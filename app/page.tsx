@@ -34,7 +34,7 @@ export default function Dashboard() {
   return (
     <div className="app-shell">
       <Sidebar active="dashboard" />
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '120vh' }}>
         <Header title="Dashboard consolidado" empresa={empresa} onEmpresa={setEmpresa} />
         <main className="main">
 
