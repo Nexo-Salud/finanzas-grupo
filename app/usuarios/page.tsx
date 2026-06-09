@@ -298,7 +298,7 @@ export default function UsuariosPage() {
           {tab === 'actividad' && (
             <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'4px 20px' }}>
               {ACTIVIDAD.map((a, i) => (
-                <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 0', borderBottom: i<ACTIVIDAD.length-1?'1px solid rgba(0,0,0,0.06)':'none', flexWrap:'wrap', gap:10 }}>
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 0', borderBottom: i<ACTIVIDAD.length-1?'1px solid rgba(0,0,0,0.06)':'none', flexWrap:'wrap' }}>
                   <div style={{ width:8, height:8, borderRadius:'50%', background:a.color, flexShrink:0 }}/>
                   <div style={{ flex:1 }}>
                     <span style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{a.usuario}</span>
