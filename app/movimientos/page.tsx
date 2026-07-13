@@ -22,8 +22,8 @@ type Movimiento = {
 }
 type Empresa = { id: string; nombre_corto: string; color: string }
 
-const CATEGORIAS_INGRESO = ['Ventas','Servicios','Arriendos cobrados','Otros ingresos']
-const CATEGORIAS_GASTO   = ['Remuneraciones','Proveedores','Arriendos pagados','Servicios básicos','Marketing','Gastos generales']
+const CATEGORIAS_INGRESO = ["Ventas contado","Ventas crédito","Ventas débito","Transferencias recibidas","Otros ingresos"]
+const CATEGORIAS_GASTO   = ["Proveedores","Remuneraciones","Leyes sociales","Arriendos pagados","Impuestos","Tarjeta de crédito","Préstamos","Boletas de honorarios","Asesoría contable","Mantención","Comisión TUU","Controlfarma software","Seguridad","Agua Antofagasta","Servicios básicos","Gastos generales"]
 const MESES_NOMBRE = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 const NAV = [
