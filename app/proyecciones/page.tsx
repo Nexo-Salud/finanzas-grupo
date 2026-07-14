@@ -1,9 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { createClient } from '@supabase/supabase-js'
 
-const MESES_PROY = ['Jul','Ago','Sep','Oct','Nov','Dic']
-const MESES_ALL  = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+)
 
 const NAV = [
   { href:'/',             label:'Dashboard',    icon:'▦'  },
@@ -19,78 +22,124 @@ const NAV = [
   { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
 ]
 
-const EMPRESAS_DATA = {
-  A: { nombre:'Empresa A', color:'#3266ad', cajaInicial:8450000,
-       ingBase:[7200,7600,7000,7400,8100,8500].map(v=>v*1000),
-       gasBase:[4300,4500,4100,4400,4800,5200].map(v=>v*1000) },
-  B: { nombre:'Empresa B', color:'#1D9E75', cajaInicial:4380000,
-       ingBase:[4400,4700,4300,4500,5000,5300].map(v=>v*1000),
-       gasBase:[3000,3200,2900,3100,3400,3600].map(v=>v*1000) },
-  C: { nombre:'Empresa C', color:'#BA7517', cajaInicial:1850000,
-       ingBase:[2700,2900,2600,2800,3100,3300].map(v=>v*1000),
-       gasBase:[1900,2000,1800,1900,2100,2200].map(v=>v*1000) },
-}
+const MESES_NOMBRE = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
-type EmpKey = 'A'|'B'|'C'|'all'
+type Empresa = { id: string; nombre_corto: string; color: string }
+type Mov     = { empresa_id: string; tipo: string; monto: number; fecha: string }
 
 function fmtM(n: number) {
-  const abs = Math.abs(n)
-  const sign = n < 0 ? '-' : ''
-  if (abs >= 1e6) return sign + '$' + (Math.round(abs/1e5)/10) + 'M'
-  if (abs >= 1000) return sign + '$' + Math.round(abs/1000) + 'K'
-  return sign + '$' + Math.round(abs)
+  const a=Math.abs(n),s=n<0?'-':''
+  if(a>=1e6) return s+'$'+(Math.round(a/1e5)/10)+'M'
+  if(a>=1000) return s+'$'+Math.round(a/1000)+'K'
+  return s+'$'+Math.round(a)
 }
-function fmtCLP(n: number) { return (n<0?'-':'') + '$' + Math.round(Math.abs(n)).toLocaleString('es-CL') }
-
-function getEmpData(key: EmpKey) {
-  if (key === 'all') {
-    const keys = ['A','B','C'] as const
-    return {
-      nombre: 'Grupo consolidado', color: '#7F77DD',
-      cajaInicial: keys.reduce((a,k) => a + EMPRESAS_DATA[k].cajaInicial, 0),
-      ingBase: MESES_PROY.map((_,i) => keys.reduce((a,k) => a + EMPRESAS_DATA[k].ingBase[i], 0)),
-      gasBase: MESES_PROY.map((_,i) => keys.reduce((a,k) => a + EMPRESAS_DATA[k].gasBase[i], 0)),
-    }
-  }
-  return EMPRESAS_DATA[key]
-}
-
-function calcFlujos(emp: ReturnType<typeof getEmpData>, varIng: number, varGas: number, h: number) {
-  const ing = emp.ingBase.slice(0,h).map(v => Math.round(v*(1+varIng/100)))
-  const gas = emp.gasBase.slice(0,h).map(v => Math.round(v*(1+varGas/100)))
-  const flujo = ing.map((v,i) => v - gas[i])
-  let caja = emp.cajaInicial
-  const cajaAcum = flujo.map(f => { caja += f; return caja })
-  return { ing, gas, flujo, cajaAcum }
+function fmtCLP(n: number) {
+  return (n<0?'-':'')+'$'+Math.round(Math.abs(n)).toLocaleString('es-CL')
 }
 
 export default function ProyeccionesPage() {
-  const [empresa,    setEmpresa]    = useState<EmpKey>('A')
-  const [horizonte,  setHorizonte]  = useState(6)
-  const [tab,        setTab]        = useState<'grafico'|'supuestos'|'tabla'>('grafico')
-  const [escenario,  setEscenario]  = useState<'opt'|'base'|'pes'>('base')
+  const [empresas,    setEmpresas]    = useState<Empresa[]>([])
+  const [movimientos, setMovimientos] = useState<Mov[]>([])
+  const [cargando,    setCargando]    = useState(true)
+  const [empresa,     setEmpresa]     = useState('all')
+  const [horizonte,   setHorizonte]   = useState(6)
+  const [tab,         setTab]         = useState<'grafico'|'supuestos'|'tabla'>('grafico')
+  const [escenario,   setEscenario]   = useState<'opt'|'base'|'pes'>('base')
 
   // Supuestos ajustables
-  const [varIngOpt,  setVarIngOpt]  = useState(12)
-  const [varGasOpt,  setVarGasOpt]  = useState(-8)
-  const [varIngPes,  setVarIngPes]  = useState(-15)
-  const [varGasPes,  setVarGasPes]  = useState(12)
-  const [minCaja,    setMinCaja]    = useState(1000000)
+  const [varIngOpt, setVarIngOpt] = useState(10)
+  const [varGasOpt, setVarGasOpt] = useState(-5)
+  const [varIngPes, setVarIngPes] = useState(-10)
+  const [varGasPes, setVarGasPes] = useState(10)
+  const [minCaja,   setMinCaja]   = useState(1000000)
 
-  const emp   = getEmpData(empresa)
-  const h     = horizonte
-  const base  = calcFlujos(emp, 0,          0,          h)
-  const opt   = calcFlujos(emp, varIngOpt,  varGasOpt,  h)
-  const pes   = calcFlujos(emp, varIngPes,  varGasPes,  h)
-  const labels = MESES_PROY.slice(0, h)
+  const hoy = new Date()
 
-  const cajaFinalBase = base.cajaAcum[h-1]
-  const minCajaBase   = Math.min(...base.cajaAcum)
-  const minCajaPes    = Math.min(...pes.cajaAcum)
-  const hayRiesgo     = minCajaPes < minCaja
+  useEffect(() => { cargarDatos() }, [])
 
-  const selData = escenario === 'opt' ? opt : escenario === 'pes' ? pes : base
-  const maxBar  = Math.max(...selData.ing, ...selData.gas, 1)
+  async function cargarDatos() {
+    setCargando(true)
+    try {
+      const [{ data: emps }, { data: movs }] = await Promise.all([
+        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
+        supabase.from('movimientos').select('empresa_id,tipo,monto,fecha').order('fecha').limit(1000),
+      ])
+      setEmpresas(emps || [])
+      setMovimientos(movs || [])
+    } catch(e) { console.error(e) }
+    finally { setCargando(false) }
+  }
+
+  // ── Calcular promedios históricos ──
+  const scope = movimientos.filter(m => empresa==='all' || m.empresa_id===empresa)
+
+  const porMes: Record<string,{ing:number;gas:number}> = {}
+  scope.forEach(m => {
+    const key = m.fecha.slice(0,7)
+    if (!porMes[key]) porMes[key] = {ing:0,gas:0}
+    if (m.tipo==='ingreso') porMes[key].ing += m.monto
+    else porMes[key].gas += m.monto
+  })
+
+  const historial = Object.entries(porMes).sort((a,b)=>a[0].localeCompare(b[0]))
+  const ultimos3  = historial.slice(-3)
+  const ultimos6  = historial.slice(-6)
+
+  // Promedio mensual últimos 3 meses
+  const promedioIng = ultimos3.length > 0
+    ? Math.round(ultimos3.reduce((a,[,v])=>a+v.ing,0) / ultimos3.length)
+    : 0
+  const promedioGas = ultimos3.length > 0
+    ? Math.round(ultimos3.reduce((a,[,v])=>a+v.gas,0) / ultimos3.length)
+    : 0
+
+  // Tendencia (crecimiento mes a mes promedio)
+  const tendenciaIng = ultimos6.length >= 2
+    ? Math.round((ultimos6[ultimos6.length-1][1].ing - ultimos6[0][1].ing) / ultimos6[0][1].ing * 100 / ultimos6.length)
+    : 0
+
+  // Caja inicial = último saldo calculado
+  const cajaInicial = historial.reduce((a,[,v])=>a+v.ing-v.gas, 0)
+
+  // ── Generar meses futuros ──
+  function getMesesFuturos(h: number) {
+    const meses = []
+    for (let i=1; i<=h; i++) {
+      const d = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1)
+      meses.push(`${MESES_NOMBRE[d.getMonth()]} ${d.getFullYear()}`)
+    }
+    return meses
+  }
+
+  function calcEscenario(varIng: number, varGas: number, h: number) {
+    const ing: number[] = []
+    const gas: number[] = []
+    const flujo: number[] = []
+    const cajaAcum: number[] = []
+    let caja = cajaInicial
+
+    for (let i=0; i<h; i++) {
+      const ingMes = Math.round(promedioIng * (1 + varIng/100) * (1 + tendenciaIng/100 * i))
+      const gasMes = Math.round(promedioGas * (1 + varGas/100))
+      const fl     = ingMes - gasMes
+      caja += fl
+      ing.push(ingMes)
+      gas.push(gasMes)
+      flujo.push(fl)
+      cajaAcum.push(caja)
+    }
+    return { ing, gas, flujo, cajaAcum }
+  }
+
+  const mesesFuturos = getMesesFuturos(horizonte)
+  const base = calcEscenario(0,          0,          horizonte)
+  const opt  = calcEscenario(varIngOpt,  varGasOpt,  horizonte)
+  const pes  = calcEscenario(varIngPes,  varGasPes,  horizonte)
+
+  const selData  = escenario==='opt' ? opt : escenario==='pes' ? pes : base
+  const hayRiesgo = Math.min(...pes.cajaAcum) < minCaja
+  const maxCaja   = Math.max(...opt.cajaAcum, ...base.cajaAcum, ...pes.cajaAcum, minCaja*2, 1)
+  const minCajaVal= Math.min(...pes.cajaAcum, cajaInicial, 0)
 
   return (
     <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
@@ -100,29 +149,28 @@ export default function ProyeccionesPage() {
         <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
           📊 Finanzas Grupo
         </div>
-        {NAV.map(item => (
+        {NAV.map(item=>(
           <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
       </div>
 
-      {/* Contenido */}
       <div style={{ marginLeft:220 }}>
-
         {/* Header */}
         <div style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
-          <div style={{ fontSize:15, fontWeight:600 }}>Proyección de caja</div>
-          <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-            <select value={empresa} onChange={e=>setEmpresa(e.target.value as EmpKey)} style={sel}>
-              <option value="A">Empresa A</option>
-              <option value="B">Empresa B</option>
-              <option value="C">Empresa C</option>
-              <option value="all">Grupo consolidado</option>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ fontSize:15, fontWeight:600 }}>Proyección de caja</div>
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Basado en historial real</span>}
+          </div>
+          <div style={{ display:'flex', gap:8 }}>
+            <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={sel}>
+              <option value="all">Grupo completo</option>
+              {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
             <div style={{ display:'flex', gap:4 }}>
-              {([3,6] as const).map(h => (
-                <button key={h} onClick={()=>setHorizonte(h)} style={{ padding:'5px 12px', borderRadius:7, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:horizonte===h?'#3266ad':'#fff', color:horizonte===h?'#fff':'#6b7280', fontWeight:horizonte===h?500:400 }}>
+              {([3,6] as const).map(h=>(
+                <button key={h} onClick={()=>setHorizonte(h)} style={{ padding:'5px 12px', borderRadius:7, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:horizonte===h?'#3266ad':'#fff', color:horizonte===h?'#fff':'#6b7280' }}>
                   {h} meses
                 </button>
               ))}
@@ -132,240 +180,264 @@ export default function ProyeccionesPage() {
 
         <div style={{ padding:'24px 28px' }}>
 
-          {/* Métricas */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24 }}>
-            {[
-              { label:'Caja inicial',      value:fmtM(emp.cajaInicial),          color:'#3266ad', bg:'#E6F1FB' },
-              { label:'Caja final (base)', value:fmtM(cajaFinalBase),            color:cajaFinalBase>=0?'#1D9E75':'#E24B4A', bg:cajaFinalBase>=0?'#E1F5EE':'#FCEBEB' },
-              { label:'Escenario opt.',    value:fmtM(opt.cajaAcum[h-1]),        color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Escenario pes.',    value:fmtM(pes.cajaAcum[h-1]),        color:'#E24B4A', bg:'#FCEBEB' },
-            ].map(m => (
-              <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
-                <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
-                <div style={{ fontSize:20, fontWeight:700, color:m.color }}>{m.value}</div>
-              </div>
-            ))}
-          </div>
+          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando historial real...</div>}
 
-          {/* Alerta de riesgo */}
-          {hayRiesgo && (
-            <div style={{ background:'#FAEEDA', border:'1px solid #EF9F27', borderRadius:10, padding:'10px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10, fontSize:13 }}>
-              <span style={{ fontSize:18 }}>⚠️</span>
-              <span style={{ color:'#633806' }}>
-                <strong>Alerta:</strong> En escenario pesimista, la caja baja de {fmtM(minCaja)} en {labels[pes.cajaAcum.findIndex(v=>v<minCaja)]}. Considera una línea de crédito preventiva.
-              </span>
-            </div>
-          )}
-          {!hayRiesgo && (
-            <div style={{ background:'#EAF3DE', border:'1px solid #97C459', borderRadius:10, padding:'10px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10, fontSize:13 }}>
-              <span style={{ fontSize:18 }}>✅</span>
-              <span style={{ color:'#27500A' }}>Caja proyectada positiva en todos los escenarios durante el horizonte analizado.</span>
-            </div>
-          )}
-
-          {/* Tabs */}
-          <div style={{ display:'flex', gap:6, marginBottom:20 }}>
-            {([
-              { key:'grafico',   label:'📈 Proyección' },
-              { key:'supuestos', label:'⚙️ Supuestos'  },
-              { key:'tabla',     label:'📋 Tabla'       },
-            ] as const).map(t => (
-              <button key={t.key} onClick={()=>setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#eff4ff':'#fff', color:tab===t.key?'#3266ad':'#6b7280', fontWeight:tab===t.key?500:400 }}>
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Tab: Gráfico ── */}
-          {tab === 'grafico' && (
+          {!cargando && (
             <>
-              {/* Selector escenario */}
-              <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+              {/* Info base de proyección */}
+              <div style={{ background:'#eff4ff', border:'1px solid #c7d7f5', borderRadius:10, padding:'10px 16px', marginBottom:20, fontSize:12, color:'#3266ad' }}>
+                <strong>Base de proyección:</strong> Promedio de los últimos {ultimos3.length} meses históricos —
+                Ingreso promedio: <strong>{fmtM(promedioIng)}/mes</strong> ·
+                Gasto promedio: <strong>{fmtM(promedioGas)}/mes</strong> ·
+                Tendencia: <strong>{tendenciaIng>0?'+':''}{tendenciaIng}% mensual</strong>
+              </div>
+
+              {/* Métricas */}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:20 }}>
+                {[
+                  { label:'Caja actual',         value:fmtM(cajaInicial),           color:'#3266ad', bg:'#E6F1FB' },
+                  { label:'Proyección base',      value:fmtM(base.cajaAcum[horizonte-1]), color:'#3266ad', bg:'#E6F1FB' },
+                  { label:'Escenario optimista',  value:fmtM(opt.cajaAcum[horizonte-1]),  color:'#1D9E75', bg:'#E1F5EE' },
+                  { label:'Escenario pesimista',  value:fmtM(pes.cajaAcum[horizonte-1]),  color:'#E24B4A', bg:'#FCEBEB' },
+                ].map(m=>(
+                  <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
+                    <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
+                    <div style={{ fontSize:20, fontWeight:700, color:m.color }}>{m.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Alerta riesgo */}
+              {hayRiesgo ? (
+                <div style={{ background:'#FAEEDA', border:'1px solid #EF9F27', borderRadius:10, padding:'10px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10, fontSize:13, color:'#633806' }}>
+                  <span style={{ fontSize:18 }}>⚠️</span>
+                  <span><strong>Alerta:</strong> En escenario pesimista la caja baja de {fmtM(minCaja)}. Considera una línea de crédito preventiva.</span>
+                </div>
+              ) : (
+                <div style={{ background:'#EAF3DE', border:'1px solid #97C459', borderRadius:10, padding:'10px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10, fontSize:13, color:'#27500A' }}>
+                  <span style={{ fontSize:18 }}>✅</span>
+                  <span>Caja proyectada positiva en todos los escenarios durante los próximos {horizonte} meses.</span>
+                </div>
+              )}
+
+              {/* Tabs */}
+              <div style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([
-                  { k:'opt',  label:'Optimista',  color:'#1D9E75' },
-                  { k:'base', label:'Base',        color:'#3266ad' },
-                  { k:'pes',  label:'Pesimista',   color:'#E24B4A' },
-                ] as const).map(e => (
-                  <button key={e.k} onClick={()=>setEscenario(e.k)} style={{ padding:'6px 14px', borderRadius:999, fontSize:12, cursor:'pointer', fontWeight:500, border:`1.5px solid ${e.color}`, background:escenario===e.k?e.color:'transparent', color:escenario===e.k?'#fff':e.color }}>
-                    {e.label}
+                  {k:'grafico',   l:'📈 Proyección'},
+                  {k:'supuestos', l:'⚙️ Supuestos'},
+                  {k:'tabla',     l:'📋 Tabla'},
+                ] as const).map(t=>(
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+                    {t.l}
                   </button>
                 ))}
               </div>
 
-              {/* Gráfico caja acumulada */}
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20, marginBottom:16 }}>
-                <div style={sectionTitle}>Caja acumulada proyectada — 3 escenarios</div>
-                <div style={{ display:'flex', gap:16, marginBottom:14 }}>
-                  {[{l:'Optimista',c:'#1D9E75'},{l:'Base',c:'#3266ad'},{l:'Pesimista',c:'#E24B4A'},{l:'Mínimo',c:'#d1d5db'}].map(e=>(
-                    <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
-                      <span style={{ width:10, height:e.l==='Mínimo'?2:10, borderRadius:e.l==='Mínimo'?0:2, background:e.c, display:'inline-block' }}/>
-                      {e.l}
-                    </span>
-                  ))}
-                </div>
-                {/* Gráfico líneas SVG simple */}
-                <div style={{ position:'relative', height:180 }}>
-                  <svg width="100%" height="180" viewBox={`0 0 ${labels.length*80+60} 180`} preserveAspectRatio="none">
-                    {(() => {
-                      const allVals = [...opt.cajaAcum, ...base.cajaAcum, ...pes.cajaAcum]
-                      const maxV = Math.max(...allVals)
-                      const minV = Math.min(...allVals, 0)
-                      const range = maxV - minV || 1
-                      const W = labels.length*80+60
-                      const H = 160
-                      const pad = 10
-                      const toX = (i:number) => pad + 30 + i*(W-pad-30)/(labels.length-1||1)
-                      const toY = (v:number) => H - pad - (v-minV)/range*(H-2*pad)
-                      const line = (arr:number[], color:string) => (
-                        <polyline key={color} points={arr.slice(0,h).map((v,i)=>`${toX(i)},${toY(v)}`).join(' ')} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
-                      )
-                      const minY = toY(minCaja)
-                      return (
-                        <>
-                          {/* Línea mínimo */}
-                          <line x1={pad+30} y1={minY} x2={W-pad} y2={minY} stroke="#d1d5db" strokeWidth="1" strokeDasharray="4,3"/>
-                          {line(opt.cajaAcum,  '#1D9E75')}
-                          {line(base.cajaAcum, '#3266ad')}
-                          {line(pes.cajaAcum,  '#E24B4A')}
-                          {/* Labels eje X */}
-                          {labels.map((l,i) => (
-                            <text key={l} x={toX(i)} y={H+8} textAnchor="middle" fontSize="10" fill="#9ca3af">{l}</text>
-                          ))}
-                          {/* Puntos escenario seleccionado */}
-                          {selData.cajaAcum.slice(0,h).map((v,i) => (
-                            <circle key={i} cx={toX(i)} cy={toY(v)} r="4" fill={escenario==='opt'?'#1D9E75':escenario==='pes'?'#E24B4A':'#3266ad'}/>
-                          ))}
-                        </>
-                      )
-                    })()}
-                  </svg>
-                </div>
-              </div>
+              {/* ── Gráfico ── */}
+              {tab==='grafico' && (
+                <>
+                  {/* Selector escenario */}
+                  <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+                    {([
+                      {k:'opt', l:'Optimista', c:'#1D9E75'},
+                      {k:'base',l:'Base',      c:'#3266ad'},
+                      {k:'pes', l:'Pesimista', c:'#E24B4A'},
+                    ] as const).map(e=>(
+                      <button key={e.k} onClick={()=>setEscenario(e.k)} style={{ padding:'6px 14px', borderRadius:999, fontSize:12, cursor:'pointer', fontWeight:500, border:`1.5px solid ${e.c}`, background:escenario===e.k?e.c:'transparent', color:escenario===e.k?'#fff':e.c }}>
+                        {e.l}
+                      </button>
+                    ))}
+                  </div>
 
-              {/* Gráfico flujo mensual */}
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20 }}>
-                <div style={sectionTitle}>Flujo neto mensual — escenario {escenario==='opt'?'optimista':escenario==='pes'?'pesimista':'base'}</div>
-                <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:120 }}>
-                  {selData.ing.slice(0,h).map((ing,i) => {
-                    const gas = selData.gas[i]
-                    const hIng = Math.round(ing/maxBar*100)
-                    const hGas = Math.round(gas/maxBar*100)
-                    return (
-                      <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:3 }}>
-                        <div style={{ width:'100%', display:'flex', gap:2, alignItems:'flex-end' }}>
-                          <div style={{ flex:1, height:hIng, background:'#3266ad', borderRadius:'2px 2px 0 0' }}/>
-                          <div style={{ flex:1, height:hGas, background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
-                        </div>
-                        <div style={{ fontSize:10, color:'#9ca3af' }}>{labels[i]}</div>
-                        <div style={{ fontSize:10, color: selData.flujo[i]>=0?'#1D9E75':'#E24B4A', fontWeight:500 }}>
-                          {fmtM(selData.flujo[i])}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div style={{ display:'flex', gap:12, marginTop:10 }}>
-                  {[{l:'Ingresos',c:'#3266ad'},{l:'Gastos',c:'#E24B4A'}].map(e=>(
-                    <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
-                      <span style={{ width:10, height:10, borderRadius:2, background:e.c, display:'inline-block' }}/>
-                      {e.l}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+                  {/* Gráfico caja acumulada */}
+                  <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+                    <div style={sTitle}>Caja proyectada — 3 escenarios</div>
+                    <div style={{ display:'flex', gap:12, marginBottom:14 }}>
+                      {[{l:'Optimista',c:'#1D9E75'},{l:'Base',c:'#3266ad'},{l:'Pesimista',c:'#E24B4A'},{l:'Mínimo',c:'#d1d5db'}].map(e=>(
+                        <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
+                          <span style={{ width:10, height:e.l==='Mínimo'?2:10, background:e.c, display:'inline-block', borderRadius:e.l==='Mínimo'?0:2 }}/>{e.l}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{ position:'relative', height:180 }}>
+                      <svg width="100%" height="180" viewBox={`0 0 ${horizonte*90+60} 180`} preserveAspectRatio="none">
+                        {(() => {
+                          const allVals = [...opt.cajaAcum, ...base.cajaAcum, ...pes.cajaAcum, minCaja, cajaInicial]
+                          const maxV = Math.max(...allVals)
+                          const minV = Math.min(...allVals, 0)
+                          const range = maxV - minV || 1
+                          const W = horizonte*90+60
+                          const H = 160
+                          const pad = 10
+                          const toX = (i: number) => pad+30 + i*(W-pad-30)/(horizonte-1||1)
+                          const toY = (v: number) => H - pad - (v-minV)/range*(H-2*pad)
+                          const mkLine = (arr: number[], color: string, width=2) => (
+                            <polyline key={color} points={arr.map((v,i)=>`${toX(i)},${toY(v)}`).join(' ')} fill="none" stroke={color} strokeWidth={width} strokeLinejoin="round"/>
+                          )
+                          const minY = toY(minCaja)
+                          return (
+                            <>
+                              <line x1={pad+30} y1={minY} x2={W-pad} y2={minY} stroke="#d1d5db" strokeWidth="1" strokeDasharray="4,3"/>
+                              {mkLine(opt.cajaAcum,  '#1D9E75')}
+                              {mkLine(base.cajaAcum, '#3266ad')}
+                              {mkLine(pes.cajaAcum,  '#E24B4A')}
+                              {selData.cajaAcum.map((v,i)=>(
+                                <circle key={i} cx={toX(i)} cy={toY(v)} r="4" fill={escenario==='opt'?'#1D9E75':escenario==='pes'?'#E24B4A':'#3266ad'}/>
+                              ))}
+                              {mesesFuturos.map((m,i)=>(
+                                <text key={m} x={toX(i)} y={H+12} textAnchor="middle" fontSize="9" fill="#9ca3af">{m.slice(0,6)}</text>
+                              ))}
+                            </>
+                          )
+                        })()}
+                      </svg>
+                    </div>
+                  </div>
 
-          {/* ── Tab: Supuestos ── */}
-          {tab === 'supuestos' && (
-            <>
-              {[
-                { title:'🟢 Escenario optimista', items:[
-                  { label:'Crecimiento de ingresos', value:varIngOpt, set:setVarIngOpt, min:0,   max:40, step:1, suffix:'%', color:'#1D9E75' },
-                  { label:'Reducción de gastos',     value:varGasOpt, set:setVarGasOpt, min:-20, max:0,  step:1, suffix:'%', color:'#1D9E75' },
-                ]},
-                { title:'🔴 Escenario pesimista', items:[
-                  { label:'Caída de ingresos',    value:varIngPes, set:setVarIngPes, min:-40, max:0,  step:1, suffix:'%', color:'#E24B4A' },
-                  { label:'Aumento de gastos',    value:varGasPes, set:setVarGasPes, min:0,   max:30, step:1, suffix:'%', color:'#E24B4A' },
-                ]},
-              ].map(grupo => (
-                <div key={grupo.title} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20, marginBottom:14 }}>
-                  <div style={{ fontSize:14, fontWeight:600, color:'#111827', marginBottom:16 }}>{grupo.title}</div>
-                  {grupo.items.map(item => (
-                    <div key={item.label} style={{ marginBottom:16 }}>
-                      <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, marginBottom:6 }}>
-                        <span style={{ color:'#374151' }}>{item.label}</span>
-                        <span style={{ fontWeight:600, color:item.color }}>{item.value > 0 ? '+' : ''}{item.value}{item.suffix}</span>
-                      </div>
-                      <input type="range" min={item.min} max={item.max} step={item.step} value={item.value}
-                        onChange={e => item.set(parseInt(e.target.value))}
-                        style={{ width:'100%', accentColor:item.color }}/>
+                  {/* Gráfico flujo mensual */}
+                  <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
+                    <div style={sTitle}>Flujo neto mensual proyectado — escenario {escenario==='opt'?'optimista':escenario==='pes'?'pesimista':'base'}</div>
+                    <div style={{ display:'flex', alignItems:'flex-end', gap:10, height:120 }}>
+                      {selData.ing.map((ing,i)=>{
+                        const gas = selData.gas[i]
+                        const maxV = Math.max(...selData.ing, ...selData.gas, 1)
+                        const hI = Math.round(ing/maxV*100)
+                        const hG = Math.round(gas/maxV*100)
+                        return (
+                          <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:3 }}>
+                            <div style={{ fontSize:10, color:selData.flujo[i]>=0?'#1D9E75':'#E24B4A', fontWeight:500 }}>{fmtM(selData.flujo[i])}</div>
+                            <div style={{ width:'100%', display:'flex', gap:2, alignItems:'flex-end' }}>
+                              <div style={{ flex:1, height:Math.max(hI,2), background:'#3266ad', borderRadius:'2px 2px 0 0' }}/>
+                              <div style={{ flex:1, height:Math.max(hG,2), background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
+                            </div>
+                            <div style={{ fontSize:9, color:'#9ca3af', textAlign:'center' }}>{mesesFuturos[i]?.slice(0,6)}</div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div style={{ display:'flex', gap:12, marginTop:8 }}>
+                      {[{l:'Ingresos',c:'#3266ad'},{l:'Gastos',c:'#E24B4A'}].map(e=>(
+                        <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
+                          <span style={{ width:10, height:10, borderRadius:2, background:e.c, display:'inline-block' }}/>{e.l}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* ── Supuestos ── */}
+              {tab==='supuestos' && (
+                <>
+                  {[
+                    { title:'🟢 Escenario optimista', items:[
+                      { label:'Aumento de ingresos', value:varIngOpt, set:setVarIngOpt, min:0, max:40, color:'#1D9E75' },
+                      { label:'Reducción de gastos', value:varGasOpt, set:setVarGasOpt, min:-20, max:0, color:'#1D9E75' },
+                    ]},
+                    { title:'🔴 Escenario pesimista', items:[
+                      { label:'Caída de ingresos',  value:varIngPes, set:setVarIngPes, min:-40, max:0,  color:'#E24B4A' },
+                      { label:'Aumento de gastos',  value:varGasPes, set:setVarGasPes, min:0,   max:30, color:'#E24B4A' },
+                    ]},
+                  ].map(grupo=>(
+                    <div key={grupo.title} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20, marginBottom:14 }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:'#111827', marginBottom:16 }}>{grupo.title}</div>
+                      {grupo.items.map(item=>(
+                        <div key={item.label} style={{ marginBottom:16 }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, marginBottom:6 }}>
+                            <span style={{ color:'#374151' }}>{item.label}</span>
+                            <span style={{ fontWeight:600, color:item.color }}>{item.value>0?'+':''}{item.value}%</span>
+                          </div>
+                          <input type="range" min={item.min} max={item.max} value={item.value}
+                            onChange={e=>item.set(parseInt(e.target.value))}
+                            style={{ width:'100%', accentColor:item.color }}/>
+                        </div>
+                      ))}
                     </div>
                   ))}
-                </div>
-              ))}
-
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20 }}>
-                <div style={{ fontSize:14, fontWeight:600, color:'#111827', marginBottom:16 }}>⚙️ Parámetros generales</div>
-                <div style={{ marginBottom:16 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, marginBottom:6 }}>
-                    <span style={{ color:'#374151' }}>Caja mínima requerida</span>
-                    <span style={{ fontWeight:600, color:'#3266ad' }}>{fmtM(minCaja)}</span>
+                  <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20 }}>
+                    <div style={{ fontSize:14, fontWeight:600, marginBottom:16 }}>⚙️ Parámetros generales</div>
+                    <div style={{ fontSize:13, color:'#374151', marginBottom:6, display:'flex', justifyContent:'space-between' }}>
+                      <span>Caja mínima requerida</span>
+                      <span style={{ fontWeight:600, color:'#3266ad' }}>{fmtM(minCaja)}</span>
+                    </div>
+                    <input type="range" min={500000} max={10000000} step={100000} value={minCaja}
+                      onChange={e=>setMinCaja(parseInt(e.target.value))}
+                      style={{ width:'100%', accentColor:'#3266ad' }}/>
                   </div>
-                  <input type="range" min={500000} max={5000000} step={100000} value={minCaja}
-                    onChange={e=>setMinCaja(parseInt(e.target.value))}
-                    style={{ width:'100%', accentColor:'#3266ad' }}/>
+                  <button onClick={()=>setTab('grafico')} style={{ width:'100%', padding:10, borderRadius:9, border:'none', background:'#3266ad', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer', marginTop:8 }}>
+                    Ver proyección actualizada →
+                  </button>
+                </>
+              )}
+
+              {/* ── Tabla ── */}
+              {tab==='tabla' && (
+                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+                  <div style={{ overflowX:'auto' }}>
+                    <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, minWidth:600 }}>
+                      <thead>
+                        <tr style={{ background:'#fafafa' }}>
+                          <th style={th}>Concepto</th>
+                          {mesesFuturos.map(m=><th key={m} style={{ ...th, textAlign:'right' }}>{m.slice(0,6)}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { label:'Ingresos (opt)',    data:opt.ing,      color:'#1D9E75', bg:'#f0fdf4' },
+                          { label:'Ingresos (base)',   data:base.ing,     color:'#3266ad', bg:'#eff4ff' },
+                          { label:'Ingresos (pes)',    data:pes.ing,      color:'#E24B4A', bg:'#fff5f5' },
+                          { label:'Gastos (base)',     data:base.gas,     color:'#6b7280', bg:'' },
+                          { label:'Flujo (opt)',       data:opt.flujo,    color:'#1D9E75', bg:'#f0fdf4', bold:true },
+                          { label:'Flujo (base)',      data:base.flujo,   color:'#3266ad', bg:'#eff4ff', bold:true },
+                          { label:'Flujo (pes)',       data:pes.flujo,    color:'#E24B4A', bg:'#fff5f5', bold:true },
+                          { label:'Caja acum. (opt)',  data:opt.cajaAcum, color:'#1D9E75', bg:'#f0fdf4' },
+                          { label:'Caja acum. (base)', data:base.cajaAcum,color:'#3266ad', bg:'#eff4ff' },
+                          { label:'Caja acum. (pes)',  data:pes.cajaAcum, color:'#E24B4A', bg:'#fff5f5' },
+                        ].map(row=>(
+                          <tr key={row.label} style={{ background:row.bg||'transparent' }}>
+                            <td style={{ padding:'8px 12px', fontWeight:row.bold?600:400, color:row.color, fontSize:12 }}>{row.label}</td>
+                            {row.data.map((v,i)=>(
+                              <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:v<0?'#E24B4A':'#374151' }}>{fmtM(v)}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Historial real */}
+              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginTop:16 }}>
+                <div style={sTitle}>Historial real — base de la proyección</div>
+                <div style={{ overflowX:'auto' }}>
+                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
+                    <thead>
+                      <tr style={{ background:'#fafafa' }}>
+                        {['Mes','Ingresos','Gastos','Flujo neto'].map(h=>(
+                          <th key={h} style={{ textAlign:'left', padding:'8px 12px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historial.map(([key,val],i)=>{
+                        const [y,m] = key.split('-')
+                        const flujo = val.ing - val.gas
+                        return (
+                          <tr key={key} style={{ borderBottom:i<historial.length-1?'1px solid rgba(0,0,0,0.06)':'none' }}>
+                            <td style={{ padding:'8px 12px', fontWeight:500 }}>{MESES_NOMBRE[parseInt(m)-1]} {y}</td>
+                            <td style={{ padding:'8px 12px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
+                            <td style={{ padding:'8px 12px', color:'#E24B4A', fontWeight:600 }}>{fmtCLP(val.gas)}</td>
+                            <td style={{ padding:'8px 12px', fontWeight:700, color:flujo>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(flujo)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-
-              <button onClick={()=>setTab('grafico')} style={{ width:'100%', padding:10, borderRadius:9, border:'none', background:'#3266ad', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer', marginTop:4 }}>
-                Ver proyección actualizada →
-              </button>
             </>
           )}
-
-          {/* ── Tab: Tabla ── */}
-          {tab === 'tabla' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, overflow:'hidden' }}>
-              <div style={{ overflowX:'auto' }}>
-                <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, minWidth:600 }}>
-                  <thead>
-                    <tr style={{ background:'#fafafa' }}>
-                      <th style={th}>Concepto</th>
-                      {labels.map(m => <th key={m} style={{ ...th, textAlign:'right' }}>{m}</th>)}
-                      <th style={{ ...th, textAlign:'right' }}>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { label:'Ingresos (opt)',       data:opt.ing,      color:'#1D9E75' },
-                      { label:'Ingresos (base)',      data:base.ing,     color:'#3266ad' },
-                      { label:'Ingresos (pes)',       data:pes.ing,      color:'#E24B4A' },
-                      { label:'Gastos (base)',        data:base.gas,     color:'#6b7280' },
-                      { label:'Flujo neto (opt)',     data:opt.flujo,    color:'#1D9E75', bold:true, bg:'#f0fdf4' },
-                      { label:'Flujo neto (base)',    data:base.flujo,   color:'#3266ad', bold:true, bg:'#eff4ff' },
-                      { label:'Flujo neto (pes)',     data:pes.flujo,    color:'#E24B4A', bold:true, bg:'#fff5f5' },
-                      { label:'Caja acum. (opt)',     data:opt.cajaAcum, color:'#1D9E75', bg:'#f0fdf4' },
-                      { label:'Caja acum. (base)',    data:base.cajaAcum,color:'#3266ad', bg:'#eff4ff' },
-                      { label:'Caja acum. (pes)',     data:pes.cajaAcum, color:'#E24B4A', bg:'#fff5f5' },
-                    ].map(row => {
-                      const total = row.data.slice(0,h).reduce((a,b)=>a+b,0)
-                      return (
-                        <tr key={row.label} style={{ background: row.bg || 'transparent' }}>
-                          <td style={{ padding:'8px 12px', fontWeight:row.bold?600:400, color:row.color, fontSize:12 }}>{row.label}</td>
-                          {row.data.slice(0,h).map((v,i) => (
-                            <td key={i} style={{ padding:'8px 8px', textAlign:'right', color: v<0?'#E24B4A':'#374151' }}>{fmtM(v)}</td>
-                          ))}
-                          <td style={{ padding:'8px 12px', textAlign:'right', fontWeight:600, color: total<0?'#E24B4A':row.color }}>{fmtM(total)}</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
     </div>
@@ -373,5 +445,5 @@ export default function ProyeccionesPage() {
 }
 
 const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const sectionTitle: React.CSSProperties = { fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase' as const, letterSpacing:'0.06em', marginBottom:12 }
-const th: React.CSSProperties = { textAlign:'left' as const, padding:'9px 8px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)', whiteSpace:'nowrap' as const, fontSize:12 }
+const sTitle: React.CSSProperties = { fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase' as const, letterSpacing:'0.06em', marginBottom:14 }
+const th: React.CSSProperties = { textAlign:'left' as const, padding:'9px 8px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)', whiteSpace:'nowrap' as const }
