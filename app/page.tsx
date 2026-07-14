@@ -25,7 +25,7 @@ const NAV = [
 const MESES_NOMBRE = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
 type Empresa = { id: string; nombre_corto: string; color: string }
-type Movimiento = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; conciliado: boolean }
+type Movimiento = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; conciliado: boolean; descripcion?: string }
 
 function fmtM(n: number) {
   const a=Math.abs(n),s=n<0?'-':''
