@@ -71,7 +71,7 @@ export default function UsuariosPage() {
     try {
       const [{ data: emps }, { data: perfs }] = await Promise.all([
         supabase.from('empresas').select('id,nombre_corto,nombre,color').eq('activa',true).order('nombre_corto'),
-        supabase.from('perfiles').select('*').order('created_at', { ascending: false }),
+        supabase.from('usuarios_plataforma').select('*').order('created_at', { ascending: false }),
       ])
       setEmpresas(emps || [])
       setPerfiles((perfs || []).map(p => ({
@@ -118,11 +118,11 @@ export default function UsuariosPage() {
     }
     try {
       if (editando) {
-        const { error: err } = await supabase.from('perfiles').update(datos).eq('id', editando.id)
+        const { error: err } = await supabase.from('usuarios_plataforma').update(datos).eq('id', editando.id)
         if (err) throw err
         setExito('✅ Usuario actualizado correctamente')
       } else {
-        const { error: err } = await supabase.from('perfiles').insert(datos)
+        const { error: err } = await supabase.from('usuarios_plataforma').insert(datos)
         if (err) throw err
         setExito('✅ Usuario agregado correctamente')
       }
@@ -137,21 +137,21 @@ export default function UsuariosPage() {
 
   async function toggleActivo(id: string, actual: boolean) {
     try {
-      await supabase.from('perfiles').update({ activa: !actual }).eq('id', id)
+      await supabase.from('usuarios_plataforma').update({ activa: !actual }).eq('id', id)
       setPerfiles(prev => prev.map(p => p.id===id ? {...p, activa:!actual} : p))
     } catch(e: any) { setError('Error actualizando.') }
   }
 
   async function eliminar(id: string) {
     try {
-      await supabase.from('perfiles').delete().eq('id', id)
+      await supabase.from('usuarios_plataforma').delete().eq('id', id)
       setPerfiles(prev => prev.filter(p => p.id !== id))
     } catch(e: any) { setError('Error eliminando.') }
   }
 
   async function actualizarEmpresas(id: string, nuevasEmpresas: string[]) {
     try {
-      await supabase.from('perfiles').update({ empresas_permitidas: nuevasEmpresas }).eq('id', id)
+      await supabase.from('usuarios_plataforma').update({ empresas_permitidas: nuevasEmpresas }).eq('id', id)
       setPerfiles(prev => prev.map(p => p.id===id ? {...p, empresas_permitidas:nuevasEmpresas} : p))
       setExito('✅ Permisos actualizados')
       setTimeout(() => setExito(''), 2000)
