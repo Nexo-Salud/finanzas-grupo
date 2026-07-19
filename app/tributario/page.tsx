@@ -14,6 +14,7 @@ const NAV = [
   { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
   { href:'/alertas',      label:'Alertas',      icon:'🔔' },
   { href:'/reportes',     label:'Reportes',     icon:'📄' },
+  { href:'/estados',      label:'Est. Financ.', icon:'📑' },
   { href:'/bancos',       label:'Bancos',       icon:'🏦' },
   { href:'/tributario',   label:'Documentos',   icon:'🧾', active:true },
   { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
