@@ -14,11 +14,12 @@ const NAV = [
   { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
   { href:'/alertas',      label:'Alertas',      icon:'🔔' },
   { href:'/reportes',     label:'Reportes',     icon:'📄' },
+  { href:'/estados',      label:'Est. Financ.', icon:'📑' },
   { href:'/bancos',       label:'Bancos',       icon:'🏦' },
   { href:'/tributario',   label:'Documentos',   icon:'🧾' },
   { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
   { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
-  { href:'/kpis',         label:'KPIs',         icon:'📊', active:true },
+  { href:'/kpis',         label:'KPIs',         icon:'📊' },
   { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
 ]
 
