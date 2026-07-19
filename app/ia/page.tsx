@@ -14,12 +14,13 @@ const NAV = [
   { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
   { href:'/alertas',      label:'Alertas',      icon:'🔔' },
   { href:'/reportes',     label:'Reportes',     icon:'📄' },
+  { href:'/estados',      label:'Est. Financ.', icon:'📑' },
   { href:'/bancos',       label:'Bancos',       icon:'🏦' },
   { href:'/tributario',   label:'Documentos',   icon:'🧾' },
   { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
   { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
   { href:'/kpis',         label:'KPIs',         icon:'📊' },
-  { href:'/ia',           label:'Análisis IA',  icon:'🧠', active:true },
+  { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
 ]
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
