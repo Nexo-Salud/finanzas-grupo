@@ -124,6 +124,7 @@ export default function AlertasPage() {
           { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
           { href:'/alertas',      label:'Alertas',      icon:'🔔', active:true },
           { href:'/reportes',     label:'Reportes',     icon:'📄' },
+          { href:'/estados',      label:'Est. Financ.', icon:'📑' },
           { href:'/bancos',       label:'Bancos',       icon:'🏦' },
           { href:'/tributario',   label:'Documentos',   icon:'🧾' },
           { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
