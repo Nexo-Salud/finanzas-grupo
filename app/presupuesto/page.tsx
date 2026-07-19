@@ -205,6 +205,7 @@ export default function PresupuestoPage() {
           { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯', active:true },
           { href:'/alertas',      label:'Alertas',      icon:'🔔' },
           { href:'/reportes',     label:'Reportes',     icon:'📄' },
+          { href:'/estados',      label:'Est. Financ.', icon:'📑' },
           { href:'/bancos',       label:'Bancos',       icon:'🏦' },
           { href:'/tributario',   label:'Documentos',   icon:'🧾' },
           { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
