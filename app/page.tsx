@@ -134,6 +134,19 @@ export default function DashboardPage() {
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
+
+        <div style={{ marginTop:'auto', paddingTop:16, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+          <button
+            onClick={async () => {
+              const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL||'', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||'')
+              await sb.auth.signOut()
+              window.location.href = '/login'
+            }}
+            style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+          >
+            <span>🚪</span> Cerrar sesión
+          </button>
+        </div>
       </div>
 
       {/* Contenido */}
