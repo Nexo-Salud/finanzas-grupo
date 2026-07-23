@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -25,8 +26,8 @@ const NAV = [
 
 const MESES_NOMBRE = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
-type Empresa = { id: string; nombre_corto: string; color: string }
-type Movimiento = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; conciliado: boolean; descripcion?: string }
+type Empresa  = { id: string; nombre_corto: string; color: string }
+type Mov      = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; descripcion?: string }
 
 function fmtM(n: number) {
   const a=Math.abs(n),s=n<0?'-':''
@@ -40,74 +41,86 @@ function fmtCLP(n: number) {
 
 export default function DashboardPage() {
   const [empresas,    setEmpresas]    = useState<Empresa[]>([])
-  const [movimientos, setMovimientos] = useState<Movimiento[]>([])
+  const [movimientos, setMovimientos] = useState<Mov[]>([])
   const [cargando,    setCargando]    = useState(true)
   const [empresa,     setEmpresa]     = useState('all')
+  const [userEmail,   setUserEmail]   = useState('')
+  const router = useRouter()
 
-  const hoy = new Date()
+  const hoy        = new Date()
   const mesActual  = hoy.getMonth() + 1
   const anioActual = hoy.getFullYear()
 
-  useEffect(() => { cargarDatos() }, [])
+  useEffect(() => {
+    // Verificar sesión
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push('/login')
+        return
+      }
+      setUserEmail(session.user.email || '')
+      cargarDatos()
+    })
+
+    // Escuchar cambios de sesión
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) router.push('/login')
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   async function cargarDatos() {
     setCargando(true)
     try {
       const [{ data: emps }, { data: movs }] = await Promise.all([
         supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
-        supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria,conciliado').order('fecha', { ascending:false }).limit(1000),
+        supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria,descripcion').order('fecha', { ascending:false }).limit(1000),
       ])
       setEmpresas(emps || [])
       setMovimientos(movs || [])
-    } catch(e) {
-      console.error(e)
-    } finally {
-      setCargando(false)
-    }
+    } catch(e) { console.error(e) }
+    finally { setCargando(false) }
   }
 
-  // ── Filtros ──
-  const scope = movimientos.filter(m => empresa==='all' || m.empresa_id===empresa)
+  async function cerrarSesion() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  const scope    = movimientos.filter(m => empresa==='all' || m.empresa_id===empresa)
   const scopeMes = scope.filter(m => {
     const [y,mo] = m.fecha.split('-')
     return parseInt(y)===anioActual && parseInt(mo)===mesActual
   })
 
-  // ── Métricas globales ──
   const ingTotal  = scope.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
   const gasTotal  = scope.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
   const utilidad  = ingTotal - gasTotal
-  const margen    = ingTotal > 0 ? Math.round(utilidad/ingTotal*100) : 0
-  const pendientes= scope.filter(m=>!m.conciliado).length
-
-  // ── Métricas mes actual ──
+  const margen    = ingTotal>0 ? Math.round(utilidad/ingTotal*100) : 0
   const ingMes    = scopeMes.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
   const gasMes    = scopeMes.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
   const utilMes   = ingMes - gasMes
 
-  // ── Datos por mes para gráfico ──
   const porMes: Record<string,{ing:number;gas:number}> = {}
   scope.forEach(m => {
     const key = m.fecha.slice(0,7)
-    if (!porMes[key]) porMes[key] = { ing:0, gas:0 }
+    if (!porMes[key]) porMes[key] = {ing:0,gas:0}
     if (m.tipo==='ingreso') porMes[key].ing += m.monto
     else porMes[key].gas += m.monto
   })
   const mesesData = Object.entries(porMes).sort((a,b)=>a[0].localeCompare(b[0])).slice(-6)
   const maxBar    = Math.max(...mesesData.map(([,v])=>Math.max(v.ing,v.gas)), 1)
 
-  // ── Ranking por empresa ──
   const rankingEmpresas = empresas.map(emp => {
     const movEmp = movimientos.filter(m=>m.empresa_id===emp.id)
     const ing = movEmp.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
     const gas = movEmp.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
     const util = ing - gas
-    const mg   = ing > 0 ? Math.round(util/ing*100) : 0
+    const mg   = ing>0 ? Math.round(util/ing*100) : 0
     return { ...emp, ing, gas, util, mg }
   }).sort((a,b)=>b.util-a.util)
   const maxUtil = Math.max(...rankingEmpresas.map(e=>e.util), 1)
 
-  // ── Top categorías de gasto del mes ──
   const topGastos: Record<string,number> = {}
   scopeMes.filter(m=>m.tipo==='gasto').forEach(m => {
     topGastos[m.categoria] = (topGastos[m.categoria]||0) + m.monto
@@ -115,9 +128,7 @@ export default function DashboardPage() {
   const topGastosArr = Object.entries(topGastos).sort((a,b)=>b[1]-a[1]).slice(0,5)
   const maxGasto = Math.max(...topGastosArr.map(([,v])=>v), 1)
 
-  // ── Últimos movimientos ──
   const ultimos = scope.slice(0,6)
-
   const empColor  = (id: string) => empresas.find(e=>e.id===id)?.color || '#888780'
   const empNombre = (id: string) => empresas.find(e=>e.id===id)?.nombre_corto || id
 
@@ -134,50 +145,42 @@ export default function DashboardPage() {
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
-
-        <div style={{ marginTop:'auto', paddingTop:16, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-          <button
-            onClick={async () => {
-              const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL||'', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||'')
-              await sb.auth.signOut()
-              window.location.href = '/login'
-            }}
-            style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
-          >
-            <span>🚪</span> Cerrar sesión
+        {/* Usuario y logout */}
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:2, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+            {userEmail}
+          </div>
+          <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
+            🚪 Cerrar sesión
           </button>
         </div>
       </div>
 
       {/* Contenido */}
       <div style={{ marginLeft:220 }}>
-
         {/* Header */}
         <div style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Dashboard</div>
             {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
-            {cargando  && <span style={{ fontSize:11, color:'#9ca3af' }}>Cargando...</span>}
           </div>
           <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-            <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={sel}>
+            <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }}>
               <option value="all">Grupo completo</option>
               {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
-            <div style={{ fontSize:12, color:'#9ca3af' }}>{MESES_NOMBRE[mesActual-1]} {anioActual}</div>
           </div>
         </div>
 
         <div style={{ padding:'24px 28px' }}>
-
-          {/* Métricas globales */}
+          {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:12, marginBottom:20 }}>
             {[
               { label:'Ingresos totales', value:fmtM(ingTotal),  delta:`Mes: ${fmtM(ingMes)}`,  color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Gastos totales',   value:fmtM(gasTotal),  delta:`Mes: ${fmtM(gasMes)}`,  color:'#E24B4A', bg:'#FCEBEB' },
               { label:'Utilidad neta',    value:fmtM(utilidad),  delta:`Margen ${margen}%`,      color:'#3266ad', bg:'#E6F1FB' },
               { label:'Resultado mes',    value:fmtM(utilMes),   delta:MESES_NOMBRE[mesActual-1]+' '+anioActual, color:utilMes>=0?'#1D9E75':'#E24B4A', bg:utilMes>=0?'#E1F5EE':'#FCEBEB' },
-              { label:'Pendientes',       value:pendientes.toString(), delta:'sin conciliar',    color:'#BA7517', bg:'#FAEEDA' },
+              { label:'Movimientos',      value:scope.length.toString(), delta:'registrados', color:'#BA7517', bg:'#FAEEDA' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -188,12 +191,9 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16 }}>
-
-            {/* Gráfico ingresos vs gastos */}
+            {/* Gráfico */}
             <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
-                Ingresos vs gastos — últimos 6 meses
-              </div>
+              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos — últimos 6 meses</div>
               <div style={{ display:'flex', gap:10, marginBottom:12 }}>
                 {[{l:'Ingresos',c:'#1D9E75'},{l:'Gastos',c:'#E24B4A'}].map(e=>(
                   <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
@@ -201,11 +201,7 @@ export default function DashboardPage() {
                   </span>
                 ))}
               </div>
-              {cargando ? (
-                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af', fontSize:13 }}>Cargando...</div>
-              ) : mesesData.length === 0 ? (
-                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af', fontSize:13 }}>Sin datos</div>
-              ) : (
+              {cargando ? <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af' }}>Cargando...</div> : (
                 <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:140 }}>
                   {mesesData.map(([key,val])=>{
                     const [y,m] = key.split('-')
@@ -227,94 +223,74 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Ranking empresas */}
+            {/* Ranking */}
             <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
-                Resultado por empresa
-              </div>
-              {cargando ? (
-                <div style={{ color:'#9ca3af', fontSize:13 }}>Cargando...</div>
-              ) : rankingEmpresas.map((e,i)=>(
+              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Resultado por empresa</div>
+              {rankingEmpresas.map((e,i)=>(
                 <div key={e.id} style={{ marginBottom:16 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
                     <span style={{ fontSize:16, fontWeight:700, color:'#e5e7eb', width:20 }}>{i+1}</span>
                     <span style={{ width:9, height:9, borderRadius:'50%', background:e.color, flexShrink:0 }}/>
                     <span style={{ flex:1, fontSize:13, fontWeight:500, color:'#111827' }}>{e.nombre_corto}</span>
-                    <span style={{ fontSize:11, color:'#6b7280' }}>Margen {e.mg}%</span>
+                    <span style={{ fontSize:12, color:'#6b7280' }}>Margen {e.mg}%</span>
                     <span style={{ fontSize:14, fontWeight:700, color:e.util>=0?'#1D9E75':'#E24B4A' }}>{fmtM(e.util)}</span>
                   </div>
                   <div style={{ height:6, background:'#f1f5f9', borderRadius:3, overflow:'hidden', marginLeft:28 }}>
-                    <div style={{ height:'100%', width:`${Math.max(0,Math.min(100,Math.round(e.util/maxUtil*100)))}%`, background:e.color, borderRadius:3, transition:'width 0.5s' }}/>
+                    <div style={{ height:'100%', width:`${Math.max(0,Math.min(100,Math.round(e.util/maxUtil*100)))}%`, background:e.color, borderRadius:3 }}/>
                   </div>
                 </div>
               ))}
+
+              {topGastosArr.length > 0 && (
+                <div style={{ borderTop:'1px solid rgba(0,0,0,0.07)', paddingTop:12, marginTop:4 }}>
+                  <div style={{ fontSize:11, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8 }}>Top gastos del mes</div>
+                  {topGastosArr.map(([cat,val])=>(
+                    <div key={cat} style={{ marginBottom:6 }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, marginBottom:3 }}>
+                        <span style={{ color:'#374151' }}>{cat}</span>
+                        <span style={{ color:'#E24B4A', fontWeight:500 }}>{fmtCLP(val)}</span>
+                      </div>
+                      <div style={{ height:4, background:'#f1f5f9', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${Math.round(val/maxGasto*100)}%`, background:'#E24B4A', borderRadius:2 }}/>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16 }}>
-
-            {/* Top gastos del mes */}
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
-                Top gastos — {MESES_NOMBRE[mesActual-1]} {anioActual}
-              </div>
-              {cargando ? (
-                <div style={{ color:'#9ca3af', fontSize:13 }}>Cargando...</div>
-              ) : topGastosArr.length===0 ? (
-                <div style={{ color:'#9ca3af', fontSize:13, textAlign:'center', padding:'1rem' }}>Sin gastos este mes</div>
-              ) : topGastosArr.map(([cat, val])=>(
-                <div key={cat} style={{ marginBottom:12 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
-                    <span style={{ fontSize:12, color:'#374151', fontWeight:500 }}>{cat}</span>
-                    <span style={{ fontSize:12, fontWeight:600, color:'#E24B4A' }}>{fmtCLP(val)}</span>
-                  </div>
-                  <div style={{ height:5, background:'#f1f5f9', borderRadius:3, overflow:'hidden' }}>
-                    <div style={{ height:'100%', width:`${Math.round(val/maxGasto*100)}%`, background:'#E24B4A', borderRadius:3 }}/>
-                  </div>
-                </div>
-              ))}
+          {/* Últimos movimientos */}
+          <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>Últimos movimientos</div>
+              <Link href="/movimientos" style={{ fontSize:12, color:'#3266ad', textDecoration:'none' }}>Ver todos →</Link>
             </div>
-
-            {/* Últimos movimientos */}
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                  Últimos movimientos
+            {ultimos.map((m,i)=>(
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:i<ultimos.length-1?'1px solid rgba(0,0,0,0.05)':'none' }}>
+                <div style={{ width:28, height:28, borderRadius:8, background:m.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, flexShrink:0 }}>
+                  {m.tipo==='ingreso'?'↑':'↓'}
                 </div>
-                <Link href="/movimientos" style={{ fontSize:12, color:'#3266ad', textDecoration:'none' }}>Ver todos →</Link>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#111827', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{m.descripcion || m.categoria}</div>
+                  <div style={{ fontSize:10, color:'#9ca3af' }}>{empNombre(m.empresa_id)} · {m.fecha}</div>
+                </div>
+                <span style={{ fontSize:12, fontWeight:600, color:m.tipo==='ingreso'?'#1D9E75':'#E24B4A', flexShrink:0 }}>
+                  {m.tipo==='ingreso'?'+':'-'}{fmtM(m.monto)}
+                </span>
               </div>
-              {cargando ? (
-                <div style={{ color:'#9ca3af', fontSize:13 }}>Cargando...</div>
-              ) : ultimos.length===0 ? (
-                <div style={{ color:'#9ca3af', fontSize:13, textAlign:'center', padding:'1rem' }}>Sin movimientos</div>
-              ) : ultimos.map((m,i)=>(
-                <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:i<ultimos.length-1?'1px solid rgba(0,0,0,0.05)':'none' }}>
-                  <div style={{ width:28, height:28, borderRadius:8, background:m.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, flexShrink:0 }}>
-                    {m.tipo==='ingreso'?'↑':'↓'}
-                  </div>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:12, fontWeight:500, color:'#111827', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{m.descripcion || m.categoria}</div>
-                    <div style={{ fontSize:10, color:'#9ca3af' }}>{empNombre(m.empresa_id)} · {m.fecha}</div>
-                  </div>
-                  <span style={{ fontSize:12, fontWeight:600, color:m.tipo==='ingreso'?'#1D9E75':'#E24B4A', flexShrink:0 }}>
-                    {m.tipo==='ingreso'?'+':'-'}{fmtM(m.monto)}
-                  </span>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
 
-          {/* Acceso rápido módulos */}
+          {/* Acceso rápido */}
           <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
-              Acceso rápido
-            </div>
+            <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Acceso rápido</div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))', gap:8 }}>
               {[
                 { href:'/movimientos',  icon:'↕',  label:'Movimientos'  },
                 { href:'/tributario',   icon:'🧾', label:'Documentos'   },
                 { href:'/bancos',       icon:'🏦', label:'Bancos'       },
-                { href:'/presupuesto',  icon:'🎯', label:'Presupuesto'  },
+                { href:'/estados',      icon:'📑', label:'Est. Financ.' },
                 { href:'/reportes',     icon:'📄', label:'Reportes'     },
                 { href:'/proyecciones', icon:'📈', label:'Proyecciones' },
                 { href:'/kpis',         icon:'📊', label:'KPIs'         },
@@ -328,11 +304,8 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>
   )
 }
-
-const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
