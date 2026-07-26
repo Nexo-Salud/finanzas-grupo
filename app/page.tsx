@@ -26,8 +26,8 @@ const NAV = [
 
 const MESES_NOMBRE = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
-type Empresa  = { id: string; nombre_corto: string; color: string }
-type Mov      = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; descripcion?: string }
+type Empresa = { id: string; nombre_corto: string; color: string }
+type Mov     = { empresa_id: string; tipo: string; monto: number; fecha: string; categoria: string; descripcion?: string }
 
 function fmtM(n: number) {
   const a=Math.abs(n),s=n<0?'-':''
@@ -40,11 +40,13 @@ function fmtCLP(n: number) {
 }
 
 export default function DashboardPage() {
-  const [empresas,    setEmpresas]    = useState<Empresa[]>([])
-  const [movimientos, setMovimientos] = useState<Mov[]>([])
-  const [cargando,    setCargando]    = useState(true)
-  const [empresa,     setEmpresa]     = useState('all')
-  const [userEmail,   setUserEmail]   = useState('')
+  const [empresas,         setEmpresas]         = useState<Empresa[]>([])
+  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([]) // IDs permitidos
+  const [movimientos,      setMovimientos]      = useState<Mov[]>([])
+  const [cargando,         setCargando]         = useState(true)
+  const [empresa,          setEmpresa]          = useState('all')
+  const [userEmail,        setUserEmail]        = useState('')
+  const [esAdmin,          setEsAdmin]          = useState(false)
   const router = useRouter()
 
   const hoy        = new Date()
@@ -52,30 +54,70 @@ export default function DashboardPage() {
   const anioActual = hoy.getFullYear()
 
   useEffect(() => {
-    // Verificar sesión
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.push('/login')
-        return
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { router.push('/login'); return }
+      
+      const email = session.user.email || ''
+      setUserEmail(email)
+
+      // Buscar permisos del usuario en usuarios_plataforma
+      const { data: perfil } = await supabase
+        .from('usuarios_plataforma')
+        .select('rol, empresas_permitidas')
+        .eq('email', email)
+        .single()
+
+      let empPermitidas: string[] = []
+      
+      if (perfil) {
+        const rol = perfil.rol
+        const empsPerms = perfil.empresas_permitidas || []
+        
+        // Admin o sin restricción → ve todo
+        if (rol === 'admin' || empsPerms.length === 0) {
+          setEsAdmin(true)
+          empPermitidas = [] // vacío = todas
+        } else {
+          setEsAdmin(false)
+          empPermitidas = empsPerms
+          setEmpresasPermitidas(empsPerms)
+        }
+      } else {
+        // Si no está en usuarios_plataforma, verificar si es el dueño (admin)
+        setEsAdmin(true)
+        empPermitidas = []
       }
-      setUserEmail(session.user.email || '')
-      cargarDatos()
+
+      await cargarDatos(empPermitidas)
     })
 
-    // Escuchar cambios de sesión
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) router.push('/login')
     })
     return () => subscription.unsubscribe()
   }, [])
 
-  async function cargarDatos() {
+  async function cargarDatos(empPermitidas: string[]) {
     setCargando(true)
     try {
-      const [{ data: emps }, { data: movs }] = await Promise.all([
-        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
-        supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria,descripcion').order('fecha', { ascending:false }).limit(1000),
-      ])
+      // Cargar empresas filtradas
+      let queryEmps = supabase.from('empresas').select('id,nombre_corto,color').eq('activa', true)
+      
+      if (empPermitidas.length > 0) {
+        queryEmps = queryEmps.in('id', empPermitidas)
+      }
+      
+      const { data: emps } = await queryEmps.order('nombre_corto')
+
+      // Cargar movimientos filtrados
+      let queryMovs = supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria,descripcion').order('fecha', { ascending: false }).limit(1000)
+      
+      if (empPermitidas.length > 0) {
+        queryMovs = queryMovs.in('empresa_id', empPermitidas)
+      }
+
+      const { data: movs } = await queryMovs
+
       setEmpresas(emps || [])
       setMovimientos(movs || [])
     } catch(e) { console.error(e) }
@@ -87,19 +129,20 @@ export default function DashboardPage() {
     router.push('/login')
   }
 
-  const scope    = movimientos.filter(m => empresa==='all' || m.empresa_id===empresa)
+  // Filtrado adicional por selector de empresa
+  const scope = movimientos.filter(m => empresa === 'all' || m.empresa_id === empresa)
   const scopeMes = scope.filter(m => {
     const [y,mo] = m.fecha.split('-')
     return parseInt(y)===anioActual && parseInt(mo)===mesActual
   })
 
-  const ingTotal  = scope.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
-  const gasTotal  = scope.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
-  const utilidad  = ingTotal - gasTotal
-  const margen    = ingTotal>0 ? Math.round(utilidad/ingTotal*100) : 0
-  const ingMes    = scopeMes.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
-  const gasMes    = scopeMes.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
-  const utilMes   = ingMes - gasMes
+  const ingTotal = scope.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
+  const gasTotal = scope.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
+  const utilidad = ingTotal - gasTotal
+  const margen   = ingTotal>0 ? Math.round(utilidad/ingTotal*100) : 0
+  const ingMes   = scopeMes.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)
+  const gasMes   = scopeMes.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0)
+  const utilMes  = ingMes - gasMes
 
   const porMes: Record<string,{ing:number;gas:number}> = {}
   scope.forEach(m => {
@@ -127,8 +170,8 @@ export default function DashboardPage() {
   })
   const topGastosArr = Object.entries(topGastos).sort((a,b)=>b[1]-a[1]).slice(0,5)
   const maxGasto = Math.max(...topGastosArr.map(([,v])=>v), 1)
+  const ultimos  = scope.slice(0,6)
 
-  const ultimos = scope.slice(0,6)
   const empColor  = (id: string) => empresas.find(e=>e.id===id)?.color || '#888780'
   const empNombre = (id: string) => empresas.find(e=>e.id===id)?.nombre_corto || id
 
@@ -147,7 +190,12 @@ export default function DashboardPage() {
         ))}
         {/* Usuario y logout */}
         <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:2, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          {!esAdmin && empresasPermitidas.length > 0 && (
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:8, textAlign:'center' }}>
+              🔒 Acceso restringido
+            </div>
+          )}
+          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -163,10 +211,15 @@ export default function DashboardPage() {
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Dashboard</div>
             {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
+            {!esAdmin && empresasPermitidas.length > 0 && (
+              <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#FAEEDA', color:'#633806', fontWeight:500 }}>
+                🔒 Vista restringida
+              </span>
+            )}
           </div>
-          <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+          <div style={{ display:'flex', gap:8 }}>
             <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }}>
-              <option value="all">Grupo completo</option>
+              <option value="all">{esAdmin || empresasPermitidas.length===0 ? 'Grupo completo' : 'Mis empresas'}</option>
               {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
           </div>
@@ -201,7 +254,11 @@ export default function DashboardPage() {
                   </span>
                 ))}
               </div>
-              {cargando ? <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af' }}>Cargando...</div> : (
+              {cargando ? (
+                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af' }}>Cargando...</div>
+              ) : mesesData.length === 0 ? (
+                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af', fontSize:13 }}>Sin datos</div>
+              ) : (
                 <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:140 }}>
                   {mesesData.map(([key,val])=>{
                     const [y,m] = key.split('-')
@@ -223,10 +280,14 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Ranking */}
+            {/* Ranking empresas */}
             <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
               <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Resultado por empresa</div>
-              {rankingEmpresas.map((e,i)=>(
+              {cargando ? (
+                <div style={{ color:'#9ca3af', fontSize:13 }}>Cargando...</div>
+              ) : rankingEmpresas.length === 0 ? (
+                <div style={{ color:'#9ca3af', fontSize:13, textAlign:'center', padding:'2rem' }}>Sin datos</div>
+              ) : rankingEmpresas.map((e,i)=>(
                 <div key={e.id} style={{ marginBottom:16 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
                     <span style={{ fontSize:16, fontWeight:700, color:'#e5e7eb', width:20 }}>{i+1}</span>
@@ -266,7 +327,9 @@ export default function DashboardPage() {
               <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>Últimos movimientos</div>
               <Link href="/movimientos" style={{ fontSize:12, color:'#3266ad', textDecoration:'none' }}>Ver todos →</Link>
             </div>
-            {ultimos.map((m,i)=>(
+            {ultimos.length === 0 ? (
+              <div style={{ textAlign:'center', padding:'1rem', color:'#9ca3af', fontSize:13 }}>Sin movimientos</div>
+            ) : ultimos.map((m,i)=>(
               <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:i<ultimos.length-1?'1px solid rgba(0,0,0,0.05)':'none' }}>
                 <div style={{ width:28, height:28, borderRadius:8, background:m.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, flexShrink:0 }}>
                   {m.tipo==='ingreso'?'↑':'↓'}
