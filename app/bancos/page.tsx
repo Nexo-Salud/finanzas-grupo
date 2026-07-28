@@ -94,7 +94,7 @@ export default function BancosPage() {
           setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas)
         }
       } else { setEsAdmin(true); setEmpresasPermitidas([]) }
-      setCargandoAuth(false)
+      setAuthListo(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) router.push('/login')
