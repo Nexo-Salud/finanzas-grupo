@@ -1,4 +1,4 @@
-use client'
+'use client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -68,14 +68,17 @@ export default function MovimientosPage() {
         .select('rol, empresas_permitidas')
         .eq('email', email)
         .single()
+      let emps: string[] = []
       if (perfil) {
         if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
-          setEsAdmin(true); setEmpresasPermitidas([])
+          setEsAdmin(true); setEmpresasPermitidas([]); emps = []
         } else {
-          setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas)
+          setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas); emps = perfil.empresas_permitidas
         }
-      } else { setEsAdmin(true); setEmpresasPermitidas([]) }
+      } else { setEsAdmin(true); setEmpresasPermitidas([]); emps = [] }
       setCargandoAuth(false)
+      // Cargar datos CON los permisos ya conocidos
+      await cargarDatos(emps)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) router.push('/login')
@@ -125,21 +128,31 @@ export default function MovimientosPage() {
   const [fFecha,   setFFecha]   = useState(hoy.toISOString().split('T')[0])
   const [fRef,     setFRef]     = useState('')
 
-  useEffect(() => { cargarDatos() }, [])
+  // cargarDatos se llama desde el hook de auth una vez que tenemos los permisos
+  // useEffect(() => { cargarDatos() }, []) -- movido al auth hook
 
-  async function cargarDatos() {
+  async function cargarDatos(empPermitidas: string[] = []) {
     setCargando(true)
     try {
       const { data: emps } = await supabase
         .from('empresas').select('id,nombre_corto,color')
-        .eq('activa', true).order('nombre_corto')
-      if (emps && emps.length > 0) { setEmpresas(emps); setFEmpresa(emps[0].id) }
+        .eq('activa', true)
+      // Filtrar empresas por permisos
+      if (empPermitidas.length > 0 && emps) {
+        const empsData = emps.filter((e: any) => empPermitidas.includes(e.id))
+        setEmpresas(empsData)
+        if (empsData.length > 0) setFEmpresa(empsData[0].id)
+      } else if (emps && emps.length > 0) { setEmpresas(emps); setFEmpresa(emps[0].id) }
 
       const { data: movs, error: errMovs } = await supabase
-        .from('movimientos').select('*')
-        .order('fecha', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(1000)
+        .(() => {
+        let q = supabase.from('movimientos').select('*')
+          .order('fecha', { ascending: false })
+          .order('created_at', { ascending: false })
+          .limit(500)
+        if (empPermitidas.length > 0) q = q.in('empresa_id', empPermitidas)
+        return q
+      })()
       if (errMovs) throw errMovs
       setMovimientos(movs || [])
     } catch(e: any) {
