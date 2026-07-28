@@ -1,4 +1,5 @@
 'use client'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
@@ -14,13 +15,12 @@ const NAV = [
   { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
   { href:'/alertas',      label:'Alertas',      icon:'🔔' },
   { href:'/reportes',     label:'Reportes',     icon:'📄' },
-  { href:'/estados',      label:'Est. Financ.', icon:'📑' },
   { href:'/bancos',       label:'Bancos',       icon:'🏦' },
   { href:'/tributario',   label:'Documentos',   icon:'🧾' },
   { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
   { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
   { href:'/kpis',         label:'KPIs',         icon:'📊' },
-  { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
+  { href:'/ia',           label:'Análisis IA',  icon:'🧠', active:true },
 ]
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
@@ -40,6 +40,42 @@ function fmtCLP(n: number) {
 }
 
 export default function IAPage() {
+  const router = useRouter()
+  const [userEmail,          setUserEmail]          = useState('')
+  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
+  const [esAdmin,            setEsAdmin]            = useState(true)
+  const [cargandoAuth,       setCargandoAuth]       = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { router.push('/login'); return }
+      const email = session.user.email || ''
+      setUserEmail(email)
+      const { data: perfil } = await supabase
+        .from('usuarios_plataforma')
+        .select('rol, empresas_permitidas')
+        .eq('email', email)
+        .single()
+      if (perfil) {
+        if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
+          setEsAdmin(true); setEmpresasPermitidas([])
+        } else {
+          setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas)
+        }
+      } else { setEsAdmin(true); setEmpresasPermitidas([]) }
+      setCargandoAuth(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) router.push('/login')
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function cerrarSesion() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   const [empresas,    setEmpresas]    = useState<Empresa[]>([])
   const [movimientos, setMovimientos] = useState<Mov[]>([])
   const [cargando,    setCargando]    = useState(true)
@@ -264,6 +300,20 @@ INSTRUCCIONES:
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
+
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+          {!esAdmin && empresasPermitidas.length > 0 && (
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+              🔒 Vista restringida
+            </div>
+          )}
+          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+            {userEmail}
+          </div>
+          <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
+            🚪 Cerrar sesión
+          </button>
+        </div>
       </div>
 
       <div style={{ marginLeft:220 }}>
