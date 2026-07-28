@@ -71,6 +71,10 @@ function bancoColor(banco: string) {
 }
 
 export default function BancosPage() {
+  const [userEmail,          setUserEmail]          = useState('')
+  const [esAdmin,            setEsAdmin]            = useState(true)
+  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
+  const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
@@ -127,9 +131,9 @@ export default function BancosPage() {
   // Movimientos manuales para conciliación
   const [movimientos, setMovimientos] = useState<Movimiento[]>([])
 
-  useEffect(() => { cargarDatos() }, [])
+  // Auth maneja la carga inicial
 
-  async function cargarDatos() {
+  async function cargarDatos(perms: string[] = []) {
     setCargando(true)
     try {
       const { data: emps } = await supabase
@@ -212,6 +216,45 @@ export default function BancosPage() {
     })
     return Object.values(map)
   }
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { router.push('/login'); return }
+      const email = session.user.email || ''
+      setUserEmail(email)
+      const { data: perfil } = await supabase
+        .from('usuarios_plataforma')
+        .select('rol, empresas_permitidas')
+        .eq('email', email)
+        .single()
+      let perms: string[] = []
+      if (perfil && perfil.rol !== 'admin' && perfil.empresas_permitidas?.length > 0) {
+        perms = perfil.empresas_permitidas
+        setEsAdmin(false)
+        setEmpresasPermitidas(perms)
+      } else {
+        setEsAdmin(true)
+        setEmpresasPermitidas([])
+      }
+      setAuthListo(true)
+      await cargarDatos(perms)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) router.push('/login')
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function cerrarSesion() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  if (!authListo) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+      ⏳ Verificando acceso...
+    </div>
+  )
 
   return (
     <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
