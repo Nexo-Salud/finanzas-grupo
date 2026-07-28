@@ -102,9 +102,7 @@ export default function ProyeccionesPage() {
     setCargando(true)
     try {
       const [{ data: emps }, { data: movs }] = await Promise.all([
-        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true)
-      // Filtro por permisos
-      // (se aplica en JS después de cargar).order('nombre_corto'),
+        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
         supabase.from('movimientos').select('empresa_id,tipo,monto,fecha').order('fecha').limit(1000),
       ])
       setEmpresas(emps || [])
