@@ -39,10 +39,6 @@ function fmtCLP(n: number) {
 }
 
 export default function ProyeccionesPage() {
-  const [userEmail,          setUserEmail]          = useState('')
-  const [esAdmin,            setEsAdmin]            = useState(true)
-  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
-  const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
