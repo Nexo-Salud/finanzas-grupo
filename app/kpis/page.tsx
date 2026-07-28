@@ -48,10 +48,6 @@ function semLabel(pct: number, invert=false) {
 }
 
 export default function KpisPage() {
-  const [userEmail,          setUserEmail]          = useState('')
-  const [esAdmin,            setEsAdmin]            = useState(true)
-  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
-  const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
@@ -109,9 +105,7 @@ export default function KpisPage() {
     setCargando(true)
     try {
       const [{ data: emps }, { data: movs }] = await Promise.all([
-        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true)
-      // Filtro por permisos
-      // (se aplica en JS después de cargar).order('nombre_corto'),
+        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
         supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria').order('fecha').limit(1000),
       ])
       setEmpresas(emps || [])
