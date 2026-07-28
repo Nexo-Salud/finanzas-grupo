@@ -55,10 +55,6 @@ type CuentaBalance = {
 }
 
 export default function EstadosPage() {
-  const [userEmail,          setUserEmail]          = useState('')
-  const [esAdmin,            setEsAdmin]            = useState(true)
-  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
-  const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
@@ -112,9 +108,7 @@ export default function EstadosPage() {
     setCargando(true)
     try {
       const [{ data: emps }, { data: movs }, { data: docs }] = await Promise.all([
-        supabase.from('empresas').select('id,nombre_corto,nombre,color,rut').eq('activa',true)
-      // Filtro por permisos
-      // (se aplica en JS después de cargar).order('nombre_corto'),
+        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
         supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria,descripcion').order('fecha').limit(1000),
         supabase.from('documentos').select('*').order('fecha', { ascending: false }).limit(500),
       ])
