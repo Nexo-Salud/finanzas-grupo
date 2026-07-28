@@ -76,10 +76,6 @@ export default function BancosPage() {
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
   const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
-  const [userEmail,          setUserEmail]          = useState('')
-  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
-  const [esAdmin,            setEsAdmin]            = useState(true)
-  const [cargandoAuth,       setCargandoAuth]       = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
