@@ -48,6 +48,10 @@ function semLabel(pct: number, invert=false) {
 }
 
 export default function KpisPage() {
+  const [userEmail,          setUserEmail]          = useState('')
+  const [esAdmin,            setEsAdmin]            = useState(true)
+  const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
+  const [authListo,          setAuthListo]          = useState(false)
   const router = useRouter()
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
@@ -99,13 +103,15 @@ export default function KpisPage() {
   const mesActual  = hoy.getMonth() + 1
   const anioActual = hoy.getFullYear()
 
-  useEffect(() => { cargarDatos() }, [])
+  // Auth maneja la carga inicial
 
-  async function cargarDatos() {
+  async function cargarDatos(perms: string[] = []) {
     setCargando(true)
     try {
       const [{ data: emps }, { data: movs }] = await Promise.all([
-        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true).order('nombre_corto'),
+        supabase.from('empresas').select('id,nombre_corto,color').eq('activa',true)
+      // Filtro por permisos
+      // (se aplica en JS después de cargar).order('nombre_corto'),
         supabase.from('movimientos').select('empresa_id,tipo,monto,fecha,categoria').order('fecha').limit(1000),
       ])
       setEmpresas(emps || [])
@@ -175,6 +181,45 @@ export default function KpisPage() {
     const mg  = ing>0 ? Math.round(ut/ing*100) : 0
     return { ...emp, ing, gas, ut, mg }
   }).sort((a,b)=>b.ut-a.ut)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { router.push('/login'); return }
+      const email = session.user.email || ''
+      setUserEmail(email)
+      const { data: perfil } = await supabase
+        .from('usuarios_plataforma')
+        .select('rol, empresas_permitidas')
+        .eq('email', email)
+        .single()
+      let perms: string[] = []
+      if (perfil && perfil.rol !== 'admin' && perfil.empresas_permitidas?.length > 0) {
+        perms = perfil.empresas_permitidas
+        setEsAdmin(false)
+        setEmpresasPermitidas(perms)
+      } else {
+        setEsAdmin(true)
+        setEmpresasPermitidas([])
+      }
+      setAuthListo(true)
+      await cargarDatos(perms)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) router.push('/login')
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function cerrarSesion() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  if (!authListo) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+      ⏳ Verificando acceso...
+    </div>
+  )
 
   return (
     <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
