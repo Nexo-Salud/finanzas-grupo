@@ -61,36 +61,6 @@ export default function EstadosPage() {
   const [esAdmin,            setEsAdmin]            = useState(true)
   const [cargandoAuth,       setCargandoAuth]       = useState(true)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) { router.push('/login'); return }
-      const email = session.user.email || ''
-      setUserEmail(email)
-      const { data: perfil } = await supabase
-        .from('usuarios_plataforma')
-        .select('rol, empresas_permitidas')
-        .eq('email', email)
-        .single()
-      if (perfil) {
-        if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
-          setEsAdmin(true); setEmpresasPermitidas([])
-        } else {
-          setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas)
-        }
-      } else { setEsAdmin(true); setEmpresasPermitidas([]) }
-      setCargandoAuth(false)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) router.push('/login')
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-
-  async function cerrarSesion() {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
-
   const [empresas,    setEmpresas]    = useState<Empresa[]>([])
   const [movimientos, setMovimientos] = useState<Mov[]>([])
   const [documentos,  setDocumentos]  = useState<Doc[]>([])
