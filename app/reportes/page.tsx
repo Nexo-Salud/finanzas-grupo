@@ -141,7 +141,10 @@ export default function ReportesPage() {
     <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
       <style>{`@media print { .no-print { display:none!important; } body { background:white!important; } }`}</style>
 
-      <div className="no-print" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+      <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
+      <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
+      <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
+      <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
         <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
           <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
@@ -155,8 +158,8 @@ export default function ReportesPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft:220 }}>
-        <div className="no-print" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+      <div className="app-content" style={{ marginLeft:220 }}>
+        <div className="no-print app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Reportes financieros</div>
             {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
@@ -164,7 +167,7 @@ export default function ReportesPage() {
           {tab==='preview' && <button onClick={()=>window.print()} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>}
         </div>
 
-        <div style={{ padding:'24px 28px' }}>
+        <div className="app-main" style={{ padding:'24px 28px' }}>
           {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
           {!cargando && (
             <>
