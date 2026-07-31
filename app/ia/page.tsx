@@ -186,9 +186,9 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>📊 Finanzas Grupo</div>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -203,7 +203,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
         <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Análisis con IA</div>
-            <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:600, background:'#EEEDFE', color:'#3C3489' }}>✨ Claude + datos reales</span>
+            <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:600, background:'#FBF1D9', color:'#8A6D1F' }}>✨ Claude + datos reales</span>
           </div>
           {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 {movimientos.length} mov.</span>}
         </div>
@@ -216,8 +216,8 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                 {[
                   { label:'Ingresos', value:fmtM(ing),  color:'#1D9E75', bg:'#E1F5EE' },
                   { label:'Gastos',   value:fmtM(gas),  color:'#E24B4A', bg:'#FCEBEB' },
-                  { label:'Utilidad', value:fmtM(util), color:'#3266ad', bg:'#E6F1FB' },
-                  { label:'Margen',   value:mg+'%',      color:'#7F77DD', bg:'#EEEDFE' },
+                  { label:'Utilidad', value:fmtM(util), color:'#B8912E', bg:'#FBF1D9' },
+                  { label:'Margen',   value:mg+'%',      color:'#B8912E', bg:'#FBF1D9' },
                 ].map(m=>(
                   <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'12px 14px' }}>
                     <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:3, opacity:0.8 }}>{m.label}</div>
@@ -228,7 +228,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
 
               <div style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([{k:'chat',l:'💬 Chat'},{k:'anomalias',l:'⚠️ Anomalías'},{k:'resumen',l:'📊 Resumen'}] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
                 ))}
               </div>
 
@@ -242,7 +242,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                   <div ref={chatRef} style={{ height:360, overflowY:'auto', padding:16, display:'flex', flexDirection:'column', gap:12 }}>
                     {mensajes.map((m,i)=>(
                       <div key={i} style={{ maxWidth:'85%', alignSelf:m.rol==='user'?'flex-end':'flex-start' }}>
-                        <div style={{ padding:'10px 14px', borderRadius:12, fontSize:13, lineHeight:1.6, background:m.rol==='user'?'#3266ad':'#f1f5f9', color:m.rol==='user'?'#fff':'#111827' }}>
+                        <div style={{ padding:'10px 14px', borderRadius:12, fontSize:13, lineHeight:1.6, background:m.rol==='user'?'#B8912E':'#f1f5f9', color:m.rol==='user'?'#fff':'#111827' }}>
                           {m.rol==='ia' && <div style={{ fontSize:10, fontWeight:600, color:'#9ca3af', marginBottom:4 }}>🧠 Analista IA</div>}
                           {m.texto.split('\n').map((line,j)=><div key={j}>{line}</div>)}
                         </div>
@@ -252,7 +252,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                   </div>
                   <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', gap:8 }}>
                     <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); enviar() } }} placeholder="Pregunta sobre tus finanzas..." disabled={pensando} style={{ flex:1, padding:'9px 12px', fontSize:13, border:'1px solid rgba(0,0,0,0.12)', borderRadius:9, background:'#fff', outline:'none', fontFamily:'DM Sans, sans-serif' }}/>
-                    <button onClick={()=>enviar()} disabled={pensando||!input.trim()} style={{ padding:'9px 18px', borderRadius:9, border:'none', background:pensando||!input.trim()?'#d1d5db':'#3266ad', color:'#fff', fontSize:13, fontWeight:600, cursor:pensando||!input.trim()?'not-allowed':'pointer' }}>Enviar</button>
+                    <button onClick={()=>enviar()} disabled={pensando||!input.trim()} style={{ padding:'9px 18px', borderRadius:9, border:'none', background:pensando||!input.trim()?'#d1d5db':'#B8912E', color:'#fff', fontSize:13, fontWeight:600, cursor:pensando||!input.trim()?'not-allowed':'pointer' }}>Enviar</button>
                   </div>
                 </div>
               )}
@@ -275,7 +275,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
 
               {tab==='resumen' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:24 }}>
-                  <div style={{ borderBottom:'3px solid #3266ad', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
                       <div style={{ fontSize:18, fontWeight:700, color:'#111827' }}>Resumen ejecutivo</div>
                       <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>Generado {hoy.toLocaleDateString('es-CL')}</div>
@@ -283,7 +283,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                     <div style={{ fontSize:20 }}>📊</div>
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:20 }}>
-                    {[{l:'Ingresos',v:fmtCLP(ing),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gas),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(util),c:'#3266ad'},{l:'Margen',v:mg+'%',c:'#7F77DD'},{l:'Empresas',v:empresas.length.toString(),c:'#7F77DD'},{l:'Movimientos',v:movimientos.length.toString(),c:'#BA7517'}].map(k=>(
+                    {[{l:'Ingresos',v:fmtCLP(ing),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gas),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(util),c:'#B8912E'},{l:'Margen',v:mg+'%',c:'#B8912E'},{l:'Empresas',v:empresas.length.toString(),c:'#B8912E'},{l:'Movimientos',v:movimientos.length.toString(),c:'#BA7517'}].map(k=>(
                       <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
                         <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:16, fontWeight:700, color:k.c }}>{k.v}</div>
@@ -291,7 +291,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                     ))}
                   </div>
                   <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
-                    <thead><tr style={{ background:'#3266ad' }}>
+                    <thead><tr style={{ background:'#B8912E' }}>
                       {['Empresa','Ingresos','Gastos','Utilidad','Margen'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                     </tr></thead>
                     <tbody>
@@ -306,7 +306,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                             <td style={{ padding:'7px 10px', fontWeight:500 }}>{emp.nombre_corto}</td>
                             <td style={{ padding:'7px 10px', color:'#1D9E75', fontWeight:600 }}>{fmtM(eIng)}</td>
                             <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtM(eGas)}</td>
-                            <td style={{ padding:'7px 10px', fontWeight:600, color:eUtil>=0?'#3266ad':'#E24B4A' }}>{fmtM(eUtil)}</td>
+                            <td style={{ padding:'7px 10px', fontWeight:600, color:eUtil>=0?'#B8912E':'#E24B4A' }}>{fmtM(eUtil)}</td>
                             <td style={{ padding:'7px 10px', color:eMg>=30?'#1D9E75':eMg>=15?'#EF9F27':'#E24B4A', fontWeight:600 }}>{eMg}%</td>
                           </tr>
                         )

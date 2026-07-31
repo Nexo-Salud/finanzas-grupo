@@ -30,13 +30,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', background:'linear-gradient(135deg, #1e3a5f 0%, #3266ad 50%, #1D9E75 100%)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', padding:20 }}>
+    <div style={{ minHeight:'100vh', background:'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 45%, #8A6D1F 78%, #B8912E 100%)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', padding:20 }}>
       <div style={{ background:'#fff', borderRadius:20, padding:'40px 36px', width:'100%', maxWidth:400, boxShadow:'0 20px 60px rgba(0,0,0,0.2)' }}>
 
         {/* Logo */}
         <div style={{ textAlign:'center', marginBottom:32 }}>
           <div style={{ fontSize:36, marginBottom:8 }}>📊</div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#1e3a5f' }}>Finanzas Grupo</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#1A1A1A' }}>Finanzas Grupo</div>
           <div style={{ fontSize:13, color:'#9ca3af', marginTop:4 }}>Sistema financiero empresarial</div>
         </div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={cargando}
-            style={{ width:'100%', padding:'12px', borderRadius:10, border:'none', background:cargando?'#9ca3af':'#3266ad', color:'#fff', fontSize:15, fontWeight:600, cursor:cargando?'not-allowed':'pointer', transition:'background 0.2s' }}
+            style={{ width:'100%', padding:'12px', borderRadius:10, border:'none', background:cargando?'#9ca3af':'#B8912E', color:'#fff', fontSize:15, fontWeight:600, cursor:cargando?'not-allowed':'pointer', transition:'background 0.2s' }}
           >
             {cargando ? '⏳ Ingresando...' : 'Ingresar al sistema'}
           </button>

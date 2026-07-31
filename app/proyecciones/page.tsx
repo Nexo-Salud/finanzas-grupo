@@ -149,9 +149,9 @@ export default function ProyeccionesPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>📊 Finanzas Grupo</div>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -174,7 +174,7 @@ export default function ProyeccionesPage() {
               {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
             {([3,6] as const).map(h=>(
-              <button key={h} onClick={()=>setHorizonte(h)} style={{ padding:'5px 12px', borderRadius:7, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:horizonte===h?'#3266ad':'#fff', color:horizonte===h?'#fff':'#6b7280' }}>{h} meses</button>
+              <button key={h} onClick={()=>setHorizonte(h)} style={{ padding:'5px 12px', borderRadius:7, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:horizonte===h?'#B8912E':'#fff', color:horizonte===h?'#fff':'#6b7280' }}>{h} meses</button>
             ))}
           </div>
         </div>
@@ -184,14 +184,14 @@ export default function ProyeccionesPage() {
 
           {!cargando && (
             <>
-              <div style={{ background:'#eff4ff', border:'1px solid #c7d7f5', borderRadius:10, padding:'10px 16px', marginBottom:20, fontSize:12, color:'#3266ad' }}>
+              <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 16px', marginBottom:20, fontSize:12, color:'#B8912E' }}>
                 <strong>Base:</strong> Promedio últimos {ultimos3.length} meses — Ing: <strong>{fmtM(promedioIng)}/mes</strong> · Gas: <strong>{fmtM(promedioGas)}/mes</strong>
               </div>
 
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:20 }}>
                 {[
-                  { label:'Caja actual',        value:fmtM(cajaInicial),              color:'#3266ad', bg:'#E6F1FB' },
-                  { label:'Proyección base',     value:fmtM(base.acum[horizonte-1]),   color:'#3266ad', bg:'#E6F1FB' },
+                  { label:'Caja actual',        value:fmtM(cajaInicial),              color:'#B8912E', bg:'#FBF1D9' },
+                  { label:'Proyección base',     value:fmtM(base.acum[horizonte-1]),   color:'#B8912E', bg:'#FBF1D9' },
                   { label:'Optimista',           value:fmtM(opt.acum[horizonte-1]),    color:'#1D9E75', bg:'#E1F5EE' },
                   { label:'Pesimista',           value:fmtM(pes.acum[horizonte-1]),    color:'#E24B4A', bg:'#FCEBEB' },
                 ].map(m=>(
@@ -214,14 +214,14 @@ export default function ProyeccionesPage() {
 
               <div style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([{k:'grafico',l:'📈 Proyección'},{k:'supuestos',l:'⚙️ Supuestos'},{k:'tabla',l:'📋 Tabla'}] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
                 ))}
               </div>
 
               {tab==='grafico' && (
                 <>
                   <div style={{ display:'flex', gap:8, marginBottom:16 }}>
-                    {([{k:'opt',l:'Optimista',c:'#1D9E75'},{k:'base',l:'Base',c:'#3266ad'},{k:'pes',l:'Pesimista',c:'#E24B4A'}] as const).map(e=>(
+                    {([{k:'opt',l:'Optimista',c:'#1D9E75'},{k:'base',l:'Base',c:'#B8912E'},{k:'pes',l:'Pesimista',c:'#E24B4A'}] as const).map(e=>(
                       <button key={e.k} onClick={()=>setEscenario(e.k)} style={{ padding:'6px 14px', borderRadius:999, fontSize:12, cursor:'pointer', fontWeight:500, border:`1.5px solid ${e.c}`, background:escenario===e.k?e.c:'transparent', color:escenario===e.k?'#fff':e.c }}>{e.l}</button>
                     ))}
                   </div>
@@ -237,7 +237,7 @@ export default function ProyeccionesPage() {
                           <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:3 }}>
                             <div style={{ fontSize:10, color:sel.flujo[i]>=0?'#1D9E75':'#E24B4A', fontWeight:500 }}>{fmtM(sel.flujo[i])}</div>
                             <div style={{ width:'100%', display:'flex', gap:2, alignItems:'flex-end' }}>
-                              <div style={{ flex:1, height:Math.max(hI,2), background:'#3266ad', borderRadius:'2px 2px 0 0' }}/>
+                              <div style={{ flex:1, height:Math.max(hI,2), background:'#B8912E', borderRadius:'2px 2px 0 0' }}/>
                               <div style={{ flex:1, height:Math.max(hG,2), background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
                             </div>
                             <div style={{ fontSize:9, color:'#9ca3af', textAlign:'center' }}>{mesesFuturos[i]?.slice(0,6)}</div>
@@ -279,11 +279,11 @@ export default function ProyeccionesPage() {
                   <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:20 }}>
                     <div style={{ fontSize:14, fontWeight:600, marginBottom:16 }}>⚙️ Caja mínima requerida</div>
                     <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, marginBottom:6 }}>
-                      <span>Mínimo</span><span style={{ fontWeight:600, color:'#3266ad' }}>{fmtM(minCaja)}</span>
+                      <span>Mínimo</span><span style={{ fontWeight:600, color:'#B8912E' }}>{fmtM(minCaja)}</span>
                     </div>
                     <input type="range" min={500000} max={10000000} step={100000} value={minCaja}
                       onChange={e=>setMinCaja(parseInt(e.target.value))}
-                      style={{ width:'100%', accentColor:'#3266ad' }}/>
+                      style={{ width:'100%', accentColor:'#B8912E' }}/>
                   </div>
                 </>
               )}
@@ -301,14 +301,14 @@ export default function ProyeccionesPage() {
                       <tbody>
                         {[
                           { label:'Ingresos (opt)',   data:opt.ing,  color:'#1D9E75', bg:'#f0fdf4' },
-                          { label:'Ingresos (base)',  data:base.ing, color:'#3266ad', bg:'#eff4ff' },
+                          { label:'Ingresos (base)',  data:base.ing, color:'#B8912E', bg:'#FBF1D9' },
                           { label:'Ingresos (pes)',   data:pes.ing,  color:'#E24B4A', bg:'#fff5f5' },
                           { label:'Gastos (base)',    data:base.gas, color:'#6b7280', bg:'' },
                           { label:'Flujo (opt)',      data:opt.flujo, color:'#1D9E75', bg:'#f0fdf4', bold:true },
-                          { label:'Flujo (base)',     data:base.flujo,color:'#3266ad', bg:'#eff4ff', bold:true },
+                          { label:'Flujo (base)',     data:base.flujo,color:'#B8912E', bg:'#FBF1D9', bold:true },
                           { label:'Flujo (pes)',      data:pes.flujo, color:'#E24B4A', bg:'#fff5f5', bold:true },
                           { label:'Caja (opt)',       data:opt.acum,  color:'#1D9E75', bg:'#f0fdf4' },
-                          { label:'Caja (base)',      data:base.acum, color:'#3266ad', bg:'#eff4ff' },
+                          { label:'Caja (base)',      data:base.acum, color:'#B8912E', bg:'#FBF1D9' },
                           { label:'Caja (pes)',       data:pes.acum,  color:'#E24B4A', bg:'#fff5f5' },
                         ].map(row=>(
                           <tr key={row.label} style={{ background:row.bg||'transparent' }}>
@@ -342,7 +342,7 @@ export default function ProyeccionesPage() {
                           <td style={{ padding:'8px 12px', fontWeight:500 }}>{MESES[parseInt(m)-1]} {y}</td>
                           <td style={{ padding:'8px 12px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
                           <td style={{ padding:'8px 12px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
-                          <td style={{ padding:'8px 12px', fontWeight:700, color:fl>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(fl)}</td>
+                          <td style={{ padding:'8px 12px', fontWeight:700, color:fl>=0?'#B8912E':'#E24B4A' }}>{fmtCLP(fl)}</td>
                         </tr>
                       )
                     })}

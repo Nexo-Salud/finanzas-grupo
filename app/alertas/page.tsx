@@ -67,13 +67,13 @@ const HISTORIAL = [
 ]
 
 // ── Helpers ────────────────────────────────────────────────────
-const NIV_COLOR  = { crit:'#E24B4A', warn:'#EF9F27', info:'#378ADD', ok:'#1D9E75' }
-const NIV_BG     = { crit:'#FCEBEB', warn:'#FAEEDA', info:'#E6F1FB', ok:'#EAF3DE' }
-const NIV_BORDER = { crit:'#E24B4A', warn:'#EF9F27', info:'#378ADD', ok:'#1D9E75' }
+const NIV_COLOR  = { crit:'#E24B4A', warn:'#EF9F27', info:'#B8912E', ok:'#1D9E75' }
+const NIV_BG     = { crit:'#FCEBEB', warn:'#FAEEDA', info:'#FBF1D9', ok:'#EAF3DE' }
+const NIV_BORDER = { crit:'#E24B4A', warn:'#EF9F27', info:'#B8912E', ok:'#1D9E75' }
 const NIV_LABEL  = { crit:'Crítico', warn:'Aviso', info:'Info', ok:'OK' }
-const NIV_TEXT   = { crit:'#A32D2D', warn:'#633806', info:'#0C447C', ok:'#27500A' }
-const NIV_BADGE_BG = { crit:'#F09595', warn:'#FAC775', info:'#B5D4F4', ok:'#C0DD97' }
-const NIV_BADGE_TX = { crit:'#501313', warn:'#412402', info:'#042C53', ok:'#173404' }
+const NIV_TEXT   = { crit:'#A32D2D', warn:'#633806', info:'#8A6D1F', ok:'#27500A' }
+const NIV_BADGE_BG = { crit:'#F09595', warn:'#FAC775', info:'#F6ECC9', ok:'#C0DD97' }
+const NIV_BADGE_TX = { crit:'#501313', warn:'#412402', info:'#8A6D1F', ok:'#173404' }
 
 // ── Componente ─────────────────────────────────────────────────
 export default function AlertasPage() {
@@ -161,7 +161,7 @@ export default function AlertasPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {[
@@ -177,7 +177,7 @@ export default function AlertasPage() {
           { href:'/kpis',         label:'KPIs',         icon:'📊' },
           { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
         ].map(item => (
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
             {item.href==='/alertas' && noLeidas.length > 0 && (
               <span style={{ marginLeft:'auto', background:'#E24B4A', color:'#fff', borderRadius:999, fontSize:10, fontWeight:600, padding:'1px 6px' }}>{noLeidas.length}</span>
@@ -248,7 +248,7 @@ export default function AlertasPage() {
               { key:'reglas',    label:'⚙️ Reglas' },
               { key:'historial', label:'📋 Historial' },
             ] as const).map(t => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#eff4ff':'#fff', color:tab===t.key?'#3266ad':'#6b7280', fontWeight:tab===t.key?500:400 }}>
+              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#FBF1D9':'#fff', color:tab===t.key?'#B8912E':'#6b7280', fontWeight:tab===t.key?500:400 }}>
                 {t.label}
               </button>
             ))}
@@ -399,7 +399,7 @@ function AlertaCard({ alerta: a, onLeer, dim }: { alerta: Alerta; onLeer: (id:st
 }
 
 // ── Estilos ────────────────────────────────────────────────────
-const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
 const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

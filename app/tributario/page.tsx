@@ -50,10 +50,10 @@ function fmtM(n: number) {
 }
 
 const PILL: Record<TipoDoc,{bg:string;tx:string;label:string}> = {
-  FE:  { bg:'#E6F1FB', tx:'#0C447C', label:'Factura emitida'  },
+  FE:  { bg:'#FBF1D9', tx:'#8A6D1F', label:'Factura emitida'  },
   FR:  { bg:'#FAEEDA', tx:'#633806', label:'Factura recibida' },
   BE:  { bg:'#E1F5EE', tx:'#085041', label:'Boleta'           },
-  RET: { bg:'#EEEDFE', tx:'#3C3489', label:'Retención'        },
+  RET: { bg:'#FBF1D9', tx:'#8A6D1F', label:'Retención'        },
 }
 const ESTADO_STYLE: Record<Estado,{bg:string;tx:string}> = {
   pagada:   { bg:'#E1F5EE', tx:'#085041' },
@@ -231,7 +231,7 @@ export default function TributarioPage() {
     return (
       <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:14 }}>
         <div style={{ fontSize:14, fontWeight:600, marginBottom:6 }}>Registrar documento</div>
-        <div style={{ fontSize:12, color:'#6b7280', marginBottom:14, background:'#eff4ff', padding:'8px 12px', borderRadius:8 }}>
+        <div style={{ fontSize:12, color:'#6b7280', marginBottom:14, background:'#FBF1D9', padding:'8px 12px', borderRadius:8 }}>
           💡 Al guardar se creará automáticamente un movimiento en {fTipo==='FE'||fTipo==='BE'?'ingresos':'gastos'}
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
@@ -390,11 +390,11 @@ export default function TributarioPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -445,7 +445,7 @@ export default function TributarioPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Docs emitidos',  value:emitidos.length,  sub:fmtM(emitidos.reduce((a,d)=>a+d.total,0)),  color:'#3266ad', bg:'#E6F1FB' },
+              { label:'Docs emitidos',  value:emitidos.length,  sub:fmtM(emitidos.reduce((a,d)=>a+d.total,0)),  color:'#B8912E', bg:'#FBF1D9' },
               { label:'Docs recibidos', value:recibidos.length, sub:fmtM(recibidos.reduce((a,d)=>a+d.total,0)), color:'#BA7517', bg:'#FAEEDA' },
               { label:'IVA a pagar',    value:fmtM(ivaNeto),    sub:'débito − crédito', color:ivaNeto>0?'#E24B4A':'#1D9E75', bg:ivaNeto>0?'#FCEBEB':'#E1F5EE' },
               { label:'Vencidas',       value:vencidas,          sub:vencidas>0?'acción requerida':'al día', color:vencidas>0?'#E24B4A':'#1D9E75', bg:vencidas>0?'#FCEBEB':'#E1F5EE' },
@@ -459,7 +459,7 @@ export default function TributarioPage() {
           </div>
 
           {/* Banner integración */}
-          <div style={{ background:'#eff4ff', border:'1px solid #c7d7f5', borderRadius:10, padding:'10px 16px', fontSize:12, color:'#3266ad', marginBottom:20, display:'flex', alignItems:'center', gap:8 }}>
+          <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 16px', fontSize:12, color:'#B8912E', marginBottom:20, display:'flex', alignItems:'center', gap:8 }}>
             <span style={{ fontSize:16 }}>🔄</span>
             <span><strong>Integración activa:</strong> Cada factura que registres crea automáticamente un movimiento en ingresos o gastos según el tipo.</span>
           </div>
@@ -472,7 +472,7 @@ export default function TributarioPage() {
               {key:'retenciones', label:'📑 Retenciones'},
               {key:'iva',         label:'🧮 IVA'},
             ] as const).map(t=>(
-              <button key={t.key} onClick={()=>{ setTab(t.key); setShowForm(false) }} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#eff4ff':'#fff', color:tab===t.key?'#3266ad':'#6b7280', fontWeight:tab===t.key?500:400 }}>
+              <button key={t.key} onClick={()=>{ setTab(t.key); setShowForm(false) }} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#FBF1D9':'#fff', color:tab===t.key?'#B8912E':'#6b7280', fontWeight:tab===t.key?500:400 }}>
                 {t.label}
               </button>
             ))}
@@ -535,7 +535,7 @@ export default function TributarioPage() {
 }
 
 const sel: React.CSSProperties    = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
 const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

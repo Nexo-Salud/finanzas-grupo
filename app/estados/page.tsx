@@ -236,7 +236,7 @@ export default function EstadosPage() {
 
   function imprimir() { window.print() }
 
-  const thStyle: React.CSSProperties = { padding:'5px 6px', textAlign:'center', fontWeight:600, fontSize:10, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080', whiteSpace:'nowrap' as const }
+  const thStyle: React.CSSProperties = { padding:'5px 6px', textAlign:'center', fontWeight:600, fontSize:10, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A', whiteSpace:'nowrap' as const }
   const tdStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid #e5e7eb', textAlign:'right', whiteSpace:'nowrap' as const }
   const tdNomStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid #e5e7eb', textAlign:'left' }
 
@@ -294,11 +294,11 @@ export default function EstadosPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -356,7 +356,7 @@ export default function EstadosPage() {
                   {k:'compras',    l:'📥 Libro de compras'},
                   {k:'ventas',     l:'📤 Libro de ventas'},
                 ] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
                     {t.l}
                   </button>
                 ))}
@@ -366,8 +366,8 @@ export default function EstadosPage() {
               {tab==='balance' && (
                 <div style={{ background:'#fff', borderRadius:14, padding:24, overflowX:'auto' }}>
                   {/* Encabezado formal */}
-                  <div style={{ textAlign:'center', marginBottom:16, borderBottom:'2px solid #1e3a5f', paddingBottom:12 }}>
-                    <div style={{ fontSize:14, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase', letterSpacing:'0.1em' }}>
+                  <div style={{ textAlign:'center', marginBottom:16, borderBottom:'2px solid #1A1A1A', paddingBottom:12 }}>
+                    <div style={{ fontSize:14, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.1em' }}>
                       B A L A N C E &nbsp; G E N E R A L
                     </div>
                     <div style={{ fontSize:11, color:'#374151', marginTop:4 }}>
@@ -417,25 +417,25 @@ export default function EstadosPage() {
                             <td style={{ ...tdStyle, color:'#1D9E75', fontWeight:c.activo>0?500:400 }}>{fmtCLP(c.activo)}</td>
                             <td style={{ ...tdStyle, color:'#E24B4A', fontWeight:c.pasivo>0?500:400 }}>{fmtCLP(c.pasivo)}</td>
                             <td style={{ ...tdStyle, color:'#D85A30' }}>{fmtCLP(c.perdidas)}</td>
-                            <td style={{ ...tdStyle, color:'#3266ad' }}>{fmtCLP(c.ganancias)}</td>
+                            <td style={{ ...tdStyle, color:'#B8912E' }}>{fmtCLP(c.ganancias)}</td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
                         {/* Fila SUMAS */}
-                        <tr style={{ background:'#1e3a5f' }}>
-                          <td colSpan={2} style={{ ...tdStyle, textAlign:'center', fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>SUMAS</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaDebe)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaHaber)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaDeudor)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaAcreedor)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaActivo)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaPasivo)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaPerdidas)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaGanancias)}</td>
+                        <tr style={{ background:'#1A1A1A' }}>
+                          <td colSpan={2} style={{ ...tdStyle, textAlign:'center', fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>SUMAS</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaDebe)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaHaber)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaDeudor)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaAcreedor)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaActivo)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaPasivo)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaPerdidas)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaGanancias)}</td>
                         </tr>
                         {/* Fila UTILIDAD/PÉRDIDA */}
-                        <tr style={{ background:'#f0f4ff' }}>
+                        <tr style={{ background:'#FBF1D9' }}>
                           <td colSpan={2} style={{ ...tdNomStyle, fontWeight:700, fontSize:11 }}>
                             {esUtilidad ? 'UTILIDAD DEL EJERCICIO' : 'PÉRDIDA DEL EJERCICIO'}
                           </td>
@@ -450,21 +450,21 @@ export default function EstadosPage() {
                           <td style={{ ...tdStyle, fontWeight:700, color:'#D85A30' }}>
                             {esUtilidad ? '-' : fmtCLP(Math.abs(utilidad))}
                           </td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#3266ad' }}>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#B8912E' }}>
                             {esUtilidad ? fmtCLP(utilidad) : '-'}
                           </td>
                         </tr>
                         {/* Fila TOTALES IGUALES */}
-                        <tr style={{ background:'#1e3a5f' }}>
-                          <td colSpan={2} style={{ ...tdStyle, textAlign:'center', fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>TOTALES IGUALES</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaDebe)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaHaber)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaDeudor)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaAcreedor)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaActivo + (esUtilidad?0:Math.abs(utilidad)))}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaPasivo)}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaPerdidas + (esUtilidad?0:Math.abs(utilidad)))}</td>
-                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1e3a5f', border:'1px solid #2d5080' }}>{fmtCLP(sumaGanancias + (esUtilidad?utilidad:0))}</td>
+                        <tr style={{ background:'#1A1A1A' }}>
+                          <td colSpan={2} style={{ ...tdStyle, textAlign:'center', fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>TOTALES IGUALES</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaDebe)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaHaber)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaDeudor)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaAcreedor)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaActivo + (esUtilidad?0:Math.abs(utilidad)))}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaPasivo)}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaPerdidas + (esUtilidad?0:Math.abs(utilidad)))}</td>
+                          <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaGanancias + (esUtilidad?utilidad:0))}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -495,9 +495,9 @@ export default function EstadosPage() {
                     {[
                       { l:'Total activos',   v:fmtM(sumaActivo),    c:'#1D9E75', bg:'#E1F5EE' },
                       { l:'Total pasivos',   v:fmtM(sumaPasivo),    c:'#E24B4A', bg:'#FCEBEB' },
-                      { l:esUtilidad?'Utilidad':'Pérdida', v:fmtM(Math.abs(utilidad)), c:esUtilidad?'#3266ad':'#E24B4A', bg:'#E6F1FB' },
+                      { l:esUtilidad?'Utilidad':'Pérdida', v:fmtM(Math.abs(utilidad)), c:esUtilidad?'#B8912E':'#E24B4A', bg:'#FBF1D9' },
                       { l:'Total pérdidas',  v:fmtM(sumaPerdidas),  c:'#D85A30', bg:'#FAEEDA' },
-                      { l:'Total ganancias', v:fmtM(sumaGanancias), c:'#3266ad', bg:'#eff4ff'  },
+                      { l:'Total ganancias', v:fmtM(sumaGanancias), c:'#B8912E', bg:'#FBF1D9'  },
                     ].map(m=>(
                       <div key={m.l} style={{ background:m.bg, borderRadius:10, padding:'10px 12px' }}>
                         <div style={{ fontSize:10, color:m.c, marginBottom:2, opacity:0.8 }}>{m.l}</div>
@@ -511,12 +511,12 @@ export default function EstadosPage() {
               {/* ── ESTADO DE RESULTADOS ── */}
               {tab==='resultados' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28, maxWidth:720, margin:'0 auto' }}>
-                  <div style={{ borderBottom:'3px solid #1e3a5f', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
-                    <div style={{ fontSize:16, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase', letterSpacing:'0.08em' }}>Estado de resultados</div>
+                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
+                    <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.08em' }}>Estado de resultados</div>
                     <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {MESES[mes-1]} {anio}</div>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Ingresos operacionales</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Ingresos operacionales</div>
                     {Object.entries(catIng).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>(
                       <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
                         <span style={{ color:'#374151' }}>{cat}</span>
@@ -529,7 +529,7 @@ export default function EstadosPage() {
                     </div>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Gastos operacionales</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Gastos operacionales</div>
                     {Object.entries(catGas).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>(
                       <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
                         <span style={{ color:'#374151' }}>{cat}</span>
@@ -556,13 +556,13 @@ export default function EstadosPage() {
               {/* ── FLUJO DE CAJA ── */}
               {tab==='flujo' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1e3a5f', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
-                    <div style={{ fontSize:16, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase', letterSpacing:'0.08em' }}>Flujo de caja</div>
+                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
+                    <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.08em' }}>Flujo de caja</div>
                     <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · Histórico completo</div>
                   </div>
                   <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
                     <thead>
-                      <tr style={{ background:'#1e3a5f' }}>
+                      <tr style={{ background:'#1A1A1A' }}>
                         {['Período','Ingresos','Egresos','Flujo neto','Caja acumulada'].map(h=>(
                           <th key={h} style={{ ...thStyle, textAlign:'left' }}>{h}</th>
                         ))}
@@ -574,18 +574,18 @@ export default function EstadosPage() {
                           <td style={{ ...tdNomStyle }}>{f.label}</td>
                           <td style={{ ...tdStyle, color:'#1D9E75' }}>{f.ing.toLocaleString('es-CL')}</td>
                           <td style={{ ...tdStyle, color:'#E24B4A' }}>({f.gas.toLocaleString('es-CL')})</td>
-                          <td style={{ ...tdStyle, fontWeight:600, color:f.flujo>=0?'#3266ad':'#E24B4A' }}>{f.flujo>=0?'':'-'}{Math.abs(f.flujo).toLocaleString('es-CL')}</td>
+                          <td style={{ ...tdStyle, fontWeight:600, color:f.flujo>=0?'#B8912E':'#E24B4A' }}>{f.flujo>=0?'':'-'}{Math.abs(f.flujo).toLocaleString('es-CL')}</td>
                           <td style={{ ...tdStyle, fontWeight:700, color:f.acum>=0?'#1D9E75':'#E24B4A' }}>{f.acum>=0?'':'-'}{Math.abs(f.acum).toLocaleString('es-CL')}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr style={{ background:'#1e3a5f' }}>
-                        <td style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>TOTALES</td>
-                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{flujoConAcum.reduce((a,f)=>a+f.ing,0).toLocaleString('es-CL')}</td>
-                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>({flujoConAcum.reduce((a,f)=>a+f.gas,0).toLocaleString('es-CL')})</td>
-                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{flujoConAcum.reduce((a,f)=>a+f.flujo,0).toLocaleString('es-CL')}</td>
-                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{cajaAcum.toLocaleString('es-CL')}</td>
+                      <tr style={{ background:'#1A1A1A' }}>
+                        <td style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>TOTALES</td>
+                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{flujoConAcum.reduce((a,f)=>a+f.ing,0).toLocaleString('es-CL')}</td>
+                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>({flujoConAcum.reduce((a,f)=>a+f.gas,0).toLocaleString('es-CL')})</td>
+                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{flujoConAcum.reduce((a,f)=>a+f.flujo,0).toLocaleString('es-CL')}</td>
+                        <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{cajaAcum.toLocaleString('es-CL')}</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -595,9 +595,9 @@ export default function EstadosPage() {
               {/* ── LIBRO DE COMPRAS ── */}
               {tab==='compras' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1e3a5f', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
+                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
-                      <div style={{ fontSize:16, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase' }}>Libro de compras</div>
+                      <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase' }}>Libro de compras</div>
                       <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {libroCompras.length} documentos · Año {anio}</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
@@ -611,7 +611,7 @@ export default function EstadosPage() {
                     <div style={{ overflowX:'auto' }}>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11, minWidth:700 }}>
                         <thead>
-                          <tr style={{ background:'#1e3a5f' }}>
+                          <tr style={{ background:'#1A1A1A' }}>
                             {['N°','Fecha','Folio','Proveedor','RUT','Neto','IVA','Total','Estado'].map(h=>(
                               <th key={h} style={{ ...thStyle }}>{h}</th>
                             ))}
@@ -626,7 +626,7 @@ export default function EstadosPage() {
                               <td style={{ ...tdNomStyle }}>{d.contraparte}</td>
                               <td style={{ ...tdStyle, fontSize:10, color:'#6b7280' }}>{d.rut_contraparte}</td>
                               <td style={{ ...tdStyle }}>{d.neto.toLocaleString('es-CL')}</td>
-                              <td style={{ ...tdStyle, color:'#3266ad' }}>{d.iva.toLocaleString('es-CL')}</td>
+                              <td style={{ ...tdStyle, color:'#B8912E' }}>{d.iva.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle, fontWeight:600 }}>{d.total.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle }}>
                                 <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.estado==='pagada'?'#E1F5EE':d.estado==='vencida'?'#FCEBEB':'#FAEEDA', color:d.estado==='pagada'?'#085041':d.estado==='vencida'?'#791F1F':'#633806' }}>
@@ -637,12 +637,12 @@ export default function EstadosPage() {
                           ))}
                         </tbody>
                         <tfoot>
-                          <tr style={{ background:'#1e3a5f' }}>
-                            <td colSpan={5} style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>TOTALES — {libroCompras.length} doc.</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{libroCompras.reduce((a,d)=>a+d.neto,0).toLocaleString('es-CL')}</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{totalIvaC.toLocaleString('es-CL')}</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{libroCompras.reduce((a,d)=>a+d.total,0).toLocaleString('es-CL')}</td>
-                            <td style={{ background:'#1e3a5f', border:'1px solid #2d5080' }}></td>
+                          <tr style={{ background:'#1A1A1A' }}>
+                            <td colSpan={5} style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>TOTALES — {libroCompras.length} doc.</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{libroCompras.reduce((a,d)=>a+d.neto,0).toLocaleString('es-CL')}</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{totalIvaC.toLocaleString('es-CL')}</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{libroCompras.reduce((a,d)=>a+d.total,0).toLocaleString('es-CL')}</td>
+                            <td style={{ background:'#1A1A1A', border:'1px solid #3A3A3A' }}></td>
                           </tr>
                         </tfoot>
                       </table>
@@ -654,9 +654,9 @@ export default function EstadosPage() {
               {/* ── LIBRO DE VENTAS ── */}
               {tab==='ventas' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1e3a5f', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
+                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
-                      <div style={{ fontSize:16, fontWeight:700, color:'#1e3a5f', textTransform:'uppercase' }}>Libro de ventas</div>
+                      <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase' }}>Libro de ventas</div>
                       <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {libroVentas.length} documentos · Año {anio}</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
@@ -682,7 +682,7 @@ export default function EstadosPage() {
                     <div style={{ overflowX:'auto' }}>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11, minWidth:700 }}>
                         <thead>
-                          <tr style={{ background:'#1e3a5f' }}>
+                          <tr style={{ background:'#1A1A1A' }}>
                             {['N°','Fecha','Tipo','Folio','Cliente','RUT','Neto','IVA','Total','Estado'].map(h=>(
                               <th key={h} style={{ ...thStyle }}>{h}</th>
                             ))}
@@ -694,7 +694,7 @@ export default function EstadosPage() {
                               <td style={{ ...tdStyle, textAlign:'center', color:'#9ca3af' }}>{i+1}</td>
                               <td style={{ ...tdStyle }}>{d.fecha}</td>
                               <td style={{ ...tdStyle, textAlign:'center' }}>
-                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.tipo==='FE'?'#E6F1FB':'#E1F5EE', color:d.tipo==='FE'?'#0C447C':'#085041', fontWeight:600 }}>
+                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.tipo==='FE'?'#FBF1D9':'#E1F5EE', color:d.tipo==='FE'?'#8A6D1F':'#085041', fontWeight:600 }}>
                                   {d.tipo==='FE'?'Factura':'Boleta'}
                                 </span>
                               </td>
@@ -713,12 +713,12 @@ export default function EstadosPage() {
                           ))}
                         </tbody>
                         <tfoot>
-                          <tr style={{ background:'#1e3a5f' }}>
-                            <td colSpan={6} style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>TOTALES — {libroVentas.length} doc.</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{libroVentas.reduce((a,d)=>a+d.neto,0).toLocaleString('es-CL')}</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{totalIvaV.toLocaleString('es-CL')}</td>
-                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1e3a5f', border:'1px solid #2d5080' }}>{libroVentas.reduce((a,d)=>a+d.total,0).toLocaleString('es-CL')}</td>
-                            <td style={{ background:'#1e3a5f', border:'1px solid #2d5080' }}></td>
+                          <tr style={{ background:'#1A1A1A' }}>
+                            <td colSpan={6} style={{ ...tdNomStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>TOTALES — {libroVentas.length} doc.</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{libroVentas.reduce((a,d)=>a+d.neto,0).toLocaleString('es-CL')}</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{totalIvaV.toLocaleString('es-CL')}</td>
+                            <td style={{ ...tdStyle, color:'#fff', fontWeight:700, background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{libroVentas.reduce((a,d)=>a+d.total,0).toLocaleString('es-CL')}</td>
+                            <td style={{ background:'#1A1A1A', border:'1px solid #3A3A3A' }}></td>
                           </tr>
                         </tfoot>
                       </table>
@@ -735,4 +735,4 @@ export default function EstadosPage() {
 }
 
 const sel: React.CSSProperties  = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#1e3a5f', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#1A1A1A', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }

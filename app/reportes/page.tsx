@@ -145,9 +145,9 @@ export default function ReportesPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>📊 Finanzas Grupo</div>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -164,7 +164,7 @@ export default function ReportesPage() {
             <div style={{ fontSize:15, fontWeight:600 }}>Reportes financieros</div>
             {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
           </div>
-          {tab==='preview' && <button onClick={()=>window.print()} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>}
+          {tab==='preview' && <button onClick={()=>window.print()} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>}
         </div>
 
         <div className="app-main" style={{ padding:'24px 28px' }}>
@@ -173,7 +173,7 @@ export default function ReportesPage() {
             <>
               <div className="no-print" style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([{k:'nuevo',l:'⚙️ Configurar'},{k:'preview',l:'👁️ Vista previa'}] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
                 ))}
               </div>
 
@@ -211,7 +211,7 @@ export default function ReportesPage() {
                       ].map(s=>(
                         <label key={s.label} style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:s.disabled?'#9ca3af':'#374151', cursor:s.disabled?'default':'pointer' }}>
                           <input type="checkbox" checked={s.checked} disabled={s.disabled}
-                            onChange={()=>s.set && s.set(!s.checked)} style={{ accentColor:'#3266ad' }}/>
+                            onChange={()=>s.set && s.set(!s.checked)} style={{ accentColor:'#B8912E' }}/>
                           {s.label}
                         </label>
                       ))}
@@ -221,8 +221,8 @@ export default function ReportesPage() {
                     {[
                       { label:'Ingresos mes',  value:fmtM(ingMes),  color:'#1D9E75', bg:'#E1F5EE' },
                       { label:'Gastos mes',    value:fmtM(gasMes),  color:'#E24B4A', bg:'#FCEBEB' },
-                      { label:'Utilidad mes',  value:fmtM(utilMes), color:'#3266ad', bg:'#E6F1FB' },
-                      { label:'Margen mes',    value:mgMes+'%',      color:'#7F77DD', bg:'#EEEDFE' },
+                      { label:'Utilidad mes',  value:fmtM(utilMes), color:'#B8912E', bg:'#FBF1D9' },
+                      { label:'Margen mes',    value:mgMes+'%',      color:'#B8912E', bg:'#FBF1D9' },
                     ].map(m=>(
                       <div key={m.label} style={{ background:m.bg, borderRadius:10, padding:'12px 14px' }}>
                         <div style={{ fontSize:11, color:m.color, marginBottom:3, opacity:0.8 }}>{m.label}</div>
@@ -230,7 +230,7 @@ export default function ReportesPage() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={()=>setTab('preview')} style={{ width:'100%', padding:11, borderRadius:9, border:'none', background:'#3266ad', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
+                  <button onClick={()=>setTab('preview')} style={{ width:'100%', padding:11, borderRadius:9, border:'none', background:'#B8912E', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                     👁️ Ver reporte completo →
                   </button>
                 </>
@@ -238,7 +238,7 @@ export default function ReportesPage() {
 
               {tab==='preview' && (
                 <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:32, maxWidth:760, margin:'0 auto' }}>
-                  <div style={{ borderBottom:'3px solid #3266ad', paddingBottom:16, marginBottom:24, display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:16, marginBottom:24, display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                     <div>
                       <div style={{ fontSize:22, fontWeight:700, color:'#111827', marginBottom:4 }}>
                         {empresa==='all'?'Reporte consolidado':'Reporte '+empInfo?.nombre_corto} — {MESES_NOMBRE[mes-1]} {anio}
@@ -251,9 +251,9 @@ export default function ReportesPage() {
                     <div style={{ fontSize:28 }}>📊</div>
                   </div>
 
-                  <div style={{ fontSize:11, fontWeight:700, color:'#3266ad', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Indicadores — {MESES_NOMBRE[mes-1]} {anio}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Indicadores — {MESES_NOMBRE[mes-1]} {anio}</div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:24 }}>
-                    {[{l:'Ingresos',v:fmtCLP(ingMes),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasMes),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilMes),c:'#3266ad'},{l:'Margen',v:mgMes+'%',c:'#7F77DD'}].map(k=>(
+                    {[{l:'Ingresos',v:fmtCLP(ingMes),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasMes),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilMes),c:'#B8912E'},{l:'Margen',v:mgMes+'%',c:'#B8912E'}].map(k=>(
                       <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
                         <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:14, fontWeight:700, color:k.c }}>{k.v}</div>
@@ -261,9 +261,9 @@ export default function ReportesPage() {
                     ))}
                   </div>
 
-                  <div style={{ fontSize:11, fontWeight:700, color:'#3266ad', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Acumulado total</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Acumulado total</div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:24 }}>
-                    {[{l:'Ingresos',v:fmtCLP(ingTotal),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasTotal),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilTotal),c:'#3266ad'},{l:'Margen',v:mgTotal+'%',c:'#7F77DD'}].map(k=>(
+                    {[{l:'Ingresos',v:fmtCLP(ingTotal),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasTotal),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilTotal),c:'#B8912E'},{l:'Margen',v:mgTotal+'%',c:'#B8912E'}].map(k=>(
                       <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
                         <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:14, fontWeight:700, color:k.c }}>{k.v}</div>
@@ -273,9 +273,9 @@ export default function ReportesPage() {
 
                   {incluirCats && catsArr.length>0 && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#3266ad', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Detalle categorías — {MESES_NOMBRE[mes-1]}</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Detalle categorías — {MESES_NOMBRE[mes-1]}</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
-                        <thead><tr style={{ background:'#3266ad' }}>
+                        <thead><tr style={{ background:'#B8912E' }}>
                           {['Categoría','Tipo','Monto'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                         </tr></thead>
                         <tbody>
@@ -299,9 +299,9 @@ export default function ReportesPage() {
 
                   {incluirMensual && historial.length>0 && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#3266ad', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Historial mensual</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Historial mensual</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
-                        <thead><tr style={{ background:'#3266ad' }}>
+                        <thead><tr style={{ background:'#B8912E' }}>
                           {['Mes','Ingresos','Gastos','Utilidad','Margen'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                         </tr></thead>
                         <tbody>
@@ -311,11 +311,11 @@ export default function ReportesPage() {
                             const mg    = val.ing>0?Math.round(neto/val.ing*100):0
                             const esMes = parseInt(m)===mes&&parseInt(y)===anio
                             return (
-                              <tr key={key} style={{ background:esMes?'#eff4ff':i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb', fontWeight:esMes?600:400 }}>
+                              <tr key={key} style={{ background:esMes?'#FBF1D9':i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb', fontWeight:esMes?600:400 }}>
                                 <td style={{ padding:'7px 10px' }}>{MESES_NOMBRE[parseInt(m)-1]} {y}{esMes?' ←':''}</td>
                                 <td style={{ padding:'7px 10px', color:'#1D9E75' }}>{fmtCLP(val.ing)}</td>
                                 <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
-                                <td style={{ padding:'7px 10px', color:neto>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(neto)}</td>
+                                <td style={{ padding:'7px 10px', color:neto>=0?'#B8912E':'#E24B4A' }}>{fmtCLP(neto)}</td>
                                 <td style={{ padding:'7px 10px', color:mg>=30?'#1D9E75':mg>=15?'#EF9F27':'#E24B4A' }}>{mg}%</td>
                               </tr>
                             )
@@ -327,9 +327,9 @@ export default function ReportesPage() {
 
                   {empresa==='all' && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#3266ad', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Por empresa — acumulado</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Por empresa — acumulado</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
-                        <thead><tr style={{ background:'#3266ad' }}>
+                        <thead><tr style={{ background:'#B8912E' }}>
                           {['Empresa','Ingresos','Gastos','Utilidad','Margen'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                         </tr></thead>
                         <tbody>
@@ -338,7 +338,7 @@ export default function ReportesPage() {
                               <td style={{ padding:'7px 10px', fontWeight:500 }}>{e.nombre_corto}</td>
                               <td style={{ padding:'7px 10px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(e.ing)}</td>
                               <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtCLP(e.gas)}</td>
-                              <td style={{ padding:'7px 10px', fontWeight:600, color:e.ut>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(e.ut)}</td>
+                              <td style={{ padding:'7px 10px', fontWeight:600, color:e.ut>=0?'#B8912E':'#E24B4A' }}>{fmtCLP(e.ut)}</td>
                               <td style={{ padding:'7px 10px', color:e.mg>=30?'#1D9E75':e.mg>=15?'#EF9F27':'#E24B4A', fontWeight:600 }}>{e.mg}%</td>
                             </tr>
                           ))}
@@ -346,8 +346,8 @@ export default function ReportesPage() {
                             <td style={{ padding:'8px 10px' }}>Total grupo</td>
                             <td style={{ padding:'8px 10px', color:'#1D9E75' }}>{fmtCLP(ingTotal)}</td>
                             <td style={{ padding:'8px 10px', color:'#E24B4A' }}>{fmtCLP(gasTotal)}</td>
-                            <td style={{ padding:'8px 10px', color:'#3266ad' }}>{fmtCLP(utilTotal)}</td>
-                            <td style={{ padding:'8px 10px', color:'#7F77DD' }}>{mgTotal}%</td>
+                            <td style={{ padding:'8px 10px', color:'#B8912E' }}>{fmtCLP(utilTotal)}</td>
+                            <td style={{ padding:'8px 10px', color:'#B8912E' }}>{mgTotal}%</td>
                           </tr></tfoot>
                         </tbody>
                       </table>
@@ -360,7 +360,7 @@ export default function ReportesPage() {
                   </div>
 
                   <div className="no-print" style={{ marginTop:20, display:'flex', gap:8 }}>
-                    <button onClick={()=>window.print()} style={{ flex:1, padding:11, borderRadius:9, border:'none', background:'#3266ad', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>
+                    <button onClick={()=>window.print()} style={{ flex:1, padding:11, borderRadius:9, border:'none', background:'#B8912E', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>
                     <button onClick={()=>setTab('nuevo')} style={{ padding:'11px 16px', borderRadius:9, border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', fontSize:13, cursor:'pointer' }}>← Volver</button>
                   </div>
                 </div>

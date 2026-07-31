@@ -150,7 +150,7 @@ export default function PresupuestoPage() {
   const [fNombre, setFNombre] = useState('')
   const [fTipo,   setFTipo]   = useState<'ingreso'|'gasto'>('ingreso')
   const [fMeta,   setFMeta]   = useState('')
-  const [fColor,  setFColor]  = useState('#3266ad')
+  const [fColor,  setFColor]  = useState('#B8912E')
 
   const cats = presupuestos[empresa] || []
   const filtradas = tipoFiltro === 'all' ? cats : cats.filter(c => c.tipo === tipoFiltro)
@@ -242,7 +242,7 @@ export default function PresupuestoPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {[
@@ -258,7 +258,7 @@ export default function PresupuestoPage() {
           { href:'/kpis',         label:'KPIs',         icon:'📊' },
           { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
         ].map(item => (
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:item.active?'#3266ad':'#6b7280', background:item.active?'#eff4ff':'transparent', fontWeight:item.active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:item.active?'#B8912E':'#6b7280', background:item.active?'#FBF1D9':'transparent', fontWeight:item.active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -302,8 +302,8 @@ export default function PresupuestoPage() {
             {[
               { label:'Ingreso presupuestado', value:fmtM(totalIngMeta), color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Gasto presupuestado',   value:fmtM(totalGasMeta), color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad esperada',     value:fmtM(utilidadMeta), color:'#3266ad', bg:'#E6F1FB' },
-              { label:'Margen objetivo',       value:margen+'%',          color:'#7F77DD', bg:'#EEEDFE' },
+              { label:'Utilidad esperada',     value:fmtM(utilidadMeta), color:'#B8912E', bg:'#FBF1D9' },
+              { label:'Margen objetivo',       value:margen+'%',          color:'#B8912E', bg:'#FBF1D9' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -343,14 +343,14 @@ export default function PresupuestoPage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:16, flexWrap:'wrap' }}>
             {(['categorias','resumen','comparativo'] as const).map(t=>(
-              <button key={t} onClick={()=>setTab(t)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t?'#eff4ff':'#fff', color:tab===t?'#3266ad':'#6b7280', fontWeight:tab===t?500:400 }}>
+              <button key={t} onClick={()=>setTab(t)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t?'#FBF1D9':'#fff', color:tab===t?'#B8912E':'#6b7280', fontWeight:tab===t?500:400 }}>
                 {t==='categorias'?'📋 Categorías':t==='resumen'?'📊 Resumen anual':'🔄 Presup. vs Real'}
               </button>
             ))}
             {tab==='categorias' && (
               <div style={{ marginLeft:'auto', display:'flex', gap:6 }}>
                 {(['all','ingreso','gasto'] as const).map(f=>(
-                  <button key={f} onClick={()=>setTipoFiltro(f)} style={{ padding:'6px 12px', borderRadius:8, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tipoFiltro===f?'#1f2937':'#fff', color:tipoFiltro===f?'#fff':'#6b7280' }}>
+                  <button key={f} onClick={()=>setTipoFiltro(f)} style={{ padding:'6px 12px', borderRadius:8, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tipoFiltro===f?'#1A1A1A':'#fff', color:tipoFiltro===f?'#fff':'#6b7280' }}>
                     {f==='all'?'Todos':f==='ingreso'?'Ingresos':'Gastos'}
                   </button>
                 ))}
@@ -567,7 +567,7 @@ export default function PresupuestoPage() {
 
 // ── Estilos ────────────────────────────────────────────────────
 const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'8px 16px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#111827', width:'100%' }
 const lbl: React.CSSProperties = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

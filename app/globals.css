@@ -15,12 +15,12 @@
   --color-muted:     #6b7280;
   --color-hint:      #9ca3af;
 
-  --brand:     #3266ad;
-  --brand-dk:  #185FA5;
+  --brand:     #B8912E;
+  --brand-dk:  #8A6D1F;
   --success:   #1D9E75;
   --warning:   #BA7517;
   --danger:    #E24B4A;
-  --purple:    #7F77DD;
+  --purple:    #B8912E;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -102,7 +102,7 @@ body {
 
 .nav-item:hover { background: #f1f5f9; color: var(--color-text); }
 .nav-item.active {
-  background: #eff4ff;
+  background: #FBF1D9;
   color: var(--brand);
   font-weight: 500;
 }
@@ -157,7 +157,7 @@ body {
 .badge-ok   { background: #E1F5EE; color: #085041; }
 .badge-warn { background: #FAEEDA; color: #633806; }
 .badge-err  { background: #FCEBEB; color: #791F1F; }
-.badge-info { background: #E6F1FB; color: #0C447C; }
+.badge-info { background: #FBF1D9; color: #8A6D1F; }
 
 /* ── Tables ── */
 .table-wrap { overflow-x: auto; }
@@ -216,7 +216,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #eff4ff 0%, #f8f9fb 60%, #e8f5ee 100%);
+  background: linear-gradient(135deg, #FBF1D9 0%, #f8f9fb 60%, #efefef 100%);
 }
 
 .login-card {
@@ -250,7 +250,7 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #1e3a5f;
+  background: #1A1A1A;
   color: #fff;
   font-size: 18px;
   line-height: 1;

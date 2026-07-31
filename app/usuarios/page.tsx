@@ -25,9 +25,9 @@ const NAV = [
 ]
 
 const ROLES = {
-  admin:    { label:'Administrador', color:'#7F77DD', bg:'#EEEDFE', tx:'#3C3489', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
+  admin:    { label:'Administrador', color:'#B8912E', bg:'#FBF1D9', tx:'#8A6D1F', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
   contador: { label:'Contador',      color:'#1D9E75', bg:'#E1F5EE', tx:'#085041', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
-  gerente:  { label:'Gerente',       color:'#3266ad', bg:'#E6F1FB', tx:'#0C447C', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
+  gerente:  { label:'Gerente',       color:'#B8912E', bg:'#FBF1D9', tx:'#8A6D1F', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
   lectura:  { label:'Solo lectura',  color:'#888780', bg:'#f1f5f9', tx:'#374151', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
 }
 
@@ -213,11 +213,11 @@ export default function UsuariosPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -267,7 +267,7 @@ export default function UsuariosPage() {
               { label:'Total usuarios', value:perfiles.length, color:'#111827', bg:'#f1f5f9' },
               { label:'Activos',        value:activos,          color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Con restricción',value:perfiles.filter(p=>p.empresas_permitidas?.length>0&&p.rol!=='admin').length, color:'#BA7517', bg:'#FAEEDA' },
-              { label:'Acceso total',   value:perfiles.filter(p=>p.rol==='admin'||!p.empresas_permitidas?.length).length, color:'#7F77DD', bg:'#EEEDFE' },
+              { label:'Acceso total',   value:perfiles.filter(p=>p.rol==='admin'||!p.empresas_permitidas?.length).length, color:'#B8912E', bg:'#FBF1D9' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -283,7 +283,7 @@ export default function UsuariosPage() {
               {k:'permisos', l:'🏢 Permisos por empresa'},
               {k:'roles',    l:'🛡️ Roles'},
             ] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
               </button>
             ))}
@@ -315,13 +315,13 @@ export default function UsuariosPage() {
                 <div>
                   <label style={lbl}>Acceso a empresas</label>
                   {fRol === 'admin' ? (
-                    <div style={{ fontSize:12, color:'#7F77DD', padding:'8px', background:'#EEEDFE', borderRadius:8 }}>
+                    <div style={{ fontSize:12, color:'#B8912E', padding:'8px', background:'#FBF1D9', borderRadius:8 }}>
                       👑 Administrador — acceso automático a todas las empresas
                     </div>
                   ) : (
                     <>
                       <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#374151', marginBottom:8, cursor:'pointer', padding:'8px', background:'#f8fafc', borderRadius:8, border:'1px solid #e5e7eb' }}>
-                        <input type="checkbox" checked={fTodas} onChange={e=>{ setFTodas(e.target.checked); if(e.target.checked) setFEmpresas([]) }} style={{ accentColor:'#3266ad' }}/>
+                        <input type="checkbox" checked={fTodas} onChange={e=>{ setFTodas(e.target.checked); if(e.target.checked) setFEmpresas([]) }} style={{ accentColor:'#B8912E' }}/>
                         <strong>Todas las empresas</strong>
                       </label>
                       {!fTodas && (
@@ -392,7 +392,7 @@ export default function UsuariosPage() {
                     {/* Empresas con acceso */}
                     <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap', marginTop:tieneRestr||p.rol==='admin'?8:0 }}>
                       {p.rol === 'admin' ? (
-                        <span style={{ fontSize:11, color:'#7F77DD', fontWeight:500 }}>👑 Acceso a todas las empresas</span>
+                        <span style={{ fontSize:11, color:'#B8912E', fontWeight:500 }}>👑 Acceso a todas las empresas</span>
                       ) : p.empresas_permitidas?.length === 0 ? (
                         <span style={{ fontSize:11, color:'#6b7280' }}>🌐 Acceso a todas las empresas</span>
                       ) : (
@@ -421,7 +421,7 @@ export default function UsuariosPage() {
           {/* ── Tab: Permisos por empresa ── */}
           {!cargando && tab==='permisos' && (
             <>
-              <div style={{ background:'#eff4ff', border:'1px solid #c7d7f5', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#3266ad', marginBottom:16 }}>
+              <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E', marginBottom:16 }}>
                 🏢 <strong>Panel de acceso:</strong> Marca qué empresas puede ver cada usuario. Los administradores siempre tienen acceso a todo.
               </div>
 
@@ -551,7 +551,7 @@ export default function UsuariosPage() {
   )
 }
 
-const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
 const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

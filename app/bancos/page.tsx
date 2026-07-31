@@ -230,11 +230,11 @@ export default function BancosPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -283,7 +283,7 @@ export default function BancosPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Saldo total CLP',  value:fmtM(totalCLP),        color:'#3266ad', bg:'#E6F1FB' },
+              { label:'Saldo total CLP',  value:fmtM(totalCLP),        color:'#B8912E', bg:'#FBF1D9' },
               { label:'Cuentas activas',  value:activas.length,         color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Con diferencias',  value:conDif,                  color:conDif>0?'#E24B4A':'#1D9E75', bg:conDif>0?'#FCEBEB':'#E1F5EE' },
               { label:'Sin diferencias',  value:activas.length-conDif,  color:'#1D9E75', bg:'#E1F5EE' },
@@ -301,7 +301,7 @@ export default function BancosPage() {
               { key:'cuentas',      label:'🏦 Cuentas'      },
               { key:'conciliacion', label:'✓ Conciliación'  },
             ] as const).map(t=>(
-              <button key={t.key} onClick={()=>setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#eff4ff':'#fff', color:tab===t.key?'#3266ad':'#6b7280', fontWeight:tab===t.key?500:400 }}>
+              <button key={t.key} onClick={()=>setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#FBF1D9':'#fff', color:tab===t.key?'#B8912E':'#6b7280', fontWeight:tab===t.key?500:400 }}>
                 {t.label}
               </button>
             ))}
@@ -377,7 +377,7 @@ export default function BancosPage() {
                     return (
                       <div key={c.id} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:18, marginBottom:10 }}>
                         {c.banco==='Mercado Pago' && (
-                          <div style={{ background:'#e0f7ff', border:'1px solid #7dd3ee', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#0070a8', marginBottom:10 }}>
+                          <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#8A6D1F', marginBottom:10 }}>
                             📱 Billetera digital Mercado Pago
                           </div>
                         )}
@@ -397,7 +397,7 @@ export default function BancosPage() {
                         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
                           <div style={{ background:'#f8fafc', borderRadius:8, padding:'10px 12px' }}>
                             <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>Saldo libro</div>
-                            <div style={{ fontSize:16, fontWeight:700, color:'#3266ad' }}>{fmtCLP(c.saldo)}</div>
+                            <div style={{ fontSize:16, fontWeight:700, color:'#B8912E' }}>{fmtCLP(c.saldo)}</div>
                           </div>
                           <div style={{ background:'#f8fafc', borderRadius:8, padding:'10px 12px' }}>
                             <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>Saldo real banco</div>
@@ -443,7 +443,7 @@ export default function BancosPage() {
                 <div>3. Si hay diferencia, edita el campo "Saldo real banco" directamente</div>
                 <div>4. Revisa en Movimientos qué transacciones podrían explicar la diferencia</div>
               </div>
-              <div style={{ background:'#eff4ff', border:'1px solid #c7d7f5', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#3266ad' }}>
+              <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E' }}>
                 💡 <strong>Tip Mercado Pago:</strong> Descarga el resumen desde la app MP → Actividad → Exportar. El saldo final debe coincidir con el saldo libro de tu cuenta MP en esta plataforma.
               </div>
             </div>
@@ -456,7 +456,7 @@ export default function BancosPage() {
 }
 
 const sel: React.CSSProperties    = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
 const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

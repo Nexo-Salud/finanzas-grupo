@@ -316,11 +316,11 @@ export default function MovimientosPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -366,7 +366,7 @@ export default function MovimientosPage() {
               <span style={{ fontSize:12, fontWeight:600, color:'#6b7280' }}>📅 Período:</span>
               <div style={{ display:'flex', gap:4 }}>
                 {([{k:'mes',l:'Por mes'},{k:'rango',l:'Rango'},{k:'todo',l:'Todo'}] as const).map(p=>(
-                  <button key={p.k} onClick={()=>setPeriodoTipo(p.k)} style={{ padding:'4px 10px', borderRadius:6, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:periodoTipo===p.k?'#3266ad':'#fff', color:periodoTipo===p.k?'#fff':'#6b7280' }}>
+                  <button key={p.k} onClick={()=>setPeriodoTipo(p.k)} style={{ padding:'4px 10px', borderRadius:6, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:periodoTipo===p.k?'#B8912E':'#fff', color:periodoTipo===p.k?'#fff':'#6b7280' }}>
                     {p.l}
                   </button>
                 ))}
@@ -381,7 +381,7 @@ export default function MovimientosPage() {
                   </select>
                   <div style={{ display:'flex', gap:4, marginLeft:'auto', flexWrap:'wrap' }}>
                     {['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'].map((m,i)=>(
-                      <button key={i} onClick={()=>{ setMesSelec(i+1); setAnioSelec(2026) }} style={{ padding:'3px 7px', borderRadius:5, fontSize:11, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:mesSelec===i+1&&anioSelec===2026?'#eff4ff':'#fff', color:mesSelec===i+1&&anioSelec===2026?'#3266ad':'#9ca3af', fontWeight:mesSelec===i+1&&anioSelec===2026?600:400 }}>
+                      <button key={i} onClick={()=>{ setMesSelec(i+1); setAnioSelec(2026) }} style={{ padding:'3px 7px', borderRadius:5, fontSize:11, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:mesSelec===i+1&&anioSelec===2026?'#FBF1D9':'#fff', color:mesSelec===i+1&&anioSelec===2026?'#B8912E':'#9ca3af', fontWeight:mesSelec===i+1&&anioSelec===2026?600:400 }}>
                         {m}
                       </button>
                     ))}
@@ -403,7 +403,7 @@ export default function MovimientosPage() {
             {[
               { label:'Ingresos', value:fmtM(totalIngresos), sub:labelPeriodo(), color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Gastos',   value:fmtM(totalGastos),   sub:labelPeriodo(), color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad', value:fmtM(utilidad),      sub:`Margen ${margen}%`, color:utilidad>=0?'#3266ad':'#E24B4A', bg:'#E6F1FB' },
+              { label:'Utilidad', value:fmtM(utilidad),      sub:`Margen ${margen}%`, color:utilidad>=0?'#B8912E':'#E24B4A', bg:'#FBF1D9' },
               { label:'Registros',value:scope.length.toString(), sub:`${scope.filter(m=>!m.conciliado).length} pendientes`, color:'#BA7517', bg:'#FAEEDA' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
@@ -421,7 +421,7 @@ export default function MovimientosPage() {
                 <div style={{ fontSize:14, fontWeight:600 }}>📥 Importar CSV</div>
                 <button onClick={()=>{ setShowImport(false); setCsvPreview([]) }} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:18, color:'#9ca3af' }}>✕</button>
               </div>
-              <div style={{ background:'#eff4ff', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#3266ad', marginBottom:12 }}>
+              <div style={{ background:'#FBF1D9', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#B8912E', marginBottom:12 }}>
                 Columnas: <strong>tipo</strong> (ingreso/gasto), <strong>descripcion</strong>, <strong>monto</strong>, <strong>fecha</strong> (AAAA-MM-DD)
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
@@ -486,7 +486,7 @@ export default function MovimientosPage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
             {([{k:'lista',l:'≡ Lista'},{k:'mensual',l:'📅 Resumen mensual'},{k:'categorias',l:'⬛ Por categoría'}] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
               </button>
             ))}
@@ -610,7 +610,7 @@ export default function MovimientosPage() {
                           <td style={{ padding:'10px 14px', fontWeight:500 }}>{MESES_NOMBRE[parseInt(m)-1]} {y}</td>
                           <td style={{ padding:'10px 14px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
                           <td style={{ padding:'10px 14px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
-                          <td style={{ padding:'10px 14px', fontWeight:700, color:neto>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(neto)}</td>
+                          <td style={{ padding:'10px 14px', fontWeight:700, color:neto>=0?'#B8912E':'#E24B4A' }}>{fmtCLP(neto)}</td>
                           <td style={{ padding:'10px 14px' }}>
                             <span style={{ fontSize:12, fontWeight:500, color:mg>=30?'#1D9E75':mg>=15?'#EF9F27':'#E24B4A' }}>{mg}%</span>
                           </td>
@@ -623,7 +623,7 @@ export default function MovimientosPage() {
                       <td style={{ padding:'10px 14px', fontWeight:700 }}>Total</td>
                       <td style={{ padding:'10px 14px', fontWeight:700, color:'#1D9E75' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.ing,0))}</td>
                       <td style={{ padding:'10px 14px', fontWeight:700, color:'#E24B4A' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.gas,0))}</td>
-                      <td style={{ padding:'10px 14px', fontWeight:700, color:'#3266ad' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.ing-v.gas,0))}</td>
+                      <td style={{ padding:'10px 14px', fontWeight:700, color:'#B8912E' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.ing-v.gas,0))}</td>
                       <td/>
                     </tr>
                   </tfoot>
@@ -665,7 +665,7 @@ export default function MovimientosPage() {
 }
 
 const sel: React.CSSProperties     = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#3266ad', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
 const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
 const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }

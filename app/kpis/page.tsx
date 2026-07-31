@@ -150,7 +150,7 @@ export default function KpisPage() {
     { icon:'🏢', label:'Margen mes actual',   val:margenMes+'%',                sub:MESES[mesActual-1]+' '+anioActual, pct:Math.round(margenMes/metaMargen*100),  inv:false, color:'', bg:'' },
     { icon:'🚀', label:'Crecimiento',         val:(crecR>0?'+':'')+crecR+'%',   sub:'vs mes anterior',           pct:ingAnt>0?Math.round(Math.max(0,crecR)/metaCrec*100):0, inv:false, color:'', bg:'' },
     { icon:'💰', label:'Gasto / Ingreso',     val:gasIngR+'%',                  sub:`Límite: ${metaGastoIng}%`,  pct:Math.round(metaGastoIng/Math.max(gasIngR,1)*100), inv:true, color:'', bg:'' },
-    { icon:'📊', label:'Utilidad total',      val:fmtM(util),                   sub:`Mes: ${fmtM(utilMes)}`,     pct:100,                                         inv:false, color:util>=0?'#3266ad':'#E24B4A', bg:util>=0?'#E6F1FB':'#FCEBEB' },
+    { icon:'📊', label:'Utilidad total',      val:fmtM(util),                   sub:`Mes: ${fmtM(utilMes)}`,     pct:100,                                         inv:false, color:util>=0?'#B8912E':'#E24B4A', bg:util>=0?'#FBF1D9':'#FCEBEB' },
   ]
 
   if (!authListo) return (
@@ -165,11 +165,11 @@ export default function KpisPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -195,7 +195,7 @@ export default function KpisPage() {
         <div className="app-main" style={{ padding:'24px 28px' }}>
           <div style={{ display:'flex', gap:6, marginBottom:24 }}>
             {([{k:'panel',l:'📊 Panel'},{k:'tendencias',l:'📈 Tendencias'},{k:'metas',l:'🎯 Metas'}] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#eff4ff':'#fff', color:tab===t.k?'#3266ad':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
             ))}
           </div>
 
@@ -303,7 +303,7 @@ export default function KpisPage() {
                           <td style={{ padding:'9px 12px', fontWeight:500 }}>{MESES[parseInt(m)-1]} {y}</td>
                           <td style={{ padding:'9px 12px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
                           <td style={{ padding:'9px 12px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
-                          <td style={{ padding:'9px 12px', fontWeight:700, color:neto>=0?'#3266ad':'#E24B4A' }}>{fmtCLP(neto)}</td>
+                          <td style={{ padding:'9px 12px', fontWeight:700, color:neto>=0?'#B8912E':'#E24B4A' }}>{fmtCLP(neto)}</td>
                           <td style={{ padding:'9px 12px', color:mg>=30?'#1D9E75':mg>=15?'#EF9F27':'#E24B4A', fontWeight:500 }}>{mg}%</td>
                         </tr>
                       )
@@ -320,7 +320,7 @@ export default function KpisPage() {
               {[
                 { label:'Margen neto objetivo',     real:margenR+'%',  meta:metaMargen,   setMeta:setMetaMargen,   min:5,  max:60, color:'#1D9E75', pct:Math.round(margenR/metaMargen*100),                       inv:false },
                 { label:'Gasto/Ingreso máximo',     real:gasIngR+'%',  meta:metaGastoIng, setMeta:setMetaGastoIng, min:40, max:95, color:'#E24B4A', pct:Math.round(metaGastoIng/Math.max(gasIngR,1)*100),          inv:true  },
-                { label:'Crecimiento mensual obj.', real:(crecR>0?'+':'')+crecR+'%', meta:metaCrec, setMeta:setMetaCrec, min:1, max:50, color:'#3266ad', pct:Math.round(Math.max(0,crecR)/metaCrec*100), inv:false },
+                { label:'Crecimiento mensual obj.', real:(crecR>0?'+':'')+crecR+'%', meta:metaCrec, setMeta:setMetaCrec, min:1, max:50, color:'#B8912E', pct:Math.round(Math.max(0,crecR)/metaCrec*100), inv:false },
               ].map(row=>{
                 const color = semColor(row.pct, row.inv)
                 const bg    = color==='#1D9E75'?'#E1F5EE':color==='#EF9F27'?'#FAEEDA':'#FCEBEB'

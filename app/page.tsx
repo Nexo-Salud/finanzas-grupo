@@ -183,11 +183,11 @@ export default function DashboardPage() {
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
       <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#3266ad' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#3266ad':'#6b7280', background:(item as any).active?'#eff4ff':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             {[
               { label:'Ingresos totales', value:fmtM(ingTotal),  delta:`Mes: ${fmtM(ingMes)}`,  color:'#1D9E75', bg:'#E1F5EE' },
               { label:'Gastos totales',   value:fmtM(gasTotal),  delta:`Mes: ${fmtM(gasMes)}`,  color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad neta',    value:fmtM(utilidad),  delta:`Margen ${margen}%`,      color:'#3266ad', bg:'#E6F1FB' },
+              { label:'Utilidad neta',    value:fmtM(utilidad),  delta:`Margen ${margen}%`,      color:'#B8912E', bg:'#FBF1D9' },
               { label:'Resultado mes',    value:fmtM(utilMes),   delta:MESES_NOMBRE[mesActual-1]+' '+anioActual, color:utilMes>=0?'#1D9E75':'#E24B4A', bg:utilMes>=0?'#E1F5EE':'#FCEBEB' },
               { label:'Movimientos',      value:scope.length.toString(), delta:'registrados', color:'#BA7517', bg:'#FAEEDA' },
             ].map(m=>(
@@ -328,7 +328,7 @@ export default function DashboardPage() {
           <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
               <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>Últimos movimientos</div>
-              <Link href="/movimientos" style={{ fontSize:12, color:'#3266ad', textDecoration:'none' }}>Ver todos →</Link>
+              <Link href="/movimientos" style={{ fontSize:12, color:'#B8912E', textDecoration:'none' }}>Ver todos →</Link>
             </div>
             {ultimos.length === 0 ? (
               <div style={{ textAlign:'center', padding:'1rem', color:'#9ca3af', fontSize:13 }}>Sin movimientos</div>
