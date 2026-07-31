@@ -74,7 +74,7 @@ export default function TributarioPage() {
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
   const [esAdmin,            setEsAdmin]            = useState(true)
-  const [cargandoAuth,       setCargandoAuth]       = useState(true)
+  const [authListo,          setAuthListo]          = useState(false)
 
   const [docs,      setDocs]      = useState<Doc[]>([])
   const [empresas,  setEmpresas]  = useState<Empresa[]>([])
