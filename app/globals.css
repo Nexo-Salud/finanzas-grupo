@@ -7,16 +7,16 @@
   --font-sans: 'DM Sans', sans-serif;
   --font-mono: 'DM Mono', monospace;
 
-  --color-bg:        #f8f9fb;
-  --color-surface:   #ffffff;
-  --color-border:    rgba(0,0,0,0.08);
-  --color-border-md: rgba(0,0,0,0.14);
-  --color-text:      #111827;
-  --color-muted:     #6b7280;
-  --color-hint:      #9ca3af;
+  --color-bg:        #0B0B0C;
+  --color-surface:   #161616;
+  --color-border:    rgba(255,255,255,0.08);
+  --color-border-md: rgba(255,255,255,0.16);
+  --color-text:      #F0EFEA;
+  --color-muted:     #9A9A9A;
+  --color-hint:      #767676;
 
   --brand:     #B8912E;
-  --brand-dk:  #8A6D1F;
+  --brand-dk:  #D8B24D;
   --success:   #1D9E75;
   --warning:   #BA7517;
   --danger:    #E24B4A;
@@ -100,9 +100,9 @@ body {
   font-weight: 400;
 }
 
-.nav-item:hover { background: #f1f5f9; color: var(--color-text); }
+.nav-item:hover { background: #1F1F1F; color: var(--color-text); }
 .nav-item.active {
-  background: #FBF1D9;
+  background: rgba(184,145,46,0.16);
   color: var(--brand);
   font-weight: 500;
 }
@@ -137,7 +137,7 @@ body {
 }
 
 .metric-card {
-  background: #f8fafc;
+  background: #141414;
   border-radius: var(--radius-sm);
   padding: 14px 16px;
 }
@@ -154,19 +154,19 @@ body {
   padding: 2px 8px;
   border-radius: 999px;
 }
-.badge-ok   { background: #E1F5EE; color: #085041; }
-.badge-warn { background: #FAEEDA; color: #633806; }
-.badge-err  { background: #FCEBEB; color: #791F1F; }
-.badge-info { background: #FBF1D9; color: #8A6D1F; }
+.badge-ok   { background: rgba(29,158,117,0.16); color: #1D9E75; }
+.badge-warn { background: rgba(186,117,23,0.18); color: #BA7517; }
+.badge-err  { background: rgba(226,75,74,0.16); color: #E24B4A; }
+.badge-info { background: rgba(184,145,46,0.16); color: #D8B24D; }
 
 /* ── Tables ── */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { text-align: left; padding: 9px 12px; font-weight: 500; color: var(--color-muted);
-     border-bottom: 1px solid var(--color-border); background: #fafafa; }
+     border-bottom: 1px solid var(--color-border); background: #1A1A1A; }
 td { padding: 9px 12px; border-bottom: 1px solid var(--color-border); }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: #fafcff; }
+tr:hover td { background: #181818; }
 
 /* ── Buttons ── */
 .btn {
@@ -177,7 +177,7 @@ tr:hover td { background: #fafcff; }
   background: transparent; color: var(--color-text);
   transition: all 0.12s;
 }
-.btn:hover { background: #f1f5f9; }
+.btn:hover { background: #1F1F1F; }
 .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); }
 .btn-primary:hover { background: var(--brand-dk); }
 .btn svg { width: 15px; height: 15px; }
@@ -197,11 +197,11 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(50,102,173,0.1);
+  box-shadow: 0 0 0 3px rgba(184,145,46,0.18);
 }
 
 /* ── Progress ── */
-.progress-track { height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
+.progress-track { height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
 .progress-fill  { height: 100%; border-radius: 3px; transition: width 0.4s; }
 
 /* ── Semaforo ── */
@@ -216,7 +216,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FBF1D9 0%, #f8f9fb 60%, #efefef 100%);
+  background: linear-gradient(135deg, rgba(184,145,46,0.16) 0%, #0B0B0C 60%, #1a1a1a 100%);
 }
 
 .login-card {
@@ -224,7 +224,7 @@ input:focus, select:focus, textarea:focus {
   border-radius: var(--radius-lg);
   padding: 40px;
   width: 380px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 40px rgba(255,255,255,0.08);
   border: 1px solid var(--color-border);
 }
 
@@ -250,13 +250,13 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #1A1A1A;
-  color: #fff;
+  background: #B8912E;
+  color: #1A1A1A;
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
   z-index: 110;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
 }
 
 .sidebar-overlay {
@@ -271,7 +271,7 @@ input:focus, select:focus, textarea:focus {
   }
   .sidebar-toggle-input:checked ~ .app-sidebar {
     transform: translateX(0);
-    box-shadow: 0 0 28px rgba(0,0,0,0.25);
+    box-shadow: 0 0 28px rgba(0,0,0,0.6);
   }
 
   .sidebar-toggle-btn { display: flex; }

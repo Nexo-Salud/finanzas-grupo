@@ -25,10 +25,10 @@ const NAV = [
 ]
 
 const ROLES = {
-  admin:    { label:'Administrador', color:'#B8912E', bg:'#FBF1D9', tx:'#8A6D1F', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
-  contador: { label:'Contador',      color:'#1D9E75', bg:'#E1F5EE', tx:'#085041', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
-  gerente:  { label:'Gerente',       color:'#B8912E', bg:'#FBF1D9', tx:'#8A6D1F', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
-  lectura:  { label:'Solo lectura',  color:'#888780', bg:'#f1f5f9', tx:'#374151', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
+  admin:    { label:'Administrador', color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
+  contador: { label:'Contador',      color:'#1D9E75', bg:'rgba(29,158,117,0.16)', tx:'#1D9E75', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
+  gerente:  { label:'Gerente',       color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
+  lectura:  { label:'Solo lectura',  color:'#888780', bg:'#1F1F1F', tx:'#C9C9C9', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
 }
 
 type Rol = keyof typeof ROLES
@@ -206,29 +206,29 @@ export default function UsuariosPage() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
 
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>
               🔒 Vista restringida
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -239,10 +239,10 @@ export default function UsuariosPage() {
 
       <div className="app-content" style={{ marginLeft:220 }}>
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Usuarios y permisos</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Supabase</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Supabase</span>}
           </div>
           <button onClick={abrirFormNuevo} style={btnP}>+ Agregar usuario</button>
         </div>
@@ -250,13 +250,13 @@ export default function UsuariosPage() {
         <div className="app-main" style={{ padding:'24px 28px' }}>
 
           {error && (
-            <div style={{ background:'#FCEBEB', border:'1px solid #F09595', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#791F1F', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
+            <div style={{ background:'rgba(226,75,74,0.16)', border:'1px solid rgba(226,75,74,0.22)', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#E24B4A', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
               <span>⚠️ {error}</span>
-              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#791F1F' }}>✕</button>
+              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#E24B4A' }}>✕</button>
             </div>
           )}
           {exito && (
-            <div style={{ background:'#EAF3DE', border:'1px solid #97C459', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#27500A', marginBottom:16 }}>
+            <div style={{ background:'rgba(29,158,117,0.14)', border:'1px solid rgba(29,158,117,0.4)', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#1D9E75', marginBottom:16 }}>
               {exito}
             </div>
           )}
@@ -264,10 +264,10 @@ export default function UsuariosPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Total usuarios', value:perfiles.length, color:'#111827', bg:'#f1f5f9' },
-              { label:'Activos',        value:activos,          color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Con restricción',value:perfiles.filter(p=>p.empresas_permitidas?.length>0&&p.rol!=='admin').length, color:'#BA7517', bg:'#FAEEDA' },
-              { label:'Acceso total',   value:perfiles.filter(p=>p.rol==='admin'||!p.empresas_permitidas?.length).length, color:'#B8912E', bg:'#FBF1D9' },
+              { label:'Total usuarios', value:perfiles.length, color:'#F0EFEA', bg:'#1F1F1F' },
+              { label:'Activos',        value:activos,          color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+              { label:'Con restricción',value:perfiles.filter(p=>p.empresas_permitidas?.length>0&&p.rol!=='admin').length, color:'#BA7517', bg:'rgba(186,117,23,0.18)' },
+              { label:'Acceso total',   value:perfiles.filter(p=>p.rol==='admin'||!p.empresas_permitidas?.length).length, color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -283,7 +283,7 @@ export default function UsuariosPage() {
               {k:'permisos', l:'🏢 Permisos por empresa'},
               {k:'roles',    l:'🛡️ Roles'},
             ] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
               </button>
             ))}
@@ -291,7 +291,7 @@ export default function UsuariosPage() {
 
           {/* ── Formulario ── */}
           {showForm && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
               <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>
                 {editando ? `Editando — ${editando.nombre}` : 'Agregar usuario'}
               </div>
@@ -308,26 +308,26 @@ export default function UsuariosPage() {
                       <option key={k} value={k}>{v.icon} {v.label}</option>
                     ))}
                   </select>
-                  <div style={{ fontSize:11, color:'#6b7280', marginTop:4, padding:'6px 8px', background:'#f8fafc', borderRadius:6 }}>
+                  <div style={{ fontSize:11, color:'#9A9A9A', marginTop:4, padding:'6px 8px', background:'#141414', borderRadius:6 }}>
                     {ROLES[fRol].desc}
                   </div>
                 </div>
                 <div>
                   <label style={lbl}>Acceso a empresas</label>
                   {fRol === 'admin' ? (
-                    <div style={{ fontSize:12, color:'#B8912E', padding:'8px', background:'#FBF1D9', borderRadius:8 }}>
+                    <div style={{ fontSize:12, color:'#B8912E', padding:'8px', background:'rgba(184,145,46,0.16)', borderRadius:8 }}>
                       👑 Administrador — acceso automático a todas las empresas
                     </div>
                   ) : (
                     <>
-                      <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#374151', marginBottom:8, cursor:'pointer', padding:'8px', background:'#f8fafc', borderRadius:8, border:'1px solid #e5e7eb' }}>
+                      <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#C9C9C9', marginBottom:8, cursor:'pointer', padding:'8px', background:'#141414', borderRadius:8, border:'1px solid rgba(255,255,255,0.12)' }}>
                         <input type="checkbox" checked={fTodas} onChange={e=>{ setFTodas(e.target.checked); if(e.target.checked) setFEmpresas([]) }} style={{ accentColor:'#B8912E' }}/>
                         <strong>Todas las empresas</strong>
                       </label>
                       {!fTodas && (
                         <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                           {empresas.map(e=>(
-                            <label key={e.id} style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#374151', cursor:'pointer', padding:'8px 10px', borderRadius:8, border:`1.5px solid ${fEmpresas.includes(e.id)?e.color:'#e5e7eb'}`, background:fEmpresas.includes(e.id)?e.color+'11':'#fff' }}>
+                            <label key={e.id} style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#C9C9C9', cursor:'pointer', padding:'8px 10px', borderRadius:8, border:`1.5px solid ${fEmpresas.includes(e.id)?e.color:'rgba(255,255,255,0.12)'}`, background:fEmpresas.includes(e.id)?e.color+'11':'#161616' }}>
                               <input type="checkbox" checked={fEmpresas.includes(e.id)} onChange={()=>toggleEmpresa(e.id)} style={{ accentColor:e.color }}/>
                               <span style={{ width:10, height:10, borderRadius:'50%', background:e.color, flexShrink:0 }}/>
                               {e.nombre_corto}
@@ -348,13 +348,13 @@ export default function UsuariosPage() {
             </div>
           )}
 
-          {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#767676' }}>⏳ Cargando...</div>}
 
           {/* ── Tab: Usuarios ── */}
           {!cargando && tab==='usuarios' && (
             <>
               {perfiles.length===0 && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'3rem', textAlign:'center', color:'#9ca3af' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'3rem', textAlign:'center', color:'#767676' }}>
                   <div style={{ fontSize:28, marginBottom:8 }}>👥</div>
                   <div style={{ fontSize:14, fontWeight:500 }}>Sin usuarios — agrega el primero</div>
                 </div>
@@ -363,26 +363,26 @@ export default function UsuariosPage() {
                 const r = ROLES[p.rol] || ROLES.lectura
                 const tieneRestr = p.rol !== 'admin' && p.empresas_permitidas?.length > 0
                 return (
-                  <div key={p.id} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:18, marginBottom:10, opacity:p.activa?1:0.6 }}>
+                  <div key={p.id} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:18, marginBottom:10, opacity:p.activa?1:0.6 }}>
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:tieneRestr?12:0 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                         <div style={{ width:40, height:40, borderRadius:'50%', background:r.bg, color:r.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0 }}>
                           {initials(p.nombre)}
                         </div>
                         <div>
-                          <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{p.nombre}</div>
-                          <div style={{ fontSize:12, color:'#6b7280' }}>{p.email}</div>
+                          <div style={{ fontSize:14, fontWeight:600, color:'#F0EFEA' }}>{p.nombre}</div>
+                          <div style={{ fontSize:12, color:'#9A9A9A' }}>{p.email}</div>
                         </div>
                       </div>
                       <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
                         <span style={{ fontSize:11, padding:'2px 9px', borderRadius:999, fontWeight:600, background:r.bg, color:r.tx }}>
                           {r.icon} {r.label}
                         </span>
-                        <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, background:p.activa?'#E1F5EE':'#f1f5f9', color:p.activa?'#085041':'#6b7280' }}>
+                        <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, background:p.activa?'rgba(29,158,117,0.16)':'#1F1F1F', color:p.activa?'#1D9E75':'#9A9A9A' }}>
                           {p.activa ? 'Activo' : 'Inactivo'}
                         </span>
-                        <div onClick={()=>toggleActivo(p.id, p.activa)} style={{ width:36, height:20, borderRadius:10, background:p.activa?'#1D9E75':'#d1d5db', cursor:'pointer', position:'relative', transition:'background 0.2s', flexShrink:0 }}>
-                          <div style={{ width:16, height:16, borderRadius:'50%', background:'#fff', position:'absolute', top:2, left:p.activa?18:2, transition:'left 0.2s' }}/>
+                        <div onClick={()=>toggleActivo(p.id, p.activa)} style={{ width:36, height:20, borderRadius:10, background:p.activa?'#1D9E75':'#4A4A4A', cursor:'pointer', position:'relative', transition:'background 0.2s', flexShrink:0 }}>
+                          <div style={{ width:16, height:16, borderRadius:'50%', background:'#161616', position:'absolute', top:2, left:p.activa?18:2, transition:'left 0.2s' }}/>
                         </div>
                         <button onClick={()=>abrirFormEditar(p)} title="Editar" style={iconBtn}>✏️</button>
                         <button onClick={()=>eliminar(p.id)} title="Eliminar" style={iconBtn}>🗑️</button>
@@ -394,10 +394,10 @@ export default function UsuariosPage() {
                       {p.rol === 'admin' ? (
                         <span style={{ fontSize:11, color:'#B8912E', fontWeight:500 }}>👑 Acceso a todas las empresas</span>
                       ) : p.empresas_permitidas?.length === 0 ? (
-                        <span style={{ fontSize:11, color:'#6b7280' }}>🌐 Acceso a todas las empresas</span>
+                        <span style={{ fontSize:11, color:'#9A9A9A' }}>🌐 Acceso a todas las empresas</span>
                       ) : (
                         <>
-                          <span style={{ fontSize:11, color:'#9ca3af' }}>Acceso:</span>
+                          <span style={{ fontSize:11, color:'#767676' }}>Acceso:</span>
                           {p.empresas_permitidas.map(id=>(
                             <span key={id} style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, background:empColor(id)+'22', color:empColor(id), border:`1px solid ${empColor(id)}44` }}>
                               {empNombre(id)}
@@ -421,27 +421,27 @@ export default function UsuariosPage() {
           {/* ── Tab: Permisos por empresa ── */}
           {!cargando && tab==='permisos' && (
             <>
-              <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E', marginBottom:16 }}>
+              <div style={{ background:'rgba(184,145,46,0.16)', border:'1px solid rgba(184,145,46,0.4)', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E', marginBottom:16 }}>
                 🏢 <strong>Panel de acceso:</strong> Marca qué empresas puede ver cada usuario. Los administradores siempre tienen acceso a todo.
               </div>
 
               {/* Tabla de permisos */}
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse' }}>
                   <thead>
-                    <tr style={{ background:'#f8fafc' }}>
-                      <th style={{ textAlign:'left', padding:'12px 16px', fontSize:12, fontWeight:600, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+                    <tr style={{ background:'#141414' }}>
+                      <th style={{ textAlign:'left', padding:'12px 16px', fontSize:12, fontWeight:600, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
                         Usuario
                       </th>
                       {empresas.map(e=>(
-                        <th key={e.id} style={{ textAlign:'center', padding:'12px 16px', fontSize:12, fontWeight:600, color:e.color, borderBottom:'1px solid rgba(0,0,0,0.07)', whiteSpace:'nowrap' as const }}>
+                        <th key={e.id} style={{ textAlign:'center', padding:'12px 16px', fontSize:12, fontWeight:600, color:e.color, borderBottom:'1px solid rgba(255,255,255,0.08)', whiteSpace:'nowrap' as const }}>
                           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4 }}>
                             <div style={{ width:10, height:10, borderRadius:'50%', background:e.color }}/>
                             {e.nombre_corto}
                           </div>
                         </th>
                       ))}
-                      <th style={{ textAlign:'center', padding:'12px 16px', fontSize:12, fontWeight:600, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+                      <th style={{ textAlign:'center', padding:'12px 16px', fontSize:12, fontWeight:600, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
                         Acciones
                       </th>
                     </tr>
@@ -450,14 +450,14 @@ export default function UsuariosPage() {
                     {perfiles.map((p,i)=>{
                       const r = ROLES[p.rol] || ROLES.lectura
                       return (
-                        <tr key={p.id} style={{ borderBottom:i<perfiles.length-1?'1px solid rgba(0,0,0,0.06)':'none', opacity:p.activa?1:0.5 }}>
+                        <tr key={p.id} style={{ borderBottom:i<perfiles.length-1?'1px solid rgba(255,255,255,0.06)':'none', opacity:p.activa?1:0.5 }}>
                           <td style={{ padding:'12px 16px' }}>
                             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                               <div style={{ width:32, height:32, borderRadius:'50%', background:r.bg, color:r.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, flexShrink:0 }}>
                                 {initials(p.nombre)}
                               </div>
                               <div>
-                                <div style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{p.nombre}</div>
+                                <div style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{p.nombre}</div>
                                 <span style={{ fontSize:10, padding:'1px 6px', borderRadius:999, background:r.bg, color:r.tx, fontWeight:500 }}>{r.icon} {r.label}</span>
                               </div>
                             </div>
@@ -485,13 +485,13 @@ export default function UsuariosPage() {
                                       }
                                       actualizarEmpresas(p.id, nuevas)
                                     }}
-                                    style={{ width:28, height:28, borderRadius:8, background:acceso?e.color+'22':'#f1f5f9', border:`2px solid ${acceso?e.color:'#e5e7eb'}`, cursor:p.activa?'pointer':'not-allowed', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto', transition:'all 0.15s' }}
+                                    style={{ width:28, height:28, borderRadius:8, background:acceso?e.color+'22':'#1F1F1F', border:`2px solid ${acceso?e.color:'rgba(255,255,255,0.12)'}`, cursor:p.activa?'pointer':'not-allowed', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto', transition:'all 0.15s' }}
                                     title={acceso?`Quitar acceso a ${e.nombre_corto}`:`Dar acceso a ${e.nombre_corto}`}
                                   >
                                     {acceso ? (
                                       <span style={{ color:e.color, fontSize:14, fontWeight:700 }}>✓</span>
                                     ) : (
-                                      <span style={{ color:'#d1d5db', fontSize:14 }}>✕</span>
+                                      <span style={{ color:'#4A4A4A', fontSize:14 }}>✕</span>
                                     )}
                                   </div>
                                 )}
@@ -508,7 +508,7 @@ export default function UsuariosPage() {
                 </table>
               </div>
 
-              <div style={{ fontSize:11, color:'#9ca3af', marginTop:10, textAlign:'center' }}>
+              <div style={{ fontSize:11, color:'#767676', marginTop:10, textAlign:'center' }}>
                 ✓ verde = tiene acceso · ✕ gris = sin acceso · 👑 = administrador (siempre tiene acceso)
               </div>
             </>
@@ -520,24 +520,24 @@ export default function UsuariosPage() {
               {(Object.entries(ROLES) as [Rol, typeof ROLES[Rol]][]).map(([key, r])=>{
                 const count = perfiles.filter(p=>p.rol===key).length
                 return (
-                  <div key={key} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:18 }}>
+                  <div key={key} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:18 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
                       <div style={{ width:36, height:36, borderRadius:'50%', background:r.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
                         {r.icon}
                       </div>
                       <div>
-                        <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{r.label}</div>
-                        <div style={{ fontSize:12, color:'#6b7280' }}>{count} usuario{count!==1?'s':''}</div>
+                        <div style={{ fontSize:14, fontWeight:600, color:'#F0EFEA' }}>{r.label}</div>
+                        <div style={{ fontSize:12, color:'#9A9A9A' }}>{count} usuario{count!==1?'s':''}</div>
                       </div>
                     </div>
-                    <div style={{ fontSize:12, color:'#6b7280', lineHeight:1.6, marginBottom:12 }}>{r.desc}</div>
+                    <div style={{ fontSize:12, color:'#9A9A9A', lineHeight:1.6, marginBottom:12 }}>{r.desc}</div>
                     <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
                       {perfiles.filter(p=>p.rol===key).map(p=>(
                         <span key={p.id} style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:r.bg, color:r.tx, fontWeight:500 }}>
                           {initials(p.nombre)} {p.nombre.split(' ')[0]}
                         </span>
                       ))}
-                      {count===0 && <span style={{ fontSize:11, color:'#9ca3af' }}>Sin usuarios</span>}
+                      {count===0 && <span style={{ fontSize:11, color:'#767676' }}>Sin usuarios</span>}
                     </div>
                   </div>
                 )
@@ -552,7 +552,7 @@ export default function UsuariosPage() {
 }
 
 const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
-const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
-const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
-const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }
+const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#C9C9C9', width:'100%' }
+const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
+const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA', fontFamily:'DM Sans, sans-serif' }
 const iconBtn: React.CSSProperties = { background:'transparent', border:'none', cursor:'pointer', padding:'4px 6px', borderRadius:6, fontSize:14 }

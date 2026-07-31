@@ -217,35 +217,35 @@ export default function BancosPage() {
   }
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
 
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>
               🔒 Vista restringida
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -256,10 +256,10 @@ export default function BancosPage() {
 
       <div className="app-content" style={{ marginLeft:220 }}>
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Cuentas bancarias</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Supabase</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Supabase</span>}
           </div>
           <div style={{ display:'flex', gap:8 }}>
             <select value={empFiltro} onChange={e=>setEmpFiltro(e.target.value)} style={sel}>
@@ -274,19 +274,19 @@ export default function BancosPage() {
 
           {/* Error */}
           {error && (
-            <div style={{ background:'#FCEBEB', border:'1px solid #F09595', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#791F1F', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
+            <div style={{ background:'rgba(226,75,74,0.16)', border:'1px solid rgba(226,75,74,0.22)', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#E24B4A', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
               <span>⚠️ {error}</span>
-              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#791F1F' }}>✕</button>
+              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#E24B4A' }}>✕</button>
             </div>
           )}
 
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Saldo total CLP',  value:fmtM(totalCLP),        color:'#B8912E', bg:'#FBF1D9' },
-              { label:'Cuentas activas',  value:activas.length,         color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Con diferencias',  value:conDif,                  color:conDif>0?'#E24B4A':'#1D9E75', bg:conDif>0?'#FCEBEB':'#E1F5EE' },
-              { label:'Sin diferencias',  value:activas.length-conDif,  color:'#1D9E75', bg:'#E1F5EE' },
+              { label:'Saldo total CLP',  value:fmtM(totalCLP),        color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
+              { label:'Cuentas activas',  value:activas.length,         color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+              { label:'Con diferencias',  value:conDif,                  color:conDif>0?'#E24B4A':'#1D9E75', bg:conDif>0?'rgba(226,75,74,0.16)':'rgba(29,158,117,0.16)' },
+              { label:'Sin diferencias',  value:activas.length-conDif,  color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -301,7 +301,7 @@ export default function BancosPage() {
               { key:'cuentas',      label:'🏦 Cuentas'      },
               { key:'conciliacion', label:'✓ Conciliación'  },
             ] as const).map(t=>(
-              <button key={t.key} onClick={()=>setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#FBF1D9':'#fff', color:tab===t.key?'#B8912E':'#6b7280', fontWeight:tab===t.key?500:400 }}>
+              <button key={t.key} onClick={()=>setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.key?'rgba(184,145,46,0.16)':'#161616', color:tab===t.key?'#B8912E':'#9A9A9A', fontWeight:tab===t.key?500:400 }}>
                 {t.label}
               </button>
             ))}
@@ -309,7 +309,7 @@ export default function BancosPage() {
 
           {/* Formulario */}
           {showForm && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
               <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Nueva cuenta bancaria</div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                 <div><label style={lbl}>Empresa</label>
@@ -355,9 +355,9 @@ export default function BancosPage() {
           {/* ── Tab: Cuentas ── */}
           {tab==='cuentas' && (
             <>
-              {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#9ca3af' }}>⏳ Cargando cuentas...</div>}
+              {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#767676' }}>⏳ Cargando cuentas...</div>}
               {!cargando && cuentas.length===0 && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'3rem', textAlign:'center', color:'#9ca3af' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'3rem', textAlign:'center', color:'#767676' }}>
                   <div style={{ fontSize:28, marginBottom:8 }}>🏦</div>
                   <div style={{ fontSize:14, fontWeight:500, marginBottom:4 }}>Sin cuentas registradas</div>
                   <div style={{ fontSize:13 }}>Agrega tus cuentas bancarias con el botón de arriba</div>
@@ -368,16 +368,16 @@ export default function BancosPage() {
                 <div key={emp.id} style={{ marginBottom:24 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
                     <div style={{ width:10, height:10, borderRadius:'50%', background:emp.color }}/>
-                    <div style={{ fontSize:13, fontWeight:600, color:'#374151', textTransform:'uppercase', letterSpacing:'0.05em' }}>{emp.nombre_corto}</div>
+                    <div style={{ fontSize:13, fontWeight:600, color:'#C9C9C9', textTransform:'uppercase', letterSpacing:'0.05em' }}>{emp.nombre_corto}</div>
                   </div>
                   {cs.map(c=>{
                     const dif = c.saldo_banco - c.saldo
                     const hayDif = Math.abs(dif) > 0
                     const color = bancoColor(c.banco)
                     return (
-                      <div key={c.id} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:18, marginBottom:10 }}>
+                      <div key={c.id} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:18, marginBottom:10 }}>
                         {c.banco==='Mercado Pago' && (
-                          <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#8A6D1F', marginBottom:10 }}>
+                          <div style={{ background:'rgba(184,145,46,0.16)', border:'1px solid rgba(184,145,46,0.4)', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#D8B24D', marginBottom:10 }}>
                             📱 Billetera digital Mercado Pago
                           </div>
                         )}
@@ -387,37 +387,37 @@ export default function BancosPage() {
                               {initials(c.banco)}
                             </div>
                             <div>
-                              <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{c.banco}</div>
-                              <div style={{ fontSize:12, color:'#6b7280' }}>{c.tipo} · {c.numero} · {c.moneda}</div>
+                              <div style={{ fontSize:14, fontWeight:600, color:'#F0EFEA' }}>{c.banco}</div>
+                              <div style={{ fontSize:12, color:'#9A9A9A' }}>{c.tipo} · {c.numero} · {c.moneda}</div>
                             </div>
                           </div>
-                          <button onClick={()=>eliminarCuenta(c.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#9ca3af', padding:4 }}>🗑️</button>
+                          <button onClick={()=>eliminarCuenta(c.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#767676', padding:4 }}>🗑️</button>
                         </div>
 
                         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
-                          <div style={{ background:'#f8fafc', borderRadius:8, padding:'10px 12px' }}>
-                            <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>Saldo libro</div>
+                          <div style={{ background:'#141414', borderRadius:8, padding:'10px 12px' }}>
+                            <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>Saldo libro</div>
                             <div style={{ fontSize:16, fontWeight:700, color:'#B8912E' }}>{fmtCLP(c.saldo)}</div>
                           </div>
-                          <div style={{ background:'#f8fafc', borderRadius:8, padding:'10px 12px' }}>
-                            <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>Saldo real banco</div>
+                          <div style={{ background:'#141414', borderRadius:8, padding:'10px 12px' }}>
+                            <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>Saldo real banco</div>
                             <input
                               type="number"
                               defaultValue={c.saldo_banco}
                               onBlur={e=>actualizarSaldoBanco(c.id, parseFloat(e.target.value)||0)}
-                              style={{ width:'100%', fontSize:14, fontWeight:700, border:'none', borderBottom:'1.5px solid #e5e7eb', background:'transparent', color:'#111827', padding:'2px 0' }}
+                              style={{ width:'100%', fontSize:14, fontWeight:700, border:'none', borderBottom:'1.5px solid rgba(255,255,255,0.12)', background:'transparent', color:'#F0EFEA', padding:'2px 0' }}
                             />
-                            <div style={{ fontSize:9, color:'#9ca3af', marginTop:2 }}>Editable — ingresa saldo del banco</div>
+                            <div style={{ fontSize:9, color:'#767676', marginTop:2 }}>Editable — ingresa saldo del banco</div>
                           </div>
-                          <div style={{ background:hayDif?'#FAEEDA':'#EAF3DE', borderRadius:8, padding:'10px 12px' }}>
-                            <div style={{ fontSize:10, color:hayDif?'#633806':'#27500A', marginBottom:3 }}>Diferencia</div>
+                          <div style={{ background:hayDif?'rgba(186,117,23,0.18)':'rgba(29,158,117,0.14)', borderRadius:8, padding:'10px 12px' }}>
+                            <div style={{ fontSize:10, color:hayDif?'#BA7517':'#1D9E75', marginBottom:3 }}>Diferencia</div>
                             <div style={{ fontSize:16, fontWeight:700, color:hayDif?'#D85A30':'#1D9E75' }}>
                               {hayDif?(dif>0?'+':'')+fmtCLP(dif):'✓ OK'}
                             </div>
                           </div>
                         </div>
                         {hayDif && (
-                          <div style={{ marginTop:8, background:'#FAEEDA', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#854F0B' }}>
+                          <div style={{ marginTop:8, background:'rgba(186,117,23,0.18)', borderRadius:8, padding:'6px 10px', fontSize:11, color:'#BA7517' }}>
                             ⚠️ Diferencia de {fmtCLP(Math.abs(dif))} — revisa movimientos pendientes
                           </div>
                         )}
@@ -435,15 +435,15 @@ export default function BancosPage() {
 
           {/* ── Tab: Conciliación ── */}
           {tab==='conciliacion' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:14, fontWeight:500, color:'#111827', marginBottom:8 }}>Cómo conciliar</div>
-              <div style={{ fontSize:13, color:'#6b7280', lineHeight:1.8, marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:14, fontWeight:500, color:'#F0EFEA', marginBottom:8 }}>Cómo conciliar</div>
+              <div style={{ fontSize:13, color:'#9A9A9A', lineHeight:1.8, marginBottom:16 }}>
                 <div>1. Abre tu resumen bancario de Santander o Mercado Pago</div>
                 <div>2. Compara el saldo final con el "Saldo libro" en la pestaña Cuentas</div>
                 <div>3. Si hay diferencia, edita el campo "Saldo real banco" directamente</div>
                 <div>4. Revisa en Movimientos qué transacciones podrían explicar la diferencia</div>
               </div>
-              <div style={{ background:'#FBF1D9', border:'1px solid #E8D8A8', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E' }}>
+              <div style={{ background:'rgba(184,145,46,0.16)', border:'1px solid rgba(184,145,46,0.4)', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#B8912E' }}>
                 💡 <strong>Tip Mercado Pago:</strong> Descarga el resumen desde la app MP → Actividad → Exportar. El saldo final debe coincidir con el saldo libro de tu cuenta MP en esta plataforma.
               </div>
             </div>
@@ -455,8 +455,8 @@ export default function BancosPage() {
   )
 }
 
-const sel: React.CSSProperties    = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
+const sel: React.CSSProperties    = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:8, background:'#161616' }
 const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
-const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
-const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
-const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }
+const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#C9C9C9', width:'100%' }
+const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
+const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA', fontFamily:'DM Sans, sans-serif' }

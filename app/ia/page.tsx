@@ -171,53 +171,53 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
   const mg   = ing>0?Math.round(util/ing*100):0
   const anomalias = getAnomalias()
   const nivelColor = (n: string) => n==='crit'?'#E24B4A':n==='warn'?'#EF9F27':'#1D9E75'
-  const nivelBg    = (n: string) => n==='crit'?'#FCEBEB':n==='warn'?'#FAEEDA':'#EAF3DE'
-  const nivelTx    = (n: string) => n==='crit'?'#A32D2D':n==='warn'?'#633806':'#27500A'
+  const nivelBg    = (n: string) => n==='crit'?'rgba(226,75,74,0.16)':n==='warn'?'rgba(186,117,23,0.18)':'rgba(29,158,117,0.14)'
+  const nivelTx    = (n: string) => n==='crit'?'#E24B4A':n==='warn'?'#BA7517':'#1D9E75'
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>🚪 Cerrar sesión</button>
         </div>
       </div>
 
       <div className="app-content" style={{ marginLeft:220 }}>
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Análisis con IA</div>
-            <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:600, background:'#FBF1D9', color:'#8A6D1F' }}>✨ Claude + datos reales</span>
+            <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:600, background:'rgba(184,145,46,0.16)', color:'#D8B24D' }}>✨ Claude + datos reales</span>
           </div>
-          {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 {movimientos.length} mov.</span>}
+          {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 {movimientos.length} mov.</span>}
         </div>
 
         <div className="app-main" style={{ padding:'24px 28px' }}>
-          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#767676' }}>⏳ Cargando...</div>}
           {!cargando && (
             <>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))', gap:12, marginBottom:20 }}>
                 {[
-                  { label:'Ingresos', value:fmtM(ing),  color:'#1D9E75', bg:'#E1F5EE' },
-                  { label:'Gastos',   value:fmtM(gas),  color:'#E24B4A', bg:'#FCEBEB' },
-                  { label:'Utilidad', value:fmtM(util), color:'#B8912E', bg:'#FBF1D9' },
-                  { label:'Margen',   value:mg+'%',      color:'#B8912E', bg:'#FBF1D9' },
+                  { label:'Ingresos', value:fmtM(ing),  color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+                  { label:'Gastos',   value:fmtM(gas),  color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+                  { label:'Utilidad', value:fmtM(util), color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
+                  { label:'Margen',   value:mg+'%',      color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
                 ].map(m=>(
                   <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'12px 14px' }}>
                     <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:3, opacity:0.8 }}>{m.label}</div>
@@ -228,38 +228,38 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
 
               <div style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([{k:'chat',l:'💬 Chat'},{k:'anomalias',l:'⚠️ Anomalías'},{k:'resumen',l:'📊 Resumen'}] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
                 ))}
               </div>
 
               {tab==='chat' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
-                  <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', gap:6, flexWrap:'wrap' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
+                  <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', gap:6, flexWrap:'wrap' }}>
                     {['¿Cómo va el negocio?','¿Dónde reducir gastos?','¿Cuál empresa tiene mejor margen?','¿Hay riesgo de iliquidez?'].map(q=>(
-                      <button key={q} onClick={()=>enviar(q)} style={{ fontSize:11, padding:'4px 10px', borderRadius:999, border:'1px solid rgba(0,0,0,0.1)', background:'#f8fafc', color:'#374151', cursor:'pointer' }}>{q}</button>
+                      <button key={q} onClick={()=>enviar(q)} style={{ fontSize:11, padding:'4px 10px', borderRadius:999, border:'1px solid rgba(255,255,255,0.1)', background:'#141414', color:'#C9C9C9', cursor:'pointer' }}>{q}</button>
                     ))}
                   </div>
                   <div ref={chatRef} style={{ height:360, overflowY:'auto', padding:16, display:'flex', flexDirection:'column', gap:12 }}>
                     {mensajes.map((m,i)=>(
                       <div key={i} style={{ maxWidth:'85%', alignSelf:m.rol==='user'?'flex-end':'flex-start' }}>
-                        <div style={{ padding:'10px 14px', borderRadius:12, fontSize:13, lineHeight:1.6, background:m.rol==='user'?'#B8912E':'#f1f5f9', color:m.rol==='user'?'#fff':'#111827' }}>
-                          {m.rol==='ia' && <div style={{ fontSize:10, fontWeight:600, color:'#9ca3af', marginBottom:4 }}>🧠 Analista IA</div>}
+                        <div style={{ padding:'10px 14px', borderRadius:12, fontSize:13, lineHeight:1.6, background:m.rol==='user'?'#B8912E':'#1F1F1F', color:m.rol==='user'?'#fff':'#F0EFEA' }}>
+                          {m.rol==='ia' && <div style={{ fontSize:10, fontWeight:600, color:'#767676', marginBottom:4 }}>🧠 Analista IA</div>}
                           {m.texto.split('\n').map((line,j)=><div key={j}>{line}</div>)}
                         </div>
                       </div>
                     ))}
-                    {pensando && <div style={{ alignSelf:'flex-start' }}><div style={{ padding:'10px 14px', borderRadius:12, background:'#f1f5f9', fontSize:13, color:'#9ca3af' }}>🧠 Analizando...</div></div>}
+                    {pensando && <div style={{ alignSelf:'flex-start' }}><div style={{ padding:'10px 14px', borderRadius:12, background:'#1F1F1F', fontSize:13, color:'#767676' }}>🧠 Analizando...</div></div>}
                   </div>
-                  <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', gap:8 }}>
-                    <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); enviar() } }} placeholder="Pregunta sobre tus finanzas..." disabled={pensando} style={{ flex:1, padding:'9px 12px', fontSize:13, border:'1px solid rgba(0,0,0,0.12)', borderRadius:9, background:'#fff', outline:'none', fontFamily:'DM Sans, sans-serif' }}/>
-                    <button onClick={()=>enviar()} disabled={pensando||!input.trim()} style={{ padding:'9px 18px', borderRadius:9, border:'none', background:pensando||!input.trim()?'#d1d5db':'#B8912E', color:'#fff', fontSize:13, fontWeight:600, cursor:pensando||!input.trim()?'not-allowed':'pointer' }}>Enviar</button>
+                  <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(255,255,255,0.06)', display:'flex', gap:8 }}>
+                    <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); enviar() } }} placeholder="Pregunta sobre tus finanzas..." disabled={pensando} style={{ flex:1, padding:'9px 12px', fontSize:13, border:'1px solid rgba(255,255,255,0.14)', borderRadius:9, background:'#161616', outline:'none', fontFamily:'DM Sans, sans-serif' }}/>
+                    <button onClick={()=>enviar()} disabled={pensando||!input.trim()} style={{ padding:'9px 18px', borderRadius:9, border:'none', background:pensando||!input.trim()?'#4A4A4A':'#B8912E', color:'#fff', fontSize:13, fontWeight:600, cursor:pensando||!input.trim()?'not-allowed':'pointer' }}>Enviar</button>
                   </div>
                 </div>
               )}
 
               {tab==='anomalias' && (
                 <>
-                  <div style={{ fontSize:12, color:'#6b7280', marginBottom:14 }}>Análisis automático de {movimientos.length} movimientos</div>
+                  <div style={{ fontSize:12, color:'#9A9A9A', marginBottom:14 }}>Análisis automático de {movimientos.length} movimientos</div>
                   {anomalias.map((a,i)=>(
                     <div key={i} style={{ background:nivelBg(a.nivel), borderLeft:`3px solid ${nivelColor(a.nivel)}`, borderRadius:12, padding:'14px 16px', marginBottom:12 }}>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
@@ -274,18 +274,18 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
               )}
 
               {tab==='resumen' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:24 }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:24 }}>
                   <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
-                      <div style={{ fontSize:18, fontWeight:700, color:'#111827' }}>Resumen ejecutivo</div>
-                      <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>Generado {hoy.toLocaleDateString('es-CL')}</div>
+                      <div style={{ fontSize:18, fontWeight:700, color:'#F0EFEA' }}>Resumen ejecutivo</div>
+                      <div style={{ fontSize:12, color:'#9A9A9A', marginTop:3 }}>Generado {hoy.toLocaleDateString('es-CL')}</div>
                     </div>
                     <div style={{ fontSize:20 }}>📊</div>
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:20 }}>
                     {[{l:'Ingresos',v:fmtCLP(ing),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gas),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(util),c:'#B8912E'},{l:'Margen',v:mg+'%',c:'#B8912E'},{l:'Empresas',v:empresas.length.toString(),c:'#B8912E'},{l:'Movimientos',v:movimientos.length.toString(),c:'#BA7517'}].map(k=>(
-                      <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
-                        <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
+                      <div key={k.l} style={{ background:'#141414', border:'1px solid rgba(255,255,255,0.12)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+                        <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:16, fontWeight:700, color:k.c }}>{k.v}</div>
                       </div>
                     ))}
@@ -302,7 +302,7 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
                         const eUtil = eIng-eGas
                         const eMg = eIng>0?Math.round(eUtil/eIng*100):0
                         return (
-                          <tr key={emp.id} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
+                          <tr key={emp.id} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
                             <td style={{ padding:'7px 10px', fontWeight:500 }}>{emp.nombre_corto}</td>
                             <td style={{ padding:'7px 10px', color:'#1D9E75', fontWeight:600 }}>{fmtM(eIng)}</td>
                             <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtM(eGas)}</td>

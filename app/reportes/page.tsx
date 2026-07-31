@@ -132,74 +132,79 @@ export default function ReportesPage() {
   const encabezado = empInfo ? `${empInfo.nombre_corto}${empInfo.rut?' · RUT '+empInfo.rut:''}` : 'Grupo consolidado'
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
-      <style>{`@media print { .no-print { display:none!important; } body { background:white!important; } }`}</style>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
+      <style>{`@media print {
+        .no-print { display:none!important; }
+        body { background:#fff!important; }
+        * { background:#fff!important; color:#000!important; box-shadow:none!important; }
+        table, th, td { border-color:#999!important; }
+      }`}</style>
 
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
+      <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>📊 Finanzas Grupo</div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>🚪 Cerrar sesión</button>
         </div>
       </div>
 
       <div className="app-content" style={{ marginLeft:220 }}>
-        <div className="no-print app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="no-print app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Reportes financieros</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Datos reales</span>}
           </div>
           {tab==='preview' && <button onClick={()=>window.print()} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>}
         </div>
 
         <div className="app-main" style={{ padding:'24px 28px' }}>
-          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#767676' }}>⏳ Cargando...</div>}
           {!cargando && (
             <>
               <div className="no-print" style={{ display:'flex', gap:6, marginBottom:20 }}>
                 {([{k:'nuevo',l:'⚙️ Configurar'},{k:'preview',l:'👁️ Vista previa'}] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
                 ))}
               </div>
 
               {tab==='nuevo' && (
                 <>
-                  <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
-                    <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Configuración</div>
+                  <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+                    <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Configuración</div>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
-                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }}>Empresa</label>
-                        <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }}>
+                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }}>Empresa</label>
+                        <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }}>
                           <option value="all">Grupo completo</option>
                           {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
                         </select>
                       </div>
-                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }}>Mes</label>
-                        <select value={mes} onChange={e=>setMes(parseInt(e.target.value))} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }}>
+                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }}>Mes</label>
+                        <select value={mes} onChange={e=>setMes(parseInt(e.target.value))} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }}>
                           {MESES_NOMBRE.map((m,i)=><option key={i+1} value={i+1}>{m}</option>)}
                         </select>
                       </div>
-                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }}>Año</label>
-                        <select value={anio} onChange={e=>setAnio(parseInt(e.target.value))} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }}>
+                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }}>Año</label>
+                        <select value={anio} onChange={e=>setAnio(parseInt(e.target.value))} style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }}>
                           {[2024,2025,2026,2027].map(a=><option key={a}>{a}</option>)}
                         </select>
                       </div>
-                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }}>Preparado por</label>
-                        <input value={autor} onChange={e=>setAutor(e.target.value)} placeholder="Nombre" style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }}/>
+                      <div><label style={{ display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }}>Preparado por</label>
+                        <input value={autor} onChange={e=>setAutor(e.target.value)} placeholder="Nombre" style={{ width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }}/>
                       </div>
                     </div>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
@@ -209,7 +214,7 @@ export default function ReportesPage() {
                         { label:'Historial mensual', checked:incluirMensual, set:setIncluirMensual },
                         { label:'Tabla por empresa', checked:true, disabled:true },
                       ].map(s=>(
-                        <label key={s.label} style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:s.disabled?'#9ca3af':'#374151', cursor:s.disabled?'default':'pointer' }}>
+                        <label key={s.label} style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:s.disabled?'#767676':'#C9C9C9', cursor:s.disabled?'default':'pointer' }}>
                           <input type="checkbox" checked={s.checked} disabled={s.disabled}
                             onChange={()=>s.set && s.set(!s.checked)} style={{ accentColor:'#B8912E' }}/>
                           {s.label}
@@ -219,10 +224,10 @@ export default function ReportesPage() {
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))', gap:10, marginBottom:16 }}>
                     {[
-                      { label:'Ingresos mes',  value:fmtM(ingMes),  color:'#1D9E75', bg:'#E1F5EE' },
-                      { label:'Gastos mes',    value:fmtM(gasMes),  color:'#E24B4A', bg:'#FCEBEB' },
-                      { label:'Utilidad mes',  value:fmtM(utilMes), color:'#B8912E', bg:'#FBF1D9' },
-                      { label:'Margen mes',    value:mgMes+'%',      color:'#B8912E', bg:'#FBF1D9' },
+                      { label:'Ingresos mes',  value:fmtM(ingMes),  color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+                      { label:'Gastos mes',    value:fmtM(gasMes),  color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+                      { label:'Utilidad mes',  value:fmtM(utilMes), color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
+                      { label:'Margen mes',    value:mgMes+'%',      color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
                     ].map(m=>(
                       <div key={m.label} style={{ background:m.bg, borderRadius:10, padding:'12px 14px' }}>
                         <div style={{ fontSize:11, color:m.color, marginBottom:3, opacity:0.8 }}>{m.label}</div>
@@ -237,35 +242,35 @@ export default function ReportesPage() {
               )}
 
               {tab==='preview' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:32, maxWidth:760, margin:'0 auto' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:32, maxWidth:760, margin:'0 auto' }}>
                   <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:16, marginBottom:24, display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                     <div>
-                      <div style={{ fontSize:22, fontWeight:700, color:'#111827', marginBottom:4 }}>
+                      <div style={{ fontSize:22, fontWeight:700, color:'#F0EFEA', marginBottom:4 }}>
                         {empresa==='all'?'Reporte consolidado':'Reporte '+empInfo?.nombre_corto} — {MESES_NOMBRE[mes-1]} {anio}
                       </div>
-                      <div style={{ fontSize:12, color:'#6b7280' }}>{encabezado}</div>
-                      <div style={{ fontSize:12, color:'#6b7280', marginTop:2 }}>
+                      <div style={{ fontSize:12, color:'#9A9A9A' }}>{encabezado}</div>
+                      <div style={{ fontSize:12, color:'#9A9A9A', marginTop:2 }}>
                         Generado {hoy.toLocaleDateString('es-CL')}{autor&&` · Por ${autor}`}
                       </div>
                     </div>
                     <div style={{ fontSize:28 }}>📊</div>
                   </div>
 
-                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Indicadores — {MESES_NOMBRE[mes-1]} {anio}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid rgba(255,255,255,0.12)', paddingBottom:4 }}>Indicadores — {MESES_NOMBRE[mes-1]} {anio}</div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:24 }}>
                     {[{l:'Ingresos',v:fmtCLP(ingMes),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasMes),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilMes),c:'#B8912E'},{l:'Margen',v:mgMes+'%',c:'#B8912E'}].map(k=>(
-                      <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
-                        <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
+                      <div key={k.l} style={{ background:'#141414', border:'1px solid rgba(255,255,255,0.12)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+                        <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:14, fontWeight:700, color:k.c }}>{k.v}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Acumulado total</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid rgba(255,255,255,0.12)', paddingBottom:4 }}>Acumulado total</div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:24 }}>
                     {[{l:'Ingresos',v:fmtCLP(ingTotal),c:'#1D9E75'},{l:'Gastos',v:fmtCLP(gasTotal),c:'#E24B4A'},{l:'Utilidad',v:fmtCLP(utilTotal),c:'#B8912E'},{l:'Margen',v:mgTotal+'%',c:'#B8912E'}].map(k=>(
-                      <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
-                        <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
+                      <div key={k.l} style={{ background:'#141414', border:'1px solid rgba(255,255,255,0.12)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+                        <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:14, fontWeight:700, color:k.c }}>{k.v}</div>
                       </div>
                     ))}
@@ -273,23 +278,23 @@ export default function ReportesPage() {
 
                   {incluirCats && catsArr.length>0 && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Detalle categorías — {MESES_NOMBRE[mes-1]}</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid rgba(255,255,255,0.12)', paddingBottom:4 }}>Detalle categorías — {MESES_NOMBRE[mes-1]}</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
                         <thead><tr style={{ background:'#B8912E' }}>
                           {['Categoría','Tipo','Monto'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                         </tr></thead>
                         <tbody>
                           {catsArr.map(([cat,val],i)=>(
-                            <tr key={cat} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
+                            <tr key={cat} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
                               <td style={{ padding:'7px 10px', fontWeight:500 }}>{cat}</td>
                               <td style={{ padding:'7px 10px' }}>
-                                <span style={{ fontSize:10, padding:'1px 6px', borderRadius:999, fontWeight:600, background:val.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', color:val.tipo==='ingreso'?'#085041':'#791F1F' }}>{val.tipo}</span>
+                                <span style={{ fontSize:10, padding:'1px 6px', borderRadius:999, fontWeight:600, background:val.tipo==='ingreso'?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', color:val.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{val.tipo}</span>
                               </td>
                               <td style={{ padding:'7px 10px', fontWeight:600, color:val.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtCLP(val.total)}</td>
                             </tr>
                           ))}
                         </tbody>
-                        <tfoot><tr style={{ background:'#f1f5f9', borderTop:'2px solid #e5e7eb' }}>
+                        <tfoot><tr style={{ background:'#1F1F1F', borderTop:'2px solid rgba(255,255,255,0.12)' }}>
                           <td colSpan={2} style={{ padding:'8px 10px', fontWeight:700 }}>Resultado neto</td>
                           <td style={{ padding:'8px 10px', fontWeight:700, color:utilMes>=0?'#1D9E75':'#E24B4A' }}>{fmtCLP(utilMes)}</td>
                         </tr></tfoot>
@@ -299,7 +304,7 @@ export default function ReportesPage() {
 
                   {incluirMensual && historial.length>0 && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Historial mensual</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid rgba(255,255,255,0.12)', paddingBottom:4 }}>Historial mensual</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
                         <thead><tr style={{ background:'#B8912E' }}>
                           {['Mes','Ingresos','Gastos','Utilidad','Margen'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
@@ -311,7 +316,7 @@ export default function ReportesPage() {
                             const mg    = val.ing>0?Math.round(neto/val.ing*100):0
                             const esMes = parseInt(m)===mes&&parseInt(y)===anio
                             return (
-                              <tr key={key} style={{ background:esMes?'#FBF1D9':i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb', fontWeight:esMes?600:400 }}>
+                              <tr key={key} style={{ background:esMes?'rgba(184,145,46,0.16)':i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)', fontWeight:esMes?600:400 }}>
                                 <td style={{ padding:'7px 10px' }}>{MESES_NOMBRE[parseInt(m)-1]} {y}{esMes?' ←':''}</td>
                                 <td style={{ padding:'7px 10px', color:'#1D9E75' }}>{fmtCLP(val.ing)}</td>
                                 <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
@@ -327,14 +332,14 @@ export default function ReportesPage() {
 
                   {empresa==='all' && (
                     <>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid #e5e7eb', paddingBottom:4 }}>Por empresa — acumulado</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, borderBottom:'1px solid rgba(255,255,255,0.12)', paddingBottom:4 }}>Por empresa — acumulado</div>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, marginBottom:24 }}>
                         <thead><tr style={{ background:'#B8912E' }}>
                           {['Empresa','Ingresos','Gastos','Utilidad','Margen'].map(h=><th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#fff', fontWeight:500 }}>{h}</th>)}
                         </tr></thead>
                         <tbody>
                           {porEmpresa.map((e,i)=>(
-                            <tr key={e.id} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
+                            <tr key={e.id} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
                               <td style={{ padding:'7px 10px', fontWeight:500 }}>{e.nombre_corto}</td>
                               <td style={{ padding:'7px 10px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(e.ing)}</td>
                               <td style={{ padding:'7px 10px', color:'#E24B4A' }}>{fmtCLP(e.gas)}</td>
@@ -342,7 +347,7 @@ export default function ReportesPage() {
                               <td style={{ padding:'7px 10px', color:e.mg>=30?'#1D9E75':e.mg>=15?'#EF9F27':'#E24B4A', fontWeight:600 }}>{e.mg}%</td>
                             </tr>
                           ))}
-                          <tfoot><tr style={{ background:'#f1f5f9', borderTop:'2px solid #e5e7eb', fontWeight:700 }}>
+                          <tfoot><tr style={{ background:'#1F1F1F', borderTop:'2px solid rgba(255,255,255,0.12)', fontWeight:700 }}>
                             <td style={{ padding:'8px 10px' }}>Total grupo</td>
                             <td style={{ padding:'8px 10px', color:'#1D9E75' }}>{fmtCLP(ingTotal)}</td>
                             <td style={{ padding:'8px 10px', color:'#E24B4A' }}>{fmtCLP(gasTotal)}</td>
@@ -354,14 +359,14 @@ export default function ReportesPage() {
                     </>
                   )}
 
-                  <div style={{ borderTop:'1px solid #e5e7eb', paddingTop:12, display:'flex', justifyContent:'space-between', fontSize:10, color:'#9ca3af' }}>
+                  <div style={{ borderTop:'1px solid rgba(255,255,255,0.12)', paddingTop:12, display:'flex', justifyContent:'space-between', fontSize:10, color:'#767676' }}>
                     <span>Plataforma Financiera Grupo Farmacias</span>
                     <span>Generado {hoy.toLocaleDateString('es-CL')}</span>
                   </div>
 
                   <div className="no-print" style={{ marginTop:20, display:'flex', gap:8 }}>
                     <button onClick={()=>window.print()} style={{ flex:1, padding:11, borderRadius:9, border:'none', background:'#B8912E', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>🖨️ Imprimir / PDF</button>
-                    <button onClick={()=>setTab('nuevo')} style={{ padding:'11px 16px', borderRadius:9, border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', fontSize:13, cursor:'pointer' }}>← Volver</button>
+                    <button onClick={()=>setTab('nuevo')} style={{ padding:'11px 16px', borderRadius:9, border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#C9C9C9', fontSize:13, cursor:'pointer' }}>← Volver</button>
                   </div>
                 </div>
               )}

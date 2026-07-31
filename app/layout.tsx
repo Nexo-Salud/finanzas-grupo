@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${dmSans.variable} ${dmMono.variable}`}>
-      <body className="bg-gray-50 text-gray-900 antialiased">
+      <body className="bg-black text-gray-100 antialiased">
         {children}
       </body>
     </html>

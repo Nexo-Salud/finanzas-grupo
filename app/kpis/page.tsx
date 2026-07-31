@@ -145,48 +145,48 @@ export default function KpisPage() {
   }).sort((a,b)=>b.ut-a.ut)
 
   const kpis = [
-    { icon:'📈', label:'Ingresos totales',   val:fmtM(ingTotal),              sub:`Mes: ${fmtM(ingMes)}`,     pct:100,                                         inv:false, color:'#1D9E75', bg:'#E1F5EE' },
+    { icon:'📈', label:'Ingresos totales',   val:fmtM(ingTotal),              sub:`Mes: ${fmtM(ingMes)}`,     pct:100,                                         inv:false, color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
     { icon:'💹', label:'Margen neto',         val:margenR+'%',                  sub:`Meta: ${metaMargen}%`,      pct:Math.round(margenR/metaMargen*100),           inv:false, color:'', bg:'' },
     { icon:'🏢', label:'Margen mes actual',   val:margenMes+'%',                sub:MESES[mesActual-1]+' '+anioActual, pct:Math.round(margenMes/metaMargen*100),  inv:false, color:'', bg:'' },
     { icon:'🚀', label:'Crecimiento',         val:(crecR>0?'+':'')+crecR+'%',   sub:'vs mes anterior',           pct:ingAnt>0?Math.round(Math.max(0,crecR)/metaCrec*100):0, inv:false, color:'', bg:'' },
     { icon:'💰', label:'Gasto / Ingreso',     val:gasIngR+'%',                  sub:`Límite: ${metaGastoIng}%`,  pct:Math.round(metaGastoIng/Math.max(gasIngR,1)*100), inv:true, color:'', bg:'' },
-    { icon:'📊', label:'Utilidad total',      val:fmtM(util),                   sub:`Mes: ${fmtM(utilMes)}`,     pct:100,                                         inv:false, color:util>=0?'#B8912E':'#E24B4A', bg:util>=0?'#FBF1D9':'#FCEBEB' },
+    { icon:'📊', label:'Utilidad total',      val:fmtM(util),                   sub:`Mes: ${fmtM(utilMes)}`,     pct:100,                                         inv:false, color:util>=0?'#B8912E':'#E24B4A', bg:util>=0?'rgba(184,145,46,0.16)':'rgba(226,75,74,0.16)' },
   ]
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+          {!esAdmin && empresasPermitidas.length>0 && <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>}
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>🚪 Cerrar sesión</button>
         </div>
       </div>
 
       <div className="app-content" style={{ marginLeft:220 }}>
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>KPIs ejecutivos</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Datos reales</span>}
           </div>
-          <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }}>
+          <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:8, background:'#161616' }}>
             <option value="all">{esAdmin?'Grupo completo':'Mis empresas'}</option>
             {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
           </select>
@@ -195,11 +195,11 @@ export default function KpisPage() {
         <div className="app-main" style={{ padding:'24px 28px' }}>
           <div style={{ display:'flex', gap:6, marginBottom:24 }}>
             {([{k:'panel',l:'📊 Panel'},{k:'tendencias',l:'📈 Tendencias'},{k:'metas',l:'🎯 Metas'}] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>{t.l}</button>
             ))}
           </div>
 
-          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#767676' }}>⏳ Cargando...</div>}
 
           {!cargando && tab==='panel' && (
             <>
@@ -207,19 +207,19 @@ export default function KpisPage() {
                 {kpis.map(k=>{
                   const pct   = Math.min(100,k.pct)
                   const color = k.color || semColor(k.pct,k.inv)
-                  const bg    = k.bg || (color==='#1D9E75'?'#E1F5EE':color==='#EF9F27'?'#FAEEDA':'#FCEBEB')
+                  const bg    = k.bg || (color==='#1D9E75'?'rgba(29,158,117,0.16)':color==='#EF9F27'?'rgba(186,117,23,0.18)':'rgba(226,75,74,0.16)')
                   return (
-                    <div key={k.label} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:16, position:'relative' }}>
+                    <div key={k.label} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:16, position:'relative' }}>
                       <div style={{ position:'absolute', top:12, right:12, width:10, height:10, borderRadius:'50%', background:color, boxShadow:`0 0 0 3px ${color}33` }}/>
                       <div style={{ fontSize:20, marginBottom:8 }}>{k.icon}</div>
-                      <div style={{ fontSize:11, color:'#6b7280', marginBottom:3 }}>{k.label}</div>
-                      <div style={{ fontSize:22, fontWeight:700, color:'#111827', marginBottom:4 }}>{k.val}</div>
-                      <div style={{ fontSize:11, color:'#9ca3af', marginBottom:8 }}>{k.sub}</div>
-                      <div style={{ height:5, background:'#f1f5f9', borderRadius:3, overflow:'hidden', marginBottom:6 }}>
+                      <div style={{ fontSize:11, color:'#9A9A9A', marginBottom:3 }}>{k.label}</div>
+                      <div style={{ fontSize:22, fontWeight:700, color:'#F0EFEA', marginBottom:4 }}>{k.val}</div>
+                      <div style={{ fontSize:11, color:'#767676', marginBottom:8 }}>{k.sub}</div>
+                      <div style={{ height:5, background:'#1F1F1F', borderRadius:3, overflow:'hidden', marginBottom:6 }}>
                         <div style={{ height:'100%', width:`${pct}%`, background:color, borderRadius:3 }}/>
                       </div>
                       <div style={{ display:'flex', justifyContent:'space-between' }}>
-                        <span style={{ fontSize:10, color:'#9ca3af' }}>{k.pct}%</span>
+                        <span style={{ fontSize:10, color:'#767676' }}>{k.pct}%</span>
                         <span style={{ fontSize:10, padding:'1px 6px', borderRadius:999, fontWeight:600, background:bg, color }}>{semLabel(k.pct,k.inv)}</span>
                       </div>
                     </div>
@@ -227,34 +227,34 @@ export default function KpisPage() {
                 })}
               </div>
 
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ranking por utilidad neta</div>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ranking por utilidad neta</div>
                 {ranking.map((e,i)=>(
                   <div key={e.id} style={{ marginBottom:16 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-                      <span style={{ fontSize:18, fontWeight:700, color:'#e5e7eb', width:20 }}>{i+1}</span>
+                      <span style={{ fontSize:18, fontWeight:700, color:'#3A3A3A', width:20 }}>{i+1}</span>
                       <span style={{ width:9, height:9, borderRadius:'50%', background:e.color, flexShrink:0 }}/>
-                      <span style={{ flex:1, fontSize:13, fontWeight:500, color:'#111827' }}>{e.nombre_corto}</span>
-                      <span style={{ fontSize:12, color:'#6b7280' }}>Ing: {fmtM(e.ing)}</span>
-                      <span style={{ fontSize:12, color:'#6b7280' }}>Margen {e.mg}%</span>
+                      <span style={{ flex:1, fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{e.nombre_corto}</span>
+                      <span style={{ fontSize:12, color:'#9A9A9A' }}>Ing: {fmtM(e.ing)}</span>
+                      <span style={{ fontSize:12, color:'#9A9A9A' }}>Margen {e.mg}%</span>
                       <span style={{ fontSize:14, fontWeight:700, color:e.ut>=0?'#1D9E75':'#E24B4A' }}>{fmtM(e.ut)}</span>
                     </div>
-                    <div style={{ height:6, background:'#f1f5f9', borderRadius:3, overflow:'hidden', marginLeft:28 }}>
+                    <div style={{ height:6, background:'#1F1F1F', borderRadius:3, overflow:'hidden', marginLeft:28 }}>
                       <div style={{ height:'100%', width:`${Math.max(0,Math.min(100,e.ing>0?Math.round(e.ut/e.ing*100*2):0))}%`, background:e.color, borderRadius:3 }}/>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Top categorías de gasto</div>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Top categorías de gasto</div>
                 {topArr.map(([cat,val])=>(
                   <div key={cat} style={{ marginBottom:12 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
-                      <span style={{ fontSize:13, color:'#374151', fontWeight:500 }}>{cat}</span>
+                      <span style={{ fontSize:13, color:'#C9C9C9', fontWeight:500 }}>{cat}</span>
                       <span style={{ fontSize:13, fontWeight:600, color:'#E24B4A' }}>{fmtCLP(val)}</span>
                     </div>
-                    <div style={{ height:6, background:'#f1f5f9', borderRadius:3, overflow:'hidden' }}>
+                    <div style={{ height:6, background:'#1F1F1F', borderRadius:3, overflow:'hidden' }}>
                       <div style={{ height:'100%', width:`${Math.round(val/maxTop*100)}%`, background:'#E24B4A', borderRadius:3 }}/>
                     </div>
                   </div>
@@ -265,8 +265,8 @@ export default function KpisPage() {
 
           {!cargando && tab==='tendencias' && (
             <>
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos por mes</div>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos por mes</div>
                 <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:160, overflowX:'auto' }}>
                   {mesesData.map(([key,val])=>{
                     const [y,m] = key.split('-')
@@ -280,17 +280,17 @@ export default function KpisPage() {
                           <div style={{ flex:1, height:Math.max(hI,2), background:'#1D9E75', borderRadius:'2px 2px 0 0' }}/>
                           <div style={{ flex:1, height:Math.max(hG,2), background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
                         </div>
-                        <div style={{ fontSize:9, color:'#9ca3af' }}>{MESES[parseInt(m)-1]} {y.slice(2)}</div>
+                        <div style={{ fontSize:9, color:'#767676' }}>{MESES[parseInt(m)-1]} {y.slice(2)}</div>
                       </div>
                     )
                   })}
                 </div>
               </div>
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
-                  <thead><tr style={{ background:'#fafafa' }}>
+                  <thead><tr style={{ background:'#1A1A1A' }}>
                     {['Mes','Ingresos','Gastos','Utilidad','Margen'].map(h=>(
-                      <th key={h} style={{ textAlign:'left', padding:'9px 12px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>{h}</th>
+                      <th key={h} style={{ textAlign:'left', padding:'9px 12px', fontWeight:500, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
@@ -299,7 +299,7 @@ export default function KpisPage() {
                       const neto = val.ing-val.gas
                       const mg   = val.ing>0 ? Math.round(neto/val.ing*100) : 0
                       return (
-                        <tr key={key} style={{ borderBottom:i<mesesData.length-1?'1px solid rgba(0,0,0,0.06)':'none' }}>
+                        <tr key={key} style={{ borderBottom:i<mesesData.length-1?'1px solid rgba(255,255,255,0.06)':'none' }}>
                           <td style={{ padding:'9px 12px', fontWeight:500 }}>{MESES[parseInt(m)-1]} {y}</td>
                           <td style={{ padding:'9px 12px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
                           <td style={{ padding:'9px 12px', color:'#E24B4A' }}>{fmtCLP(val.gas)}</td>
@@ -315,25 +315,25 @@ export default function KpisPage() {
           )}
 
           {!cargando && tab==='metas' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:13, color:'#6b7280', marginBottom:20 }}>Ajusta tus metas — los indicadores del panel se actualizan en tiempo real.</div>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:13, color:'#9A9A9A', marginBottom:20 }}>Ajusta tus metas — los indicadores del panel se actualizan en tiempo real.</div>
               {[
                 { label:'Margen neto objetivo',     real:margenR+'%',  meta:metaMargen,   setMeta:setMetaMargen,   min:5,  max:60, color:'#1D9E75', pct:Math.round(margenR/metaMargen*100),                       inv:false },
                 { label:'Gasto/Ingreso máximo',     real:gasIngR+'%',  meta:metaGastoIng, setMeta:setMetaGastoIng, min:40, max:95, color:'#E24B4A', pct:Math.round(metaGastoIng/Math.max(gasIngR,1)*100),          inv:true  },
                 { label:'Crecimiento mensual obj.', real:(crecR>0?'+':'')+crecR+'%', meta:metaCrec, setMeta:setMetaCrec, min:1, max:50, color:'#B8912E', pct:Math.round(Math.max(0,crecR)/metaCrec*100), inv:false },
               ].map(row=>{
                 const color = semColor(row.pct, row.inv)
-                const bg    = color==='#1D9E75'?'#E1F5EE':color==='#EF9F27'?'#FAEEDA':'#FCEBEB'
+                const bg    = color==='#1D9E75'?'rgba(29,158,117,0.16)':color==='#EF9F27'?'rgba(186,117,23,0.18)':'rgba(226,75,74,0.16)'
                 return (
                   <div key={row.label} style={{ marginBottom:24 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
                       <div>
-                        <div style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{row.label}</div>
-                        <div style={{ fontSize:12, color:'#6b7280', marginTop:2 }}>Real: <strong>{row.real}</strong></div>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{row.label}</div>
+                        <div style={{ fontSize:12, color:'#9A9A9A', marginTop:2 }}>Real: <strong>{row.real}</strong></div>
                       </div>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         <div style={{ textAlign:'right' }}>
-                          <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Meta</div>
+                          <div style={{ fontSize:10, color:'#767676', marginBottom:2 }}>Meta</div>
                           <div style={{ fontSize:20, fontWeight:700, color:row.color }}>{row.meta}%</div>
                         </div>
                         <div style={{ textAlign:'center', minWidth:60 }}>
@@ -345,7 +345,7 @@ export default function KpisPage() {
                     <input type="range" min={row.min} max={row.max} value={row.meta}
                       onChange={e=>row.setMeta(parseInt(e.target.value))}
                       style={{ width:'100%', accentColor:row.color, marginBottom:6 }}/>
-                    <div style={{ height:7, background:'#f1f5f9', borderRadius:4, overflow:'hidden' }}>
+                    <div style={{ height:7, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
                       <div style={{ height:'100%', width:`${Math.min(100,row.pct)}%`, background:color, borderRadius:4 }}/>
                     </div>
                   </div>

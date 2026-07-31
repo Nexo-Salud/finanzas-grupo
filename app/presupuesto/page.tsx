@@ -225,8 +225,8 @@ export default function PresupuestoPage() {
   }
   const badgeStyle = (pct: number, invert = false): React.CSSProperties => {
     const c = barColor(pct, invert)
-    const bg = c === '#1D9E75' ? '#E1F5EE' : c === '#EF9F27' ? '#FAEEDA' : '#FCEBEB'
-    const tx = c === '#1D9E75' ? '#085041' : c === '#EF9F27' ? '#633806' : '#791F1F'
+    const bg = c === '#1D9E75' ? 'rgba(29,158,117,0.16)' : c === '#EF9F27' ? 'rgba(186,117,23,0.18)' : 'rgba(226,75,74,0.16)'
+    const tx = c === '#1D9E75' ? '#1D9E75' : c === '#EF9F27' ? '#BA7517' : '#E24B4A'
     return { fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, background:bg, color:tx }
   }
   const labelEstado = (pct: number, invert = false) => {
@@ -235,14 +235,14 @@ export default function PresupuestoPage() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {[
@@ -258,18 +258,18 @@ export default function PresupuestoPage() {
           { href:'/kpis',         label:'KPIs',         icon:'📊' },
           { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
         ].map(item => (
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:item.active?'#B8912E':'#6b7280', background:item.active?'#FBF1D9':'transparent', fontWeight:item.active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:item.active?'#B8912E':'#9A9A9A', background:item.active?'rgba(184,145,46,0.16)':'transparent', fontWeight:item.active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
 
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>
               🔒 Vista restringida
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -282,7 +282,7 @@ export default function PresupuestoPage() {
       <div className="app-content" style={{ marginLeft:220 }}>
 
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ fontSize:15, fontWeight:600 }}>Presupuesto anual</div>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
             <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={sel}>
@@ -300,10 +300,10 @@ export default function PresupuestoPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Ingreso presupuestado', value:fmtM(totalIngMeta), color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Gasto presupuestado',   value:fmtM(totalGasMeta), color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad esperada',     value:fmtM(utilidadMeta), color:'#B8912E', bg:'#FBF1D9' },
-              { label:'Margen objetivo',       value:margen+'%',          color:'#B8912E', bg:'#FBF1D9' },
+              { label:'Ingreso presupuestado', value:fmtM(totalIngMeta), color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+              { label:'Gasto presupuestado',   value:fmtM(totalGasMeta), color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+              { label:'Utilidad esperada',     value:fmtM(utilidadMeta), color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
+              { label:'Margen objetivo',       value:margen+'%',          color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -314,7 +314,7 @@ export default function PresupuestoPage() {
 
           {/* Formulario nueva categoría */}
           {showForm && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
               <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Nueva categoría de presupuesto</div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                 <div><label style={lbl}>Nombre</label><input value={fNombre} onChange={e=>setFNombre(e.target.value)} placeholder="Ej: Comisiones" style={inp}/></div>
@@ -343,14 +343,14 @@ export default function PresupuestoPage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:16, flexWrap:'wrap' }}>
             {(['categorias','resumen','comparativo'] as const).map(t=>(
-              <button key={t} onClick={()=>setTab(t)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t?'#FBF1D9':'#fff', color:tab===t?'#B8912E':'#6b7280', fontWeight:tab===t?500:400 }}>
+              <button key={t} onClick={()=>setTab(t)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t?'rgba(184,145,46,0.16)':'#161616', color:tab===t?'#B8912E':'#9A9A9A', fontWeight:tab===t?500:400 }}>
                 {t==='categorias'?'📋 Categorías':t==='resumen'?'📊 Resumen anual':'🔄 Presup. vs Real'}
               </button>
             ))}
             {tab==='categorias' && (
               <div style={{ marginLeft:'auto', display:'flex', gap:6 }}>
                 {(['all','ingreso','gasto'] as const).map(f=>(
-                  <button key={f} onClick={()=>setTipoFiltro(f)} style={{ padding:'6px 12px', borderRadius:8, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tipoFiltro===f?'#1A1A1A':'#fff', color:tipoFiltro===f?'#fff':'#6b7280' }}>
+                  <button key={f} onClick={()=>setTipoFiltro(f)} style={{ padding:'6px 12px', borderRadius:8, fontSize:12, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tipoFiltro===f?'#B8912E':'#161616', color:tipoFiltro===f?'#fff':'#9A9A9A' }}>
                     {f==='all'?'Todos':f==='ingreso'?'Ingresos':'Gastos'}
                   </button>
                 ))}
@@ -366,14 +366,14 @@ export default function PresupuestoPage() {
             const isOpen = expandidos[cat.id]
 
             return (
-              <div key={cat.id} style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:12 }}>
+              <div key={cat.id} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:12 }}>
                 {/* Header categoría */}
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8, marginBottom:12 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                     <div style={{ width:10, height:10, borderRadius:'50%', background:cat.color, flexShrink:0 }}/>
                     <div>
-                      <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{cat.nombre}</div>
-                      <div style={{ fontSize:11, color:'#6b7280', marginTop:1 }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:'#F0EFEA' }}>{cat.nombre}</div>
+                      <div style={{ fontSize:11, color:'#9A9A9A', marginTop:1 }}>
                         {cat.tipo === 'ingreso' ? '↑ Ingreso' : '↓ Gasto'} · Promedio mensual: {fmtM(cat.meta/12)}
                       </div>
                     </div>
@@ -383,29 +383,29 @@ export default function PresupuestoPage() {
                     <button onClick={()=>toggleExpand(cat.id)} style={{ ...btnSec, width:'auto', padding:'5px 10px', fontSize:12 }}>
                       {isOpen ? '▲ Cerrar' : '▼ Distribución mensual'}
                     </button>
-                    <button onClick={()=>eliminarCategoria(cat.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#9ca3af', padding:'4px' }}>🗑️</button>
+                    <button onClick={()=>eliminarCategoria(cat.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#767676', padding:'4px' }}>🗑️</button>
                   </div>
                 </div>
 
                 {/* Meta editable + barra */}
                 <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10, flexWrap:'wrap' }}>
                   <div style={{ flex:1 }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'#6b7280', marginBottom:4 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'#9A9A9A', marginBottom:4 }}>
                       <span>Meta anual</span>
                       <div style={{ display:'flex', alignItems:'center', gap:4 }}>
                         <input
                           type="number"
                           value={cat.meta}
                           onChange={e=>updateMeta(cat.id, parseFloat(e.target.value)||0)}
-                          style={{ width:120, fontSize:13, fontWeight:600, textAlign:'right', border:'none', borderBottom:'1.5px solid #e5e7eb', background:'transparent', color:'#111827', padding:'2px 4px' }}
+                          style={{ width:120, fontSize:13, fontWeight:600, textAlign:'right', border:'none', borderBottom:'1.5px solid rgba(255,255,255,0.12)', background:'transparent', color:'#F0EFEA', padding:'2px 4px' }}
                         />
-                        <span style={{ fontSize:12, color:'#6b7280' }}>CLP</span>
+                        <span style={{ fontSize:12, color:'#9A9A9A' }}>CLP</span>
                       </div>
                     </div>
-                    <div style={{ height:8, background:'#f1f5f9', borderRadius:4, overflow:'hidden' }}>
+                    <div style={{ height:8, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
                       <div style={{ height:'100%', borderRadius:4, transition:'width 0.4s', width:`${Math.min(100,pctEj)}%`, background:barColor(pctEj, cat.tipo==='gasto') }}/>
                     </div>
-                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'#9ca3af', marginTop:3 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'#767676', marginTop:3 }}>
                       <span>Ejecutado: {fmtM(getTotalEjec(cat.id))} ({pctEj}%)</span>
                       <span>Meta: {fmtM(cat.meta)}</span>
                     </div>
@@ -414,9 +414,9 @@ export default function PresupuestoPage() {
 
                 {/* Distribución mensual expandible */}
                 {isOpen && (
-                  <div style={{ borderTop:'1px solid rgba(0,0,0,0.07)', paddingTop:14, marginTop:4 }}>
+                  <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:14, marginTop:4 }}>
                     <div style={{ display:'flex', gap:6, marginBottom:10, flexWrap:'wrap', alignItems:'center' }}>
-                      <span style={{ fontSize:12, color:'#6b7280' }}>Distribuir:</span>
+                      <span style={{ fontSize:12, color:'#9A9A9A' }}>Distribuir:</span>
                       <button onClick={()=>aplicarDist(cat.id,'uniforme')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Uniforme</button>
                       <button onClick={()=>aplicarDist(cat.id,'estacional')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Estacional</button>
                       <span style={{ marginLeft:'auto', fontSize:11, color: Math.abs(sumaDistActual-100) < 0.5 ? '#1D9E75' : '#E24B4A', fontWeight:500 }}>
@@ -426,14 +426,14 @@ export default function PresupuestoPage() {
                     <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:6 }}>
                       {MESES.map((mes,i)=>(
                         <div key={mes} style={{ textAlign:'center' }}>
-                          <div style={{ fontSize:10, color:'#9ca3af', marginBottom:3 }}>{mes}</div>
+                          <div style={{ fontSize:10, color:'#767676', marginBottom:3 }}>{mes}</div>
                           <input
                             type="number" step="0.1" min="0" max="100"
                             value={Math.round(cat.dist[i]*10)/10}
                             onChange={e=>updateDist(cat.id, i, parseFloat(e.target.value)||0)}
-                            style={{ width:'100%', fontSize:11, textAlign:'center', padding:'4px 2px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:6, background: i < 6 && getEjecMes(cat.id,i) > 0 ? '#f0fdf4' : '#fff' }}
+                            style={{ width:'100%', fontSize:11, textAlign:'center', padding:'4px 2px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:6, background: i < 6 && getEjecMes(cat.id,i) > 0 ? 'rgba(29,158,117,0.12)' : '#fff' }}
                           />
-                          <div style={{ fontSize:10, color:'#9ca3af', marginTop:2 }}>{fmtM(totalMesPresup[i])}</div>
+                          <div style={{ fontSize:10, color:'#767676', marginTop:2 }}>{fmtM(totalMesPresup[i])}</div>
                           {i < 6 && getEjecMes(cat.id,i) > 0 && (
                             <div style={{ fontSize:10, color:'#1D9E75', marginTop:1 }}>✓ {fmtM(getEjecMes(cat.id,i))}</div>
                           )}
@@ -448,11 +448,11 @@ export default function PresupuestoPage() {
 
           {/* ── Tab: Resumen anual ── */}
           {tab==='resumen' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
               <div style={{ overflowX:'auto' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, minWidth:700 }}>
                   <thead>
-                    <tr style={{ background:'#fafafa' }}>
+                    <tr style={{ background:'#1A1A1A' }}>
                       <th style={th}>Categoría</th>
                       {MESES.map(m=><th key={m} style={{ ...th, textAlign:'right' }}>{m}</th>)}
                       <th style={{ ...th, textAlign:'right' }}>Total</th>
@@ -460,39 +460,39 @@ export default function PresupuestoPage() {
                   </thead>
                   <tbody>
                     {/* Ingresos */}
-                    <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#1D9E75', textTransform:'uppercase', letterSpacing:'0.06em', background:'#f0fdf4' }}>INGRESOS</td></tr>
+                    <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#1D9E75', textTransform:'uppercase', letterSpacing:'0.06em', background:'rgba(29,158,117,0.12)' }}>INGRESOS</td></tr>
                     {cats.filter(c=>c.tipo==='ingreso').map(cat=>(
                       <tr key={cat.id}>
-                        <td style={{ padding:'8px 14px', fontWeight:500, color:'#111827' }}>
+                        <td style={{ padding:'8px 14px', fontWeight:500, color:'#F0EFEA' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                             <div style={{ width:8, height:8, borderRadius:'50%', background:cat.color }}/>
                             {cat.nombre}
                           </div>
                         </td>
                         {MESES.map((_,i)=>(
-                          <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#374151' }}>{fmtM(getMesVal(cat,i))}</td>
+                          <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#C9C9C9' }}>{fmtM(getMesVal(cat,i))}</td>
                         ))}
                         <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#1D9E75' }}>{fmtM(cat.meta)}</td>
                       </tr>
                     ))}
                     {/* Gastos */}
-                    <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#E24B4A', textTransform:'uppercase', letterSpacing:'0.06em', background:'#fff5f5' }}>GASTOS</td></tr>
+                    <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#E24B4A', textTransform:'uppercase', letterSpacing:'0.06em', background:'rgba(226,75,74,0.12)' }}>GASTOS</td></tr>
                     {cats.filter(c=>c.tipo==='gasto').map(cat=>(
                       <tr key={cat.id}>
-                        <td style={{ padding:'8px 14px', fontWeight:500, color:'#111827' }}>
+                        <td style={{ padding:'8px 14px', fontWeight:500, color:'#F0EFEA' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                             <div style={{ width:8, height:8, borderRadius:'50%', background:cat.color }}/>
                             {cat.nombre}
                           </div>
                         </td>
                         {MESES.map((_,i)=>(
-                          <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#374151' }}>{fmtM(getMesVal(cat,i))}</td>
+                          <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#C9C9C9' }}>{fmtM(getMesVal(cat,i))}</td>
                         ))}
                         <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#E24B4A' }}>{fmtM(cat.meta)}</td>
                       </tr>
                     ))}
                     {/* Resultado neto */}
-                    <tr style={{ background:'#f8fafc', borderTop:'2px solid rgba(0,0,0,0.1)' }}>
+                    <tr style={{ background:'#141414', borderTop:'2px solid rgba(255,255,255,0.1)' }}>
                       <td style={{ padding:'10px 14px', fontWeight:700, fontSize:13 }}>Resultado neto</td>
                       {MESES.map((_,i)=>{
                         const ing = cats.filter(c=>c.tipo==='ingreso').reduce((a,c)=>a+getMesVal(c,i),0)
@@ -510,8 +510,8 @@ export default function PresupuestoPage() {
 
           {/* ── Tab: Comparativo ── */}
           {tab==='comparativo' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:13, color:'#6b7280', marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:13, color:'#9A9A9A', marginBottom:16 }}>
                 Comparando presupuesto vs ejecución real H1 2025
               </div>
               {cats.map(cat => {
@@ -524,16 +524,16 @@ export default function PresupuestoPage() {
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6, flexWrap:'wrap', gap:6 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                         <div style={{ width:9, height:9, borderRadius:'50%', background:cat.color }}/>
-                        <span style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{cat.nombre}</span>
+                        <span style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{cat.nombre}</span>
                         <span style={{ fontSize:11, padding:'1px 7px', borderRadius:999, fontWeight:500,
-                          background:cat.tipo==='ingreso'?'#E1F5EE':'#FCEBEB',
-                          color:cat.tipo==='ingreso'?'#085041':'#791F1F' }}>
+                          background:cat.tipo==='ingreso'?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)',
+                          color:cat.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>
                           {cat.tipo}
                         </span>
                       </div>
                       <div style={{ display:'flex', gap:12, fontSize:12, flexWrap:'wrap' }}>
-                        <span style={{ color:'#6b7280' }}>Meta H1: <strong style={{ color:'#111827' }}>{fmtM(metaH1)}</strong></span>
-                        <span style={{ color:'#6b7280' }}>Real H1: <strong style={{ color: cat.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtM(ejTotal)}</strong></span>
+                        <span style={{ color:'#9A9A9A' }}>Meta H1: <strong style={{ color:'#F0EFEA' }}>{fmtM(metaH1)}</strong></span>
+                        <span style={{ color:'#9A9A9A' }}>Real H1: <strong style={{ color: cat.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtM(ejTotal)}</strong></span>
                         <span style={{ fontWeight:600, color: variacion >= 0 ? (cat.tipo==='ingreso'?'#1D9E75':'#E24B4A') : (cat.tipo==='ingreso'?'#E24B4A':'#1D9E75') }}>
                           {variacion >= 0 ? '+' : ''}{variacion}%
                         </span>
@@ -541,14 +541,14 @@ export default function PresupuestoPage() {
                     </div>
                     {/* Barras dobles */}
                     <div style={{ display:'flex', gap:4, alignItems:'center' }}>
-                      <span style={{ fontSize:10, color:'#9ca3af', width:50, flexShrink:0 }}>Meta</span>
-                      <div style={{ flex:1, height:7, background:'#f1f5f9', borderRadius:4, overflow:'hidden' }}>
+                      <span style={{ fontSize:10, color:'#767676', width:50, flexShrink:0 }}>Meta</span>
+                      <div style={{ flex:1, height:7, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
                         <div style={{ height:'100%', borderRadius:4, width:'100%', background:cat.color, opacity:0.3 }}/>
                       </div>
                     </div>
                     <div style={{ display:'flex', gap:4, alignItems:'center', marginTop:3 }}>
-                      <span style={{ fontSize:10, color:'#9ca3af', width:50, flexShrink:0 }}>Real</span>
-                      <div style={{ flex:1, height:7, background:'#f1f5f9', borderRadius:4, overflow:'hidden' }}>
+                      <span style={{ fontSize:10, color:'#767676', width:50, flexShrink:0 }}>Real</span>
+                      <div style={{ flex:1, height:7, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
                         <div style={{ height:'100%', borderRadius:4, transition:'width 0.5s', width:`${Math.min(100,pct)}%`, background:barColor(pct, cat.tipo==='gasto') }}/>
                       </div>
                       <span style={{ fontSize:11, fontWeight:500, width:36, textAlign:'right', color:barColor(pct, cat.tipo==='gasto') }}>{pct}%</span>
@@ -566,9 +566,9 @@ export default function PresupuestoPage() {
 }
 
 // ── Estilos ────────────────────────────────────────────────────
-const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff' }
+const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }
 const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
-const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'8px 16px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#111827', width:'100%' }
-const lbl: React.CSSProperties = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
-const inp: React.CSSProperties = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }
-const th: React.CSSProperties  = { textAlign:'left', padding:'9px 8px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)', whiteSpace:'nowrap', fontSize:12 }
+const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'8px 16px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#F0EFEA', width:'100%' }
+const lbl: React.CSSProperties = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
+const inp: React.CSSProperties = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA', fontFamily:'DM Sans, sans-serif' }
+const th: React.CSSProperties  = { textAlign:'left', padding:'9px 8px', fontWeight:500, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)', whiteSpace:'nowrap', fontSize:12 }

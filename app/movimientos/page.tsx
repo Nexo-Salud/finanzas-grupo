@@ -303,32 +303,32 @@ export default function MovimientosPage() {
   }
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length>0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>🔒 Vista restringida</div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{userEmail}</div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
             🚪 Cerrar sesión
           </button>
@@ -337,10 +337,10 @@ export default function MovimientosPage() {
 
       <div className="app-content" style={{ marginLeft:220 }}>
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Movimientos</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Supabase</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Supabase</span>}
           </div>
           <div style={{ display:'flex', gap:8 }}>
             <select value={empresaFiltro} onChange={e=>setEmpresaFiltro(e.target.value)} style={sel}>
@@ -354,19 +354,19 @@ export default function MovimientosPage() {
 
         <div className="app-main" style={{ padding:'24px 28px' }}>
           {error && (
-            <div style={{ background:'#FCEBEB', border:'1px solid #F09595', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#791F1F', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
+            <div style={{ background:'rgba(226,75,74,0.16)', border:'1px solid rgba(226,75,74,0.22)', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#E24B4A', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
               <span>⚠️ {error}</span>
-              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#791F1F' }}>✕</button>
+              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#E24B4A' }}>✕</button>
             </div>
           )}
 
           {/* Filtro período */}
-          <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'14px 18px', marginBottom:20 }}>
+          <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'14px 18px', marginBottom:20 }}>
             <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-              <span style={{ fontSize:12, fontWeight:600, color:'#6b7280' }}>📅 Período:</span>
+              <span style={{ fontSize:12, fontWeight:600, color:'#9A9A9A' }}>📅 Período:</span>
               <div style={{ display:'flex', gap:4 }}>
                 {([{k:'mes',l:'Por mes'},{k:'rango',l:'Rango'},{k:'todo',l:'Todo'}] as const).map(p=>(
-                  <button key={p.k} onClick={()=>setPeriodoTipo(p.k)} style={{ padding:'4px 10px', borderRadius:6, fontSize:12, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:periodoTipo===p.k?'#B8912E':'#fff', color:periodoTipo===p.k?'#fff':'#6b7280' }}>
+                  <button key={p.k} onClick={()=>setPeriodoTipo(p.k)} style={{ padding:'4px 10px', borderRadius:6, fontSize:12, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:periodoTipo===p.k?'#B8912E':'#161616', color:periodoTipo===p.k?'#fff':'#9A9A9A' }}>
                     {p.l}
                   </button>
                 ))}
@@ -381,7 +381,7 @@ export default function MovimientosPage() {
                   </select>
                   <div style={{ display:'flex', gap:4, marginLeft:'auto', flexWrap:'wrap' }}>
                     {['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'].map((m,i)=>(
-                      <button key={i} onClick={()=>{ setMesSelec(i+1); setAnioSelec(2026) }} style={{ padding:'3px 7px', borderRadius:5, fontSize:11, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:mesSelec===i+1&&anioSelec===2026?'#FBF1D9':'#fff', color:mesSelec===i+1&&anioSelec===2026?'#B8912E':'#9ca3af', fontWeight:mesSelec===i+1&&anioSelec===2026?600:400 }}>
+                      <button key={i} onClick={()=>{ setMesSelec(i+1); setAnioSelec(2026) }} style={{ padding:'3px 7px', borderRadius:5, fontSize:11, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:mesSelec===i+1&&anioSelec===2026?'rgba(184,145,46,0.16)':'#161616', color:mesSelec===i+1&&anioSelec===2026?'#B8912E':'#767676', fontWeight:mesSelec===i+1&&anioSelec===2026?600:400 }}>
                         {m}
                       </button>
                     ))}
@@ -391,7 +391,7 @@ export default function MovimientosPage() {
               {periodoTipo==='rango' && (
                 <div style={{ display:'flex', gap:6, alignItems:'center' }}>
                   <input type="date" value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} style={{ ...sel, padding:'5px 8px' }}/>
-                  <span style={{ fontSize:12, color:'#6b7280' }}>hasta</span>
+                  <span style={{ fontSize:12, color:'#9A9A9A' }}>hasta</span>
                   <input type="date" value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} style={{ ...sel, padding:'5px 8px' }}/>
                 </div>
               )}
@@ -401,10 +401,10 @@ export default function MovimientosPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:20 }}>
             {[
-              { label:'Ingresos', value:fmtM(totalIngresos), sub:labelPeriodo(), color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Gastos',   value:fmtM(totalGastos),   sub:labelPeriodo(), color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad', value:fmtM(utilidad),      sub:`Margen ${margen}%`, color:utilidad>=0?'#B8912E':'#E24B4A', bg:'#FBF1D9' },
-              { label:'Registros',value:scope.length.toString(), sub:`${scope.filter(m=>!m.conciliado).length} pendientes`, color:'#BA7517', bg:'#FAEEDA' },
+              { label:'Ingresos', value:fmtM(totalIngresos), sub:labelPeriodo(), color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+              { label:'Gastos',   value:fmtM(totalGastos),   sub:labelPeriodo(), color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+              { label:'Utilidad', value:fmtM(utilidad),      sub:`Margen ${margen}%`, color:utilidad>=0?'#B8912E':'#E24B4A', bg:'rgba(184,145,46,0.16)' },
+              { label:'Registros',value:scope.length.toString(), sub:`${scope.filter(m=>!m.conciliado).length} pendientes`, color:'#BA7517', bg:'rgba(186,117,23,0.18)' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -416,12 +416,12 @@ export default function MovimientosPage() {
 
           {/* Import CSV */}
           {showImport && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
                 <div style={{ fontSize:14, fontWeight:600 }}>📥 Importar CSV</div>
-                <button onClick={()=>{ setShowImport(false); setCsvPreview([]) }} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:18, color:'#9ca3af' }}>✕</button>
+                <button onClick={()=>{ setShowImport(false); setCsvPreview([]) }} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:18, color:'#767676' }}>✕</button>
               </div>
-              <div style={{ background:'#FBF1D9', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#B8912E', marginBottom:12 }}>
+              <div style={{ background:'rgba(184,145,46,0.16)', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#B8912E', marginBottom:12 }}>
                 Columnas: <strong>tipo</strong> (ingreso/gasto), <strong>descripcion</strong>, <strong>monto</strong>, <strong>fecha</strong> (AAAA-MM-DD)
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
@@ -435,12 +435,12 @@ export default function MovimientosPage() {
                 </div>
               </div>
               <input ref={fileRef} type="file" accept=".csv" onChange={handleArchivo}
-                style={{ display:'block', fontSize:13, padding:8, border:'1px dashed #d1d5db', borderRadius:8, width:'100%', background:'#fafafa', cursor:'pointer', marginBottom:10 }}/>
-              {csvError && <div style={{ background:'#FAEEDA', borderRadius:8, padding:'6px 10px', fontSize:12, color:'#633806', marginBottom:10 }}>⚠️ {csvError}</div>}
+                style={{ display:'block', fontSize:13, padding:8, border:'1px dashed #4A4A4A', borderRadius:8, width:'100%', background:'#1A1A1A', cursor:'pointer', marginBottom:10 }}/>
+              {csvError && <div style={{ background:'rgba(186,117,23,0.18)', borderRadius:8, padding:'6px 10px', fontSize:12, color:'#BA7517', marginBottom:10 }}>⚠️ {csvError}</div>}
               {csvPreview.length>0 && (
                 <>
                   <div style={{ fontSize:13, fontWeight:500, marginBottom:8 }}>{csvPreview.length} movimientos listos</div>
-                  {importResult && <div style={{ background:importResult.startsWith('✅')?'#EAF3DE':'#FCEBEB', borderRadius:8, padding:'7px 10px', fontSize:13, color:importResult.startsWith('✅')?'#27500A':'#791F1F', marginBottom:10 }}>{importResult}</div>}
+                  {importResult && <div style={{ background:importResult.startsWith('✅')?'rgba(29,158,117,0.14)':'rgba(226,75,74,0.16)', borderRadius:8, padding:'7px 10px', fontSize:13, color:importResult.startsWith('✅')?'#1D9E75':'#E24B4A', marginBottom:10 }}>{importResult}</div>}
                   <button onClick={importarCSV} disabled={importando} style={{ ...btnP, width:'100%', justifyContent:'center', opacity:importando?0.7:1 }}>
                     {importando?'⏳ Importando...': `✅ Importar ${csvPreview.length} movimientos`}
                   </button>
@@ -451,7 +451,7 @@ export default function MovimientosPage() {
 
           {/* Form */}
           {showForm && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
               <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>{editId?'Editar movimiento':'Nuevo movimiento'}</div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                 <div><label style={lbl}>Empresa</label>
@@ -486,7 +486,7 @@ export default function MovimientosPage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
             {([{k:'lista',l:'≡ Lista'},{k:'mensual',l:'📅 Resumen mensual'},{k:'categorias',l:'⬛ Por categoría'}] as const).map(t=>(
-              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+              <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
               </button>
             ))}
@@ -500,28 +500,28 @@ export default function MovimientosPage() {
             )}
           </div>
 
-          {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#9ca3af' }}>⏳ Cargando...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#767676' }}>⏳ Cargando...</div>}
 
           {/* Lista */}
           {!cargando && tab==='lista' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
               {lista.length===0 ? (
-                <div style={{ textAlign:'center', padding:'3rem', color:'#9ca3af', fontSize:14 }}>
+                <div style={{ textAlign:'center', padding:'3rem', color:'#767676', fontSize:14 }}>
                   {movimientos.length===0 ? '📭 Sin movimientos — agrega uno o importa un CSV' : 'Sin resultados'}
                 </div>
               ) : (
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
                   <thead>
-                    <tr style={{ background:'#fafafa' }}>
+                    <tr style={{ background:'#1A1A1A' }}>
                       {['Fecha','Empresa','Descripción','Categoría','Monto','Estado',''].map(h=>(
-                        <th key={h} style={{ textAlign:'left', padding:'10px 14px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)', whiteSpace:'nowrap' as const }}>{h}</th>
+                        <th key={h} style={{ textAlign:'left', padding:'10px 14px', fontWeight:500, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)', whiteSpace:'nowrap' as const }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {lista.map((m,i)=>(
-                      <tr key={m.id} style={{ borderBottom:i<lista.length-1?'1px solid rgba(0,0,0,0.06)':'none' }}>
-                        <td style={{ padding:'10px 14px', color:'#6b7280', whiteSpace:'nowrap' as const }}>{m.fecha}</td>
+                      <tr key={m.id} style={{ borderBottom:i<lista.length-1?'1px solid rgba(255,255,255,0.06)':'none' }}>
+                        <td style={{ padding:'10px 14px', color:'#9A9A9A', whiteSpace:'nowrap' as const }}>{m.fecha}</td>
                         <td style={{ padding:'10px 14px' }}>
                           <span style={{ display:'inline-flex', alignItems:'center', gap:5 }}>
                             <span style={{ width:8, height:8, borderRadius:'50%', background:empColor(m.empresa_id), flexShrink:0 }}/>
@@ -529,15 +529,15 @@ export default function MovimientosPage() {
                           </span>
                         </td>
                         <td style={{ padding:'10px 14px' }}>
-                          <div style={{ fontWeight:500, color:'#111827' }}>{m.descripcion}</div>
-                          {m.referencia && <div style={{ fontSize:11, color:'#9ca3af' }}>{m.referencia}</div>}
+                          <div style={{ fontWeight:500, color:'#F0EFEA' }}>{m.descripcion}</div>
+                          {m.referencia && <div style={{ fontSize:11, color:'#767676' }}>{m.referencia}</div>}
                         </td>
-                        <td style={{ padding:'10px 14px', color:'#6b7280', fontSize:12 }}>{m.categoria}</td>
+                        <td style={{ padding:'10px 14px', color:'#9A9A9A', fontSize:12 }}>{m.categoria}</td>
                         <td style={{ padding:'10px 14px', fontWeight:600, color:m.tipo==='ingreso'?'#1D9E75':'#E24B4A', whiteSpace:'nowrap' as const }}>
                           {m.tipo==='ingreso'?'+':'-'}{fmtCLP(m.monto)}
                         </td>
                         <td style={{ padding:'10px 14px' }}>
-                          <button onClick={()=>handleConciliar(m.id,m.conciliado)} style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, cursor:'pointer', border:'none', background:m.conciliado?'#E1F5EE':'#FAEEDA', color:m.conciliado?'#085041':'#633806' }}>
+                          <button onClick={()=>handleConciliar(m.id,m.conciliado)} style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, cursor:'pointer', border:'none', background:m.conciliado?'rgba(29,158,117,0.16)':'rgba(186,117,23,0.18)', color:m.conciliado?'#1D9E75':'#BA7517' }}>
                             {m.conciliado?'✓ OK':'⏳ Pendiente'}
                           </button>
                         </td>
@@ -551,9 +551,9 @@ export default function MovimientosPage() {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr style={{ background:'#f8f9fb', borderTop:'1px solid rgba(0,0,0,0.08)' }}>
-                      <td colSpan={4} style={{ padding:'10px 14px', fontSize:12, color:'#6b7280', fontWeight:500 }}>{lista.length} movimientos</td>
-                      <td style={{ padding:'10px 14px', fontWeight:700, fontSize:13, color:'#111827' }}>
+                    <tr style={{ background:'#0B0B0C', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+                      <td colSpan={4} style={{ padding:'10px 14px', fontSize:12, color:'#9A9A9A', fontWeight:500 }}>{lista.length} movimientos</td>
+                      <td style={{ padding:'10px 14px', fontWeight:700, fontSize:13, color:'#F0EFEA' }}>
                         {fmtCLP(lista.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0)-lista.filter(m=>m.tipo==='gasto').reduce((a,m)=>a+m.monto,0))}
                       </td>
                       <td colSpan={2}/>
@@ -567,8 +567,8 @@ export default function MovimientosPage() {
           {/* Resumen mensual */}
           {!cargando && tab==='mensual' && (
             <>
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:14 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos por mes</div>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:14 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos por mes</div>
                 <div style={{ display:'flex', alignItems:'flex-end', gap:6, height:140, overflowX:'auto' }}>
                   {mensual.map(([key,val])=>{
                     const [y,m] = key.split('-')
@@ -584,18 +584,18 @@ export default function MovimientosPage() {
                           <div style={{ flex:1, height:Math.max(hI,2), background:'#1D9E75', borderRadius:'2px 2px 0 0' }}/>
                           <div style={{ flex:1, height:Math.max(hG,2), background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
                         </div>
-                        <div style={{ fontSize:9, color:'#9ca3af', textAlign:'center' }}>{MESES_NOMBRE[parseInt(m)-1].slice(0,3)} {y.slice(2)}</div>
+                        <div style={{ fontSize:9, color:'#767676', textAlign:'center' }}>{MESES_NOMBRE[parseInt(m)-1].slice(0,3)} {y.slice(2)}</div>
                       </div>
                     )
                   })}
                 </div>
               </div>
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, overflow:'hidden' }}>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
                   <thead>
-                    <tr style={{ background:'#fafafa' }}>
+                    <tr style={{ background:'#1A1A1A' }}>
                       {['Mes','Ingresos','Gastos','Utilidad','Margen'].map(h=>(
-                        <th key={h} style={{ textAlign:'left', padding:'10px 14px', fontWeight:500, color:'#6b7280', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>{h}</th>
+                        <th key={h} style={{ textAlign:'left', padding:'10px 14px', fontWeight:500, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -605,7 +605,7 @@ export default function MovimientosPage() {
                       const neto = val.ing-val.gas
                       const mg = val.ing>0 ? Math.round(neto/val.ing*100) : 0
                       return (
-                        <tr key={key} style={{ borderBottom:i<mensual.length-1?'1px solid rgba(0,0,0,0.06)':'none', cursor:'pointer' }}
+                        <tr key={key} style={{ borderBottom:i<mensual.length-1?'1px solid rgba(255,255,255,0.06)':'none', cursor:'pointer' }}
                           onClick={()=>{ setMesSelec(parseInt(m)); setAnioSelec(parseInt(y)); setPeriodoTipo('mes'); setTab('lista') }}>
                           <td style={{ padding:'10px 14px', fontWeight:500 }}>{MESES_NOMBRE[parseInt(m)-1]} {y}</td>
                           <td style={{ padding:'10px 14px', color:'#1D9E75', fontWeight:600 }}>{fmtCLP(val.ing)}</td>
@@ -619,7 +619,7 @@ export default function MovimientosPage() {
                     })}
                   </tbody>
                   <tfoot>
-                    <tr style={{ background:'#f8f9fb', borderTop:'2px solid rgba(0,0,0,0.08)' }}>
+                    <tr style={{ background:'#0B0B0C', borderTop:'2px solid rgba(255,255,255,0.08)' }}>
                       <td style={{ padding:'10px 14px', fontWeight:700 }}>Total</td>
                       <td style={{ padding:'10px 14px', fontWeight:700, color:'#1D9E75' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.ing,0))}</td>
                       <td style={{ padding:'10px 14px', fontWeight:700, color:'#E24B4A' }}>{fmtCLP(mensual.reduce((a,[,v])=>a+v.gas,0))}</td>
@@ -628,30 +628,30 @@ export default function MovimientosPage() {
                     </tr>
                   </tfoot>
                 </table>
-                <div style={{ padding:'8px 14px', fontSize:11, color:'#9ca3af', background:'#f8fafc' }}>💡 Clic en un mes para ver su detalle</div>
+                <div style={{ padding:'8px 14px', fontSize:11, color:'#767676', background:'#141414' }}>💡 Clic en un mes para ver su detalle</div>
               </div>
             </>
           )}
 
           {/* Por categoría */}
           {!cargando && tab==='categorias' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>
                 Desglose por categoría — {labelPeriodo()}
               </div>
               {cats.length===0 ? (
-                <div style={{ textAlign:'center', padding:'2rem', color:'#9ca3af' }}>Sin datos para este período</div>
+                <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>Sin datos para este período</div>
               ) : cats.map(([cat,val])=>(
                 <div key={cat} style={{ marginBottom:14 }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <span style={{ fontSize:11, padding:'1px 7px', borderRadius:999, fontWeight:500, background:val.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', color:val.tipo==='ingreso'?'#085041':'#791F1F' }}>{val.tipo}</span>
-                      <span style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{cat}</span>
-                      <span style={{ fontSize:11, color:'#9ca3af' }}>{val.count} mov.</span>
+                      <span style={{ fontSize:11, padding:'1px 7px', borderRadius:999, fontWeight:500, background:val.tipo==='ingreso'?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', color:val.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{val.tipo}</span>
+                      <span style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{cat}</span>
+                      <span style={{ fontSize:11, color:'#767676' }}>{val.count} mov.</span>
                     </div>
                     <span style={{ fontSize:14, fontWeight:600, color:val.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtCLP(val.total)}</span>
                   </div>
-                  <div style={{ height:7, background:'#f1f5f9', borderRadius:4, overflow:'hidden' }}>
+                  <div style={{ height:7, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
                     <div style={{ height:'100%', width:`${Math.round(val.total/maxCat*100)}%`, background:val.tipo==='ingreso'?'#1D9E75':'#E24B4A', borderRadius:4, transition:'width 0.4s' }}/>
                   </div>
                 </div>
@@ -664,9 +664,9 @@ export default function MovimientosPage() {
   )
 }
 
-const sel: React.CSSProperties     = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
+const sel: React.CSSProperties     = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:8, background:'#161616' }
 const btnP: React.CSSProperties    = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
-const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
-const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
-const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }
+const btnSec: React.CSSProperties  = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#C9C9C9', width:'100%' }
+const lbl: React.CSSProperties     = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
+const inp: React.CSSProperties     = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA', fontFamily:'DM Sans, sans-serif' }
 const iconBtn: React.CSSProperties = { background:'transparent', border:'none', cursor:'pointer', padding:'4px 6px', borderRadius:6, fontSize:14 }

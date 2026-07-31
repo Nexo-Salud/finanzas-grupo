@@ -237,8 +237,8 @@ export default function EstadosPage() {
   function imprimir() { window.print() }
 
   const thStyle: React.CSSProperties = { padding:'5px 6px', textAlign:'center', fontWeight:600, fontSize:10, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A', whiteSpace:'nowrap' as const }
-  const tdStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid #e5e7eb', textAlign:'right', whiteSpace:'nowrap' as const }
-  const tdNomStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid #e5e7eb', textAlign:'left' }
+  const tdStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid rgba(255,255,255,0.12)', textAlign:'right', whiteSpace:'nowrap' as const }
+  const tdNomStyle: React.CSSProperties = { padding:'4px 6px', fontSize:11, border:'1px solid rgba(255,255,255,0.12)', textAlign:'left' }
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -274,18 +274,20 @@ export default function EstadosPage() {
   }
 
   if (!authListo) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#9ca3af' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
       ⏳ Verificando acceso...
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'Arial, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'Arial, sans-serif' }}>
       <style>{`
         @media print {
           .no-print { display:none!important; }
-          body { background:white!important; font-size:10px; }
+          body { background:#fff!important; font-size:10px; }
           .print-full { margin:0!important; padding:10px!important; }
+          * { background:#fff!important; color:#000!important; box-shadow:none!important; }
+          table, th, td { border-color:#999!important; }
         }
       `}</style>
 
@@ -293,23 +295,23 @@ export default function EstadosPage() {
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="no-print app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
 
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>
               🔒 Vista restringida
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -320,10 +322,10 @@ export default function EstadosPage() {
 
       <div className="app-content" style={{ marginLeft:220 }}>
         {/* Header */}
-        <div className="no-print app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="no-print app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Estados financieros</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Datos reales</span>}
           </div>
           <div style={{ display:'flex', gap:8, alignItems:'center' }}>
             <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={sel}>
@@ -343,7 +345,7 @@ export default function EstadosPage() {
         </div>
 
         <div className="print-full app-main" style={{ padding:'24px 28px' }}>
-          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>⏳ Cargando datos...</div>}
+          {cargando && <div style={{ textAlign:'center', padding:'4rem', color:'#767676' }}>⏳ Cargando datos...</div>}
 
           {!cargando && (
             <>
@@ -356,7 +358,7 @@ export default function EstadosPage() {
                   {k:'compras',    l:'📥 Libro de compras'},
                   {k:'ventas',     l:'📤 Libro de ventas'},
                 ] as const).map(t=>(
-                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.k?'#FBF1D9':'#fff', color:tab===t.k?'#B8912E':'#6b7280', fontWeight:tab===t.k?500:400 }}>
+                  <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>
                     {t.l}
                   </button>
                 ))}
@@ -364,13 +366,13 @@ export default function EstadosPage() {
 
               {/* ── BALANCE 8 COLUMNAS ── */}
               {tab==='balance' && (
-                <div style={{ background:'#fff', borderRadius:14, padding:24, overflowX:'auto' }}>
+                <div style={{ background:'#161616', borderRadius:14, padding:24, overflowX:'auto' }}>
                   {/* Encabezado formal */}
-                  <div style={{ textAlign:'center', marginBottom:16, borderBottom:'2px solid #1A1A1A', paddingBottom:12 }}>
-                    <div style={{ fontSize:14, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.1em' }}>
+                  <div style={{ textAlign:'center', marginBottom:16, borderBottom:'2px solid #B8912E', paddingBottom:12 }}>
+                    <div style={{ fontSize:14, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.1em' }}>
                       B A L A N C E &nbsp; G E N E R A L
                     </div>
-                    <div style={{ fontSize:11, color:'#374151', marginTop:4 }}>
+                    <div style={{ fontSize:11, color:'#C9C9C9', marginTop:4 }}>
                       EJERCICIO COMPRENDIDO ENTRE EL 01 DE ENERO DE {anio} AL 31 DE DICIEMBRE DE {anio}
                     </div>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4, marginTop:10, fontSize:11, textAlign:'left', maxWidth:600, margin:'10px auto 0' }}>
@@ -407,8 +409,8 @@ export default function EstadosPage() {
                       </thead>
                       <tbody>
                         {cuentas.map((c,i)=>(
-                          <tr key={c.num} style={{ background:i%2===0?'#f8fafc':'#fff' }}>
-                            <td style={{ ...tdStyle, textAlign:'center', color:'#6b7280' }}>{c.num}</td>
+                          <tr key={c.num} style={{ background:i%2===0?'#141414':'#161616' }}>
+                            <td style={{ ...tdStyle, textAlign:'center', color:'#9A9A9A' }}>{c.num}</td>
                             <td style={{ ...tdNomStyle, fontWeight:500 }}>{c.nombre}</td>
                             <td style={tdStyle}>{fmtCLP(c.debe)}</td>
                             <td style={tdStyle}>{fmtCLP(c.haber)}</td>
@@ -435,7 +437,7 @@ export default function EstadosPage() {
                           <td style={{ ...tdStyle, fontWeight:700, color:'#fff', background:'#1A1A1A', border:'1px solid #3A3A3A' }}>{fmtCLP(sumaGanancias)}</td>
                         </tr>
                         {/* Fila UTILIDAD/PÉRDIDA */}
-                        <tr style={{ background:'#FBF1D9' }}>
+                        <tr style={{ background:'rgba(184,145,46,0.16)' }}>
                           <td colSpan={2} style={{ ...tdNomStyle, fontWeight:700, fontSize:11 }}>
                             {esUtilidad ? 'UTILIDAD DEL EJERCICIO' : 'PÉRDIDA DEL EJERCICIO'}
                           </td>
@@ -471,20 +473,20 @@ export default function EstadosPage() {
                   </div>
 
                   {/* Firma */}
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:40, marginTop:40, paddingTop:20, borderTop:'1px solid #e5e7eb' }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:40, marginTop:40, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.12)' }}>
                     <div style={{ textAlign:'center' }}>
-                      <div style={{ borderTop:'1px solid #374151', paddingTop:8, fontSize:11, color:'#374151' }}>
+                      <div style={{ borderTop:'1px solid #C9C9C9', paddingTop:8, fontSize:11, color:'#C9C9C9' }}>
                         FIRMA DEL CONTADOR
                       </div>
-                      <div style={{ fontSize:10, color:'#9ca3af', marginTop:4 }}>
+                      <div style={{ fontSize:10, color:'#767676', marginTop:4 }}>
                         Fecha: Antofagasta, {anio}
                       </div>
                     </div>
                     <div style={{ textAlign:'center' }}>
-                      <div style={{ borderTop:'1px solid #374151', paddingTop:8, fontSize:11, color:'#374151' }}>
+                      <div style={{ borderTop:'1px solid #C9C9C9', paddingTop:8, fontSize:11, color:'#C9C9C9' }}>
                         FIRMA CONTRIBUYENTE
                       </div>
-                      <div style={{ fontSize:10, color:'#6b7280', marginTop:4, lineHeight:1.5 }}>
+                      <div style={{ fontSize:10, color:'#9A9A9A', marginTop:4, lineHeight:1.5 }}>
                         Declaro que todos los asientos corresponden a datos fidedignos.
                       </div>
                     </div>
@@ -493,11 +495,11 @@ export default function EstadosPage() {
                   {/* Resumen rápido */}
                   <div className="no-print" style={{ marginTop:20, display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))', gap:8 }}>
                     {[
-                      { l:'Total activos',   v:fmtM(sumaActivo),    c:'#1D9E75', bg:'#E1F5EE' },
-                      { l:'Total pasivos',   v:fmtM(sumaPasivo),    c:'#E24B4A', bg:'#FCEBEB' },
-                      { l:esUtilidad?'Utilidad':'Pérdida', v:fmtM(Math.abs(utilidad)), c:esUtilidad?'#B8912E':'#E24B4A', bg:'#FBF1D9' },
-                      { l:'Total pérdidas',  v:fmtM(sumaPerdidas),  c:'#D85A30', bg:'#FAEEDA' },
-                      { l:'Total ganancias', v:fmtM(sumaGanancias), c:'#B8912E', bg:'#FBF1D9'  },
+                      { l:'Total activos',   v:fmtM(sumaActivo),    c:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+                      { l:'Total pasivos',   v:fmtM(sumaPasivo),    c:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+                      { l:esUtilidad?'Utilidad':'Pérdida', v:fmtM(Math.abs(utilidad)), c:esUtilidad?'#B8912E':'#E24B4A', bg:'rgba(184,145,46,0.16)' },
+                      { l:'Total pérdidas',  v:fmtM(sumaPerdidas),  c:'#D85A30', bg:'rgba(186,117,23,0.18)' },
+                      { l:'Total ganancias', v:fmtM(sumaGanancias), c:'#B8912E', bg:'rgba(184,145,46,0.16)'  },
                     ].map(m=>(
                       <div key={m.l} style={{ background:m.bg, borderRadius:10, padding:'10px 12px' }}>
                         <div style={{ fontSize:10, color:m.c, marginBottom:2, opacity:0.8 }}>{m.l}</div>
@@ -510,42 +512,42 @@ export default function EstadosPage() {
 
               {/* ── ESTADO DE RESULTADOS ── */}
               {tab==='resultados' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28, maxWidth:720, margin:'0 auto' }}>
-                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
-                    <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.08em' }}>Estado de resultados</div>
-                    <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {MESES[mes-1]} {anio}</div>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:28, maxWidth:720, margin:'0 auto' }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
+                    <div style={{ fontSize:16, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.08em' }}>Estado de resultados</div>
+                    <div style={{ fontSize:12, color:'#9A9A9A', marginTop:3 }}>{razonSoc} · {MESES[mes-1]} {anio}</div>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Ingresos operacionales</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#F0EFEA', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid rgba(255,255,255,0.12)' }}>Ingresos operacionales</div>
                     {Object.entries(catIng).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>(
-                      <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
-                        <span style={{ color:'#374151' }}>{cat}</span>
+                      <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #1F1F1F' }}>
+                        <span style={{ color:'#C9C9C9' }}>{cat}</span>
                         <span style={{ color:'#1D9E75', fontWeight:500 }}>{val.toLocaleString('es-CL')}</span>
                       </div>
                     ))}
-                    <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', fontWeight:700, borderTop:'1.5px solid #e5e7eb', marginTop:4 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', fontWeight:700, borderTop:'1.5px solid rgba(255,255,255,0.12)', marginTop:4 }}>
                       <span>Total ingresos</span>
                       <span style={{ color:'#1D9E75' }}>{ingMes.toLocaleString('es-CL')}</span>
                     </div>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid #e5e7eb' }}>Gastos operacionales</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#F0EFEA', textTransform:'uppercase', marginBottom:8, paddingBottom:4, borderBottom:'1px solid rgba(255,255,255,0.12)' }}>Gastos operacionales</div>
                     {Object.entries(catGas).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>(
-                      <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
-                        <span style={{ color:'#374151' }}>{cat}</span>
+                      <div key={cat} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid #1F1F1F' }}>
+                        <span style={{ color:'#C9C9C9' }}>{cat}</span>
                         <span style={{ color:'#E24B4A' }}>({val.toLocaleString('es-CL')})</span>
                       </div>
                     ))}
-                    <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', fontWeight:700, borderTop:'1.5px solid #e5e7eb', marginTop:4 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', fontWeight:700, borderTop:'1.5px solid rgba(255,255,255,0.12)', marginTop:4 }}>
                       <span>Total gastos</span>
                       <span style={{ color:'#E24B4A' }}>({gasMes.toLocaleString('es-CL')})</span>
                     </div>
                   </div>
-                  <div style={{ background:utilMes>=0?'#E1F5EE':'#FCEBEB', borderRadius:10, padding:'14px 16px' }}>
+                  <div style={{ background:utilMes>=0?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', borderRadius:10, padding:'14px 16px' }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                       <div>
                         <div style={{ fontSize:14, fontWeight:700 }}>{utilMes>=0?'Utilidad':'Pérdida'} del período</div>
-                        <div style={{ fontSize:12, color:'#6b7280', marginTop:2 }}>Margen: {mgMes}%</div>
+                        <div style={{ fontSize:12, color:'#9A9A9A', marginTop:2 }}>Margen: {mgMes}%</div>
                       </div>
                       <div style={{ fontSize:22, fontWeight:700, color:utilMes>=0?'#1D9E75':'#E24B4A' }}>${Math.abs(utilMes).toLocaleString('es-CL')}</div>
                     </div>
@@ -555,10 +557,10 @@ export default function EstadosPage() {
 
               {/* ── FLUJO DE CAJA ── */}
               {tab==='flujo' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
-                    <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase', letterSpacing:'0.08em' }}>Flujo de caja</div>
-                    <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · Histórico completo</div>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:28 }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, textAlign:'center' }}>
+                    <div style={{ fontSize:16, fontWeight:700, color:'#B8912E', textTransform:'uppercase', letterSpacing:'0.08em' }}>Flujo de caja</div>
+                    <div style={{ fontSize:12, color:'#9A9A9A', marginTop:3 }}>{razonSoc} · Histórico completo</div>
                   </div>
                   <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
                     <thead>
@@ -570,7 +572,7 @@ export default function EstadosPage() {
                     </thead>
                     <tbody>
                       {flujoConAcum.map((f,i)=>(
-                        <tr key={f.key} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
+                        <tr key={f.key} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
                           <td style={{ ...tdNomStyle }}>{f.label}</td>
                           <td style={{ ...tdStyle, color:'#1D9E75' }}>{f.ing.toLocaleString('es-CL')}</td>
                           <td style={{ ...tdStyle, color:'#E24B4A' }}>({f.gas.toLocaleString('es-CL')})</td>
@@ -594,19 +596,19 @@ export default function EstadosPage() {
 
               {/* ── LIBRO DE COMPRAS ── */}
               {tab==='compras' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:28 }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
-                      <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase' }}>Libro de compras</div>
-                      <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {libroCompras.length} documentos · Año {anio}</div>
+                      <div style={{ fontSize:16, fontWeight:700, color:'#B8912E', textTransform:'uppercase' }}>Libro de compras</div>
+                      <div style={{ fontSize:12, color:'#9A9A9A', marginTop:3 }}>{razonSoc} · {libroCompras.length} documentos · Año {anio}</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
-                      <div style={{ fontSize:11, color:'#6b7280' }}>IVA crédito fiscal</div>
+                      <div style={{ fontSize:11, color:'#9A9A9A' }}>IVA crédito fiscal</div>
                       <div style={{ fontSize:18, fontWeight:700, color:'#1D9E75' }}>${totalIvaC.toLocaleString('es-CL')}</div>
                     </div>
                   </div>
                   {libroCompras.length===0 ? (
-                    <div style={{ textAlign:'center', padding:'2rem', color:'#9ca3af' }}>Sin facturas recibidas para {anio}</div>
+                    <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>Sin facturas recibidas para {anio}</div>
                   ) : (
                     <div style={{ overflowX:'auto' }}>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11, minWidth:700 }}>
@@ -619,17 +621,17 @@ export default function EstadosPage() {
                         </thead>
                         <tbody>
                           {libroCompras.map((d,i)=>(
-                            <tr key={d.id} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
-                              <td style={{ ...tdStyle, textAlign:'center', color:'#9ca3af' }}>{i+1}</td>
+                            <tr key={d.id} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
+                              <td style={{ ...tdStyle, textAlign:'center', color:'#767676' }}>{i+1}</td>
                               <td style={{ ...tdStyle }}>{d.fecha}</td>
                               <td style={{ ...tdNomStyle, fontWeight:500 }}>{d.folio}</td>
                               <td style={{ ...tdNomStyle }}>{d.contraparte}</td>
-                              <td style={{ ...tdStyle, fontSize:10, color:'#6b7280' }}>{d.rut_contraparte}</td>
+                              <td style={{ ...tdStyle, fontSize:10, color:'#9A9A9A' }}>{d.rut_contraparte}</td>
                               <td style={{ ...tdStyle }}>{d.neto.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle, color:'#B8912E' }}>{d.iva.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle, fontWeight:600 }}>{d.total.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle }}>
-                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.estado==='pagada'?'#E1F5EE':d.estado==='vencida'?'#FCEBEB':'#FAEEDA', color:d.estado==='pagada'?'#085041':d.estado==='vencida'?'#791F1F':'#633806' }}>
+                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.estado==='pagada'?'rgba(29,158,117,0.16)':d.estado==='vencida'?'rgba(226,75,74,0.16)':'rgba(186,117,23,0.18)', color:d.estado==='pagada'?'#1D9E75':d.estado==='vencida'?'#E24B4A':'#BA7517' }}>
                                   {d.estado}
                                 </span>
                               </td>
@@ -653,14 +655,14 @@ export default function EstadosPage() {
 
               {/* ── LIBRO DE VENTAS ── */}
               {tab==='ventas' && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:28 }}>
-                  <div style={{ borderBottom:'3px solid #1A1A1A', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:28 }}>
+                  <div style={{ borderBottom:'3px solid #B8912E', paddingBottom:14, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
                     <div>
-                      <div style={{ fontSize:16, fontWeight:700, color:'#1A1A1A', textTransform:'uppercase' }}>Libro de ventas</div>
-                      <div style={{ fontSize:12, color:'#6b7280', marginTop:3 }}>{razonSoc} · {libroVentas.length} documentos · Año {anio}</div>
+                      <div style={{ fontSize:16, fontWeight:700, color:'#B8912E', textTransform:'uppercase' }}>Libro de ventas</div>
+                      <div style={{ fontSize:12, color:'#9A9A9A', marginTop:3 }}>{razonSoc} · {libroVentas.length} documentos · Año {anio}</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
-                      <div style={{ fontSize:11, color:'#6b7280' }}>IVA débito fiscal</div>
+                      <div style={{ fontSize:11, color:'#9A9A9A' }}>IVA débito fiscal</div>
                       <div style={{ fontSize:18, fontWeight:700, color:'#E24B4A' }}>${totalIvaV.toLocaleString('es-CL')}</div>
                     </div>
                   </div>
@@ -670,14 +672,14 @@ export default function EstadosPage() {
                       { l:'IVA crédito', v:totalIvaC, c:'#1D9E75' },
                       { l:'IVA neto F29',v:ivaNeto,   c:ivaNeto>0?'#E24B4A':'#1D9E75' },
                     ].map(k=>(
-                      <div key={k.l} style={{ background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8, padding:'10px', textAlign:'center' }}>
-                        <div style={{ fontSize:10, color:'#6b7280', marginBottom:3 }}>{k.l}</div>
+                      <div key={k.l} style={{ background:'#141414', border:'1px solid rgba(255,255,255,0.12)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+                        <div style={{ fontSize:10, color:'#9A9A9A', marginBottom:3 }}>{k.l}</div>
                         <div style={{ fontSize:14, fontWeight:700, color:k.c }}>${k.v.toLocaleString('es-CL')}</div>
                       </div>
                     ))}
                   </div>
                   {libroVentas.length===0 ? (
-                    <div style={{ textAlign:'center', padding:'2rem', color:'#9ca3af' }}>Sin facturas emitidas para {anio}</div>
+                    <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>Sin facturas emitidas para {anio}</div>
                   ) : (
                     <div style={{ overflowX:'auto' }}>
                       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11, minWidth:700 }}>
@@ -690,22 +692,22 @@ export default function EstadosPage() {
                         </thead>
                         <tbody>
                           {libroVentas.map((d,i)=>(
-                            <tr key={d.id} style={{ background:i%2===0?'#f8fafc':'#fff', borderBottom:'1px solid #e5e7eb' }}>
-                              <td style={{ ...tdStyle, textAlign:'center', color:'#9ca3af' }}>{i+1}</td>
+                            <tr key={d.id} style={{ background:i%2===0?'#141414':'#161616', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
+                              <td style={{ ...tdStyle, textAlign:'center', color:'#767676' }}>{i+1}</td>
                               <td style={{ ...tdStyle }}>{d.fecha}</td>
                               <td style={{ ...tdStyle, textAlign:'center' }}>
-                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.tipo==='FE'?'#FBF1D9':'#E1F5EE', color:d.tipo==='FE'?'#8A6D1F':'#085041', fontWeight:600 }}>
+                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.tipo==='FE'?'rgba(184,145,46,0.16)':'rgba(29,158,117,0.16)', color:d.tipo==='FE'?'#D8B24D':'#1D9E75', fontWeight:600 }}>
                                   {d.tipo==='FE'?'Factura':'Boleta'}
                                 </span>
                               </td>
                               <td style={{ ...tdNomStyle, fontWeight:500 }}>{d.folio}</td>
                               <td style={{ ...tdNomStyle }}>{d.contraparte}</td>
-                              <td style={{ ...tdStyle, fontSize:10, color:'#6b7280' }}>{d.rut_contraparte}</td>
+                              <td style={{ ...tdStyle, fontSize:10, color:'#9A9A9A' }}>{d.rut_contraparte}</td>
                               <td style={{ ...tdStyle }}>{d.neto.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle, color:'#E24B4A' }}>{d.iva.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle, fontWeight:600 }}>{d.total.toLocaleString('es-CL')}</td>
                               <td style={{ ...tdStyle }}>
-                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.estado==='pagada'?'#E1F5EE':d.estado==='vencida'?'#FCEBEB':'#FAEEDA', color:d.estado==='pagada'?'#085041':d.estado==='vencida'?'#791F1F':'#633806' }}>
+                                <span style={{ fontSize:10, padding:'1px 5px', borderRadius:999, background:d.estado==='pagada'?'rgba(29,158,117,0.16)':d.estado==='vencida'?'rgba(226,75,74,0.16)':'rgba(186,117,23,0.18)', color:d.estado==='pagada'?'#1D9E75':d.estado==='vencida'?'#E24B4A':'#BA7517' }}>
                                   {d.estado}
                                 </span>
                               </td>
@@ -734,5 +736,5 @@ export default function EstadosPage() {
   )
 }
 
-const sel: React.CSSProperties  = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }
-const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#1A1A1A', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
+const sel: React.CSSProperties  = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:8, background:'#161616' }
+const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }

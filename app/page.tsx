@@ -176,29 +176,29 @@ export default function DashboardPage() {
   const empNombre = (id: string) => empresas.find(e=>e.id===id)?.nombre_corto || id
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {NAV.map(item=>(
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
         {/* Usuario y logout */}
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:8, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:8, textAlign:'center' }}>
               🔒 Acceso restringido
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -210,18 +210,18 @@ export default function DashboardPage() {
       {/* Contenido */}
       <div className="app-content" style={{ marginLeft:220 }}>
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Dashboard</div>
-            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#E1F5EE', color:'#085041', fontWeight:500 }}>🟢 Datos reales</span>}
+            {!cargando && <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(29,158,117,0.16)', color:'#1D9E75', fontWeight:500 }}>🟢 Datos reales</span>}
             {!esAdmin && empresasPermitidas.length > 0 && (
-              <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'#FAEEDA', color:'#633806', fontWeight:500 }}>
+              <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(186,117,23,0.18)', color:'#BA7517', fontWeight:500 }}>
                 🔒 Vista restringida
               </span>
             )}
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:8, background:'#fff' }}>
+            <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={{ fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:8, background:'#161616' }}>
               <option value="all">{esAdmin || empresasPermitidas.length===0 ? 'Grupo completo' : 'Mis empresas'}</option>
               {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
@@ -232,11 +232,11 @@ export default function DashboardPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:12, marginBottom:20 }}>
             {[
-              { label:'Ingresos totales', value:fmtM(ingTotal),  delta:`Mes: ${fmtM(ingMes)}`,  color:'#1D9E75', bg:'#E1F5EE' },
-              { label:'Gastos totales',   value:fmtM(gasTotal),  delta:`Mes: ${fmtM(gasMes)}`,  color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Utilidad neta',    value:fmtM(utilidad),  delta:`Margen ${margen}%`,      color:'#B8912E', bg:'#FBF1D9' },
-              { label:'Resultado mes',    value:fmtM(utilMes),   delta:MESES_NOMBRE[mesActual-1]+' '+anioActual, color:utilMes>=0?'#1D9E75':'#E24B4A', bg:utilMes>=0?'#E1F5EE':'#FCEBEB' },
-              { label:'Movimientos',      value:scope.length.toString(), delta:'registrados', color:'#BA7517', bg:'#FAEEDA' },
+              { label:'Ingresos totales', value:fmtM(ingTotal),  delta:`Mes: ${fmtM(ingMes)}`,  color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
+              { label:'Gastos totales',   value:fmtM(gasTotal),  delta:`Mes: ${fmtM(gasMes)}`,  color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+              { label:'Utilidad neta',    value:fmtM(utilidad),  delta:`Margen ${margen}%`,      color:'#B8912E', bg:'rgba(184,145,46,0.16)' },
+              { label:'Resultado mes',    value:fmtM(utilMes),   delta:MESES_NOMBRE[mesActual-1]+' '+anioActual, color:utilMes>=0?'#1D9E75':'#E24B4A', bg:utilMes>=0?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)' },
+              { label:'Movimientos',      value:scope.length.toString(), delta:'registrados', color:'#BA7517', bg:'rgba(186,117,23,0.18)' },
             ].map(m=>(
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -248,19 +248,19 @@ export default function DashboardPage() {
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16 }}>
             {/* Gráfico */}
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos — últimos 6 meses</div>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Ingresos vs gastos — últimos 6 meses</div>
               <div style={{ display:'flex', gap:10, marginBottom:12 }}>
                 {[{l:'Ingresos',c:'#1D9E75'},{l:'Gastos',c:'#E24B4A'}].map(e=>(
-                  <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#6b7280' }}>
+                  <span key={e.l} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#9A9A9A' }}>
                     <span style={{ width:10, height:10, borderRadius:2, background:e.c, display:'inline-block' }}/>{e.l}
                   </span>
                 ))}
               </div>
               {cargando ? (
-                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af' }}>Cargando...</div>
+                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#767676' }}>Cargando...</div>
               ) : mesesData.length === 0 ? (
-                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#9ca3af', fontSize:13 }}>Sin datos</div>
+                <div style={{ height:140, display:'flex', alignItems:'center', justifyContent:'center', color:'#767676', fontSize:13 }}>Sin datos</div>
               ) : (
                 <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:140 }}>
                   {mesesData.map(([key,val])=>{
@@ -275,7 +275,7 @@ export default function DashboardPage() {
                           <div style={{ flex:1, height:Math.max(hI,2), background:'#1D9E75', borderRadius:'2px 2px 0 0' }}/>
                           <div style={{ flex:1, height:Math.max(hG,2), background:'#E24B4A', borderRadius:'2px 2px 0 0' }}/>
                         </div>
-                        <div style={{ fontSize:9, color:'#9ca3af' }}>{MESES_NOMBRE[parseInt(m)-1]} {y.slice(2)}</div>
+                        <div style={{ fontSize:9, color:'#767676' }}>{MESES_NOMBRE[parseInt(m)-1]} {y.slice(2)}</div>
                       </div>
                     )
                   })}
@@ -284,37 +284,37 @@ export default function DashboardPage() {
             </div>
 
             {/* Ranking empresas */}
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Resultado por empresa</div>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Resultado por empresa</div>
               {cargando ? (
-                <div style={{ color:'#9ca3af', fontSize:13 }}>Cargando...</div>
+                <div style={{ color:'#767676', fontSize:13 }}>Cargando...</div>
               ) : rankingEmpresas.length === 0 ? (
-                <div style={{ color:'#9ca3af', fontSize:13, textAlign:'center', padding:'2rem' }}>Sin datos</div>
+                <div style={{ color:'#767676', fontSize:13, textAlign:'center', padding:'2rem' }}>Sin datos</div>
               ) : rankingEmpresas.map((e,i)=>(
                 <div key={e.id} style={{ marginBottom:16 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
-                    <span style={{ fontSize:16, fontWeight:700, color:'#e5e7eb', width:20 }}>{i+1}</span>
+                    <span style={{ fontSize:16, fontWeight:700, color:'#3A3A3A', width:20 }}>{i+1}</span>
                     <span style={{ width:9, height:9, borderRadius:'50%', background:e.color, flexShrink:0 }}/>
-                    <span style={{ flex:1, fontSize:13, fontWeight:500, color:'#111827' }}>{e.nombre_corto}</span>
-                    <span style={{ fontSize:12, color:'#6b7280' }}>Margen {e.mg}%</span>
+                    <span style={{ flex:1, fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{e.nombre_corto}</span>
+                    <span style={{ fontSize:12, color:'#9A9A9A' }}>Margen {e.mg}%</span>
                     <span style={{ fontSize:14, fontWeight:700, color:e.util>=0?'#1D9E75':'#E24B4A' }}>{fmtM(e.util)}</span>
                   </div>
-                  <div style={{ height:6, background:'#f1f5f9', borderRadius:3, overflow:'hidden', marginLeft:28 }}>
+                  <div style={{ height:6, background:'#1F1F1F', borderRadius:3, overflow:'hidden', marginLeft:28 }}>
                     <div style={{ height:'100%', width:`${Math.max(0,Math.min(100,Math.round(e.util/maxUtil*100)))}%`, background:e.color, borderRadius:3 }}/>
                   </div>
                 </div>
               ))}
 
               {topGastosArr.length > 0 && (
-                <div style={{ borderTop:'1px solid rgba(0,0,0,0.07)', paddingTop:12, marginTop:4 }}>
-                  <div style={{ fontSize:11, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8 }}>Top gastos del mes</div>
+                <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:12, marginTop:4 }}>
+                  <div style={{ fontSize:11, fontWeight:600, color:'#767676', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8 }}>Top gastos del mes</div>
                   {topGastosArr.map(([cat,val])=>(
                     <div key={cat} style={{ marginBottom:6 }}>
                       <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, marginBottom:3 }}>
-                        <span style={{ color:'#374151' }}>{cat}</span>
+                        <span style={{ color:'#C9C9C9' }}>{cat}</span>
                         <span style={{ color:'#E24B4A', fontWeight:500 }}>{fmtCLP(val)}</span>
                       </div>
-                      <div style={{ height:4, background:'#f1f5f9', borderRadius:2, overflow:'hidden' }}>
+                      <div style={{ height:4, background:'#1F1F1F', borderRadius:2, overflow:'hidden' }}>
                         <div style={{ height:'100%', width:`${Math.round(val/maxGasto*100)}%`, background:'#E24B4A', borderRadius:2 }}/>
                       </div>
                     </div>
@@ -325,21 +325,21 @@ export default function DashboardPage() {
           </div>
 
           {/* Últimos movimientos */}
-          <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+          <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>Últimos movimientos</div>
+              <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em' }}>Últimos movimientos</div>
               <Link href="/movimientos" style={{ fontSize:12, color:'#B8912E', textDecoration:'none' }}>Ver todos →</Link>
             </div>
             {ultimos.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'1rem', color:'#9ca3af', fontSize:13 }}>Sin movimientos</div>
+              <div style={{ textAlign:'center', padding:'1rem', color:'#767676', fontSize:13 }}>Sin movimientos</div>
             ) : ultimos.map((m,i)=>(
-              <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:i<ultimos.length-1?'1px solid rgba(0,0,0,0.05)':'none' }}>
-                <div style={{ width:28, height:28, borderRadius:8, background:m.tipo==='ingreso'?'#E1F5EE':'#FCEBEB', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, flexShrink:0 }}>
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:i<ultimos.length-1?'1px solid rgba(255,255,255,0.05)':'none' }}>
+                <div style={{ width:28, height:28, borderRadius:8, background:m.tipo==='ingreso'?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, flexShrink:0 }}>
                   {m.tipo==='ingreso'?'↑':'↓'}
                 </div>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:12, fontWeight:500, color:'#111827', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{m.descripcion || m.categoria}</div>
-                  <div style={{ fontSize:10, color:'#9ca3af' }}>{empNombre(m.empresa_id)} · {m.fecha}</div>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#F0EFEA', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{m.descripcion || m.categoria}</div>
+                  <div style={{ fontSize:10, color:'#767676' }}>{empNombre(m.empresa_id)} · {m.fecha}</div>
                 </div>
                 <span style={{ fontSize:12, fontWeight:600, color:m.tipo==='ingreso'?'#1D9E75':'#E24B4A', flexShrink:0 }}>
                   {m.tipo==='ingreso'?'+':'-'}{fmtM(m.monto)}
@@ -349,8 +349,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Acceso rápido */}
-          <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20 }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Acceso rápido</div>
+          <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>Acceso rápido</div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))', gap:8 }}>
               {[
                 { href:'/movimientos',  icon:'↕',  label:'Movimientos'  },
@@ -363,9 +363,9 @@ export default function DashboardPage() {
                 { href:'/ia',           icon:'🧠', label:'IA'           },
                 { href:'/alertas',      icon:'🔔', label:'Alertas'      },
               ].map(m=>(
-                <Link key={m.href} href={m.href} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:6, padding:'14px 8px', borderRadius:10, border:'1px solid rgba(0,0,0,0.08)', background:'#fafafa', textDecoration:'none' }}>
+                <Link key={m.href} href={m.href} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:6, padding:'14px 8px', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'#1A1A1A', textDecoration:'none' }}>
                   <span style={{ fontSize:22 }}>{m.icon}</span>
-                  <span style={{ fontSize:12, fontWeight:500, color:'#374151', textAlign:'center' }}>{m.label}</span>
+                  <span style={{ fontSize:12, fontWeight:500, color:'#C9C9C9', textAlign:'center' }}>{m.label}</span>
                 </Link>
               ))}
             </div>

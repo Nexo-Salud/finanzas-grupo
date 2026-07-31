@@ -68,12 +68,12 @@ const HISTORIAL = [
 
 // ── Helpers ────────────────────────────────────────────────────
 const NIV_COLOR  = { crit:'#E24B4A', warn:'#EF9F27', info:'#B8912E', ok:'#1D9E75' }
-const NIV_BG     = { crit:'#FCEBEB', warn:'#FAEEDA', info:'#FBF1D9', ok:'#EAF3DE' }
+const NIV_BG     = { crit:'rgba(226,75,74,0.16)', warn:'rgba(186,117,23,0.18)', info:'rgba(184,145,46,0.16)', ok:'rgba(29,158,117,0.14)' }
 const NIV_BORDER = { crit:'#E24B4A', warn:'#EF9F27', info:'#B8912E', ok:'#1D9E75' }
 const NIV_LABEL  = { crit:'Crítico', warn:'Aviso', info:'Info', ok:'OK' }
-const NIV_TEXT   = { crit:'#A32D2D', warn:'#633806', info:'#8A6D1F', ok:'#27500A' }
-const NIV_BADGE_BG = { crit:'#F09595', warn:'#FAC775', info:'#F6ECC9', ok:'#C0DD97' }
-const NIV_BADGE_TX = { crit:'#501313', warn:'#412402', info:'#8A6D1F', ok:'#173404' }
+const NIV_TEXT   = { crit:'#E24B4A', warn:'#BA7517', info:'#D8B24D', ok:'#1D9E75' }
+const NIV_BADGE_BG = { crit:'rgba(226,75,74,0.22)', warn:'rgba(186,117,23,0.24)', info:'rgba(184,145,46,0.2)', ok:'rgba(29,158,117,0.22)' }
+const NIV_BADGE_TX = { crit:'#E24B4A', warn:'#BA7517', info:'#D8B24D', ok:'#1D9E75' }
 
 // ── Componente ─────────────────────────────────────────────────
 export default function AlertasPage() {
@@ -154,14 +154,14 @@ export default function AlertasPage() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', background:'#f8f9fb', fontFamily:'DM Sans, sans-serif' }}>
+    <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
       {/* Sidebar */}
       <input type="checkbox" id="sidebarToggle" className="sidebar-toggle-input no-print" />
       <label htmlFor="sidebarToggle" className="sidebar-toggle-btn no-print" aria-label="Abrir menu">☰</label>
       <label htmlFor="sidebarToggle" className="sidebar-overlay no-print"></label>
-      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#fff', borderRight:'1px solid rgba(0,0,0,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
-        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(0,0,0,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
+      <div className="app-sidebar" style={{ position:'fixed', top:0, left:0, width:220, height:'100vh', background:'#161616', borderRight:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', padding:'0 12px 16px', zIndex:100, overflowY:'auto' }}>
+        <div style={{ height:56, display:'flex', alignItems:'center', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
         {[
@@ -177,7 +177,7 @@ export default function AlertasPage() {
           { href:'/kpis',         label:'KPIs',         icon:'📊' },
           { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
         ].map(item => (
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#6b7280', background:(item as any).active?'#FBF1D9':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
             {item.href==='/alertas' && noLeidas.length > 0 && (
               <span style={{ marginLeft:'auto', background:'#E24B4A', color:'#fff', borderRadius:999, fontSize:10, fontWeight:600, padding:'1px 6px' }}>{noLeidas.length}</span>
@@ -185,13 +185,13 @@ export default function AlertasPage() {
           </Link>
         ))}
 
-        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop:'auto', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.08)' }}>
           {!esAdmin && empresasPermitidas.length > 0 && (
-            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'#FAEEDA', borderRadius:6, marginBottom:6, textAlign:'center' }}>
+            <div style={{ fontSize:10, color:'#BA7517', padding:'4px 10px', background:'rgba(186,117,23,0.18)', borderRadius:6, marginBottom:6, textAlign:'center' }}>
               🔒 Vista restringida
             </div>
           )}
-          <div style={{ fontSize:11, color:'#9ca3af', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
+          <div style={{ fontSize:11, color:'#767676', marginBottom:4, padding:'0 10px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>
             {userEmail}
           </div>
           <button onClick={cerrarSesion} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 10px', borderRadius:8, fontSize:13, color:'#E24B4A', background:'transparent', border:'none', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
@@ -204,17 +204,17 @@ export default function AlertasPage() {
       <div className="app-content" style={{ marginLeft:220 }}>
 
         {/* Header */}
-        <div className="app-header" style={{ height:56, background:'#fff', borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
+        <div className="app-header" style={{ height:56, background:'#161616', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:50 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ fontSize:15, fontWeight:600 }}>Alertas automáticas</div>
             {noLeidas.length > 0 && (
-              <span style={{ background:'#FCEBEB', color:'#A32D2D', borderRadius:999, fontSize:11, fontWeight:600, padding:'2px 8px' }}>
+              <span style={{ background:'rgba(226,75,74,0.16)', color:'#E24B4A', borderRadius:999, fontSize:11, fontWeight:600, padding:'2px 8px' }}>
                 {noLeidas.length} sin leer
               </span>
             )}
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, color:'#6b7280' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, color:'#9A9A9A' }}>
               <div style={{ width:7, height:7, borderRadius:'50%', background:'#1D9E75' }}/>
               Monitoreo activo
             </div>
@@ -229,10 +229,10 @@ export default function AlertasPage() {
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))', gap:12, marginBottom:24 }}>
             {[
-              { label:'Críticas',       value:criticas, color:'#E24B4A', bg:'#FCEBEB' },
-              { label:'Avisos',         value:avisos,   color:'#EF9F27', bg:'#FAEEDA' },
-              { label:'Sin leer',       value:noLeidas.length, color:'#111827', bg:'#f1f5f9' },
-              { label:'Reglas activas', value:reglas.filter(r=>r.activa).length, color:'#1D9E75', bg:'#E1F5EE' },
+              { label:'Críticas',       value:criticas, color:'#E24B4A', bg:'rgba(226,75,74,0.16)' },
+              { label:'Avisos',         value:avisos,   color:'#EF9F27', bg:'rgba(186,117,23,0.18)' },
+              { label:'Sin leer',       value:noLeidas.length, color:'#F0EFEA', bg:'#1F1F1F' },
+              { label:'Reglas activas', value:reglas.filter(r=>r.activa).length, color:'#1D9E75', bg:'rgba(29,158,117,0.16)' },
             ].map(m => (
               <div key={m.label} style={{ background:m.bg, borderRadius:12, padding:'14px 16px' }}>
                 <div style={{ fontSize:11, color:m.color, fontWeight:500, marginBottom:4, opacity:0.8 }}>{m.label}</div>
@@ -248,7 +248,7 @@ export default function AlertasPage() {
               { key:'reglas',    label:'⚙️ Reglas' },
               { key:'historial', label:'📋 Historial' },
             ] as const).map(t => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(0,0,0,0.1)', background:tab===t.key?'#FBF1D9':'#fff', color:tab===t.key?'#B8912E':'#6b7280', fontWeight:tab===t.key?500:400 }}>
+              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.key?'rgba(184,145,46,0.16)':'#161616', color:tab===t.key?'#B8912E':'#9A9A9A', fontWeight:tab===t.key?500:400 }}>
                 {t.label}
               </button>
             ))}
@@ -259,7 +259,7 @@ export default function AlertasPage() {
             <>
               {noLeidas.length > 0 && (
                 <>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#374151', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10 }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:'#C9C9C9', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10 }}>
                     Sin leer ({noLeidas.length})
                   </div>
                   {noLeidas.map(a => <AlertaCard key={a.id} alerta={a} onLeer={marcarLeida} />)}
@@ -267,14 +267,14 @@ export default function AlertasPage() {
               )}
               {leidas.length > 0 && (
                 <>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, marginTop: noLeidas.length ? 20 : 0 }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:'#767676', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10, marginTop: noLeidas.length ? 20 : 0 }}>
                     Leídas ({leidas.length})
                   </div>
                   {leidas.map(a => <AlertaCard key={a.id} alerta={a} onLeer={marcarLeida} dim />)}
                 </>
               )}
               {alertas.length === 0 && (
-                <div style={{ textAlign:'center', padding:'4rem', color:'#9ca3af' }}>
+                <div style={{ textAlign:'center', padding:'4rem', color:'#767676' }}>
                   <div style={{ fontSize:32, marginBottom:8 }}>✅</div>
                   <div style={{ fontSize:15, fontWeight:500 }}>Sin alertas activas</div>
                   <div style={{ fontSize:13, marginTop:4 }}>Todo está bajo control</div>
@@ -288,7 +288,7 @@ export default function AlertasPage() {
             <>
               {/* Formulario nueva regla */}
               {showForm && (
-                <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:16 }}>
                   <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Nueva regla de alerta</div>
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                     <div><label style={lbl}>Nombre</label><input value={fNombre} onChange={e=>setFNombre(e.target.value)} placeholder="Nombre de la regla" style={inp}/></div>
@@ -317,30 +317,30 @@ export default function AlertasPage() {
               )}
 
               {/* Lista de reglas */}
-              <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'4px 20px' }}>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'4px 20px' }}>
                 {reglas.map((r, i) => (
-                  <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 0', borderBottom: i < reglas.length-1 ? '1px solid rgba(0,0,0,0.06)' : 'none', flexWrap:'wrap', gap:10 }}>
+                  <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 0', borderBottom: i < reglas.length-1 ? '1px solid rgba(255,255,255,0.06)' : 'none', flexWrap:'wrap', gap:10 }}>
                     <div style={{ flex:1, minWidth:200 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
-                        <span style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{r.nombre}</span>
+                        <span style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{r.nombre}</span>
                         <span style={{ fontSize:10, padding:'1px 7px', borderRadius:999, fontWeight:600, background:NIV_BADGE_BG[r.nivel], color:NIV_BADGE_TX[r.nivel] }}>
                           {NIV_LABEL[r.nivel]}
                         </span>
-                        {!r.activa && <span style={{ fontSize:10, padding:'1px 7px', borderRadius:999, background:'#f1f5f9', color:'#9ca3af' }}>Inactiva</span>}
+                        {!r.activa && <span style={{ fontSize:10, padding:'1px 7px', borderRadius:999, background:'#1F1F1F', color:'#767676' }}>Inactiva</span>}
                       </div>
-                      <div style={{ fontSize:12, color:'#6b7280' }}>{r.desc}</div>
-                      <div style={{ fontSize:12, color:'#374151', marginTop:3 }}>
+                      <div style={{ fontSize:12, color:'#9A9A9A' }}>{r.desc}</div>
+                      <div style={{ fontSize:12, color:'#C9C9C9', marginTop:3 }}>
                         Umbral: <strong>{r.tipo === '$' ? '$' + r.umbral.toLocaleString('es-CL') : r.umbral + '%'}</strong>
                       </div>
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                       <input type="number" value={r.umbral} onChange={e=>updateUmbral(r.id, parseFloat(e.target.value)||0)}
-                        style={{ width:70, fontSize:13, textAlign:'center', padding:'5px 8px', border:'1px solid rgba(0,0,0,0.12)', borderRadius:7, background:'#fff' }}/>
+                        style={{ width:70, fontSize:13, textAlign:'center', padding:'5px 8px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:7, background:'#161616' }}/>
                       {/* Toggle */}
-                      <div onClick={()=>toggleRegla(r.id)} style={{ width:36, height:20, borderRadius:10, background:r.activa?'#1D9E75':'#d1d5db', cursor:'pointer', position:'relative', transition:'background 0.2s', flexShrink:0 }}>
-                        <div style={{ width:16, height:16, borderRadius:'50%', background:'#fff', position:'absolute', top:2, left:r.activa?18:2, transition:'left 0.2s' }}/>
+                      <div onClick={()=>toggleRegla(r.id)} style={{ width:36, height:20, borderRadius:10, background:r.activa?'#1D9E75':'#4A4A4A', cursor:'pointer', position:'relative', transition:'background 0.2s', flexShrink:0 }}>
+                        <div style={{ width:16, height:16, borderRadius:'50%', background:'#161616', position:'absolute', top:2, left:r.activa?18:2, transition:'left 0.2s' }}/>
                       </div>
-                      <button onClick={()=>eliminarRegla(r.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#9ca3af', padding:4 }}>🗑️</button>
+                      <button onClick={()=>eliminarRegla(r.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:16, color:'#767676', padding:4 }}>🗑️</button>
                     </div>
                   </div>
                 ))}
@@ -353,16 +353,16 @@ export default function AlertasPage() {
 
           {/* ── Tab: Historial ── */}
           {tab === 'historial' && (
-            <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:14, padding:'4px 20px' }}>
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'4px 20px' }}>
               {HISTORIAL.map((h, i) => (
-                <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 0', borderBottom: i < HISTORIAL.length-1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 0', borderBottom: i < HISTORIAL.length-1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
                   <div style={{ width:9, height:9, borderRadius:'50%', background:NIV_COLOR[h.nivel], flexShrink:0 }}/>
                   <div style={{ flex:1 }}>
-                    <span style={{ fontSize:13, fontWeight:500, color:'#111827' }}>{h.titulo}</span>
-                    <span style={{ fontSize:12, color:'#9ca3af', marginLeft:8 }}>{h.empresa}</span>
+                    <span style={{ fontSize:13, fontWeight:500, color:'#F0EFEA' }}>{h.titulo}</span>
+                    <span style={{ fontSize:12, color:'#767676', marginLeft:8 }}>{h.empresa}</span>
                   </div>
                   <span style={{ fontSize:10, padding:'1px 7px', borderRadius:999, fontWeight:600, background:NIV_BADGE_BG[h.nivel], color:NIV_BADGE_TX[h.nivel] }}>{NIV_LABEL[h.nivel]}</span>
-                  <span style={{ fontSize:11, color:'#9ca3af', whiteSpace:'nowrap', flexShrink:0 }}>{h.fecha}</span>
+                  <span style={{ fontSize:11, color:'#767676', whiteSpace:'nowrap', flexShrink:0 }}>{h.fecha}</span>
                 </div>
               ))}
             </div>
@@ -400,6 +400,6 @@ function AlertaCard({ alerta: a, onLeer, dim }: { alerta: Alerta; onLeer: (id:st
 
 // ── Estilos ────────────────────────────────────────────────────
 const btnP: React.CSSProperties   = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
-const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(0,0,0,0.12)', background:'#fff', color:'#374151', width:'100%' }
-const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#6b7280', marginBottom:4 }
-const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(0,0,0,0.14)', borderRadius:8, background:'#fff', color:'#111827', fontFamily:'DM Sans, sans-serif' }
+const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#C9C9C9', width:'100%' }
+const lbl: React.CSSProperties    = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
+const inp: React.CSSProperties    = { width:'100%', padding:'8px 10px', fontSize:13, border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA', fontFamily:'DM Sans, sans-serif' }
