@@ -167,6 +167,7 @@ export default function AlertasPage() {
         {[
           { href:'/',             label:'Dashboard',    icon:'▦'  },
           { href:'/movimientos',  label:'Movimientos',  icon:'↕'  },
+          { href:'/caja',           label:'Caja',         icon:'💵' },
           { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
           { href:'/alertas',      label:'Alertas',      icon:'🔔', active:true },
           { href:'/reportes',     label:'Reportes',     icon:'📄' },
@@ -174,6 +175,7 @@ export default function AlertasPage() {
           { href:'/tributario',   label:'Documentos',   icon:'🧾' },
           { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
           { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
+          { href:'/asistencia',     label:'Asistencia',   icon:'🕐' },
           { href:'/kpis',         label:'KPIs',         icon:'📊' },
           { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
         ].map(item => (
