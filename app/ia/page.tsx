@@ -131,15 +131,19 @@ Responde en español, conciso y práctico. Máximo 3-4 párrafos.`
     setPensando(true)
     try {
       const historial = nuevosMensajes.slice(-8).map(m => ({ role: m.rol==='user'?'user' as const:'assistant' as const, content:m.texto }))
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/ia', {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
-        body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:buildContexto(), messages:historial }),
+        body:JSON.stringify({ system:buildContexto(), messages:historial }),
       })
       const data = await res.json()
+      if (!res.ok || data.error) {
+        setMensajes(prev=>[...prev, { rol:'ia', texto:`⚠️ ${data.error || 'Error al conectar con la IA.'}` }])
+        return
+      }
       const respuesta = data.content?.map((c: any)=>c.text||'').join('') || 'No pude obtener respuesta.'
       setMensajes(prev=>[...prev, { rol:'ia', texto:respuesta }])
-    } catch { setMensajes(prev=>[...prev, { rol:'ia', texto:'Error al conectar con la IA.' }]) }
+    } catch { setMensajes(prev=>[...prev, { rol:'ia', texto:'⚠️ Error al conectar con la IA.' }]) }
     finally { setPensando(false) }
   }
 
