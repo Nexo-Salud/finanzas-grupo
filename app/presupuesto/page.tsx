@@ -120,6 +120,10 @@ export default function PresupuestoPage() {
         .select('rol, empresas_permitidas')
         .eq('email', email)
         .single()
+      const MODULOS_RESTRINGIDOS: Record<string,string[]> = { quimico: ['/caja','/asistencia'], auxiliar: ['/asistencia'] }
+      if (perfil?.rol && MODULOS_RESTRINGIDOS[perfil.rol] && !MODULOS_RESTRINGIDOS[perfil.rol].includes('/presupuesto')) {
+        router.push(MODULOS_RESTRINGIDOS[perfil.rol][0]); return
+      }
       if (perfil) {
         if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
           setEsAdmin(true); setEmpresasPermitidas([])

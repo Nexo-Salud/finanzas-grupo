@@ -68,6 +68,10 @@ export default function DashboardPage() {
         .select('rol, empresas_permitidas')
         .eq('email', email)
         .single()
+      const MODULOS_RESTRINGIDOS: Record<string,string[]> = { quimico: ['/caja','/asistencia'], auxiliar: ['/asistencia'] }
+      if (perfil?.rol && MODULOS_RESTRINGIDOS[perfil.rol] && !MODULOS_RESTRINGIDOS[perfil.rol].includes('/')) {
+        router.push(MODULOS_RESTRINGIDOS[perfil.rol][0]); return
+      }
 
       let empPermitidas: string[] = []
       

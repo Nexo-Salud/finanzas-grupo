@@ -27,10 +27,12 @@ const NAV = [
 ]
 
 const ROLES = {
-  admin:    { label:'Administrador', color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
-  contador: { label:'Contador',      color:'#1D9E75', bg:'rgba(29,158,117,0.16)', tx:'#1D9E75', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
-  gerente:  { label:'Gerente',       color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
-  lectura:  { label:'Solo lectura',  color:'#888780', bg:'#1F1F1F', tx:'#C9C9C9', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
+  admin:    { label:'Administrador',        color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'👑', desc:'Acceso total a todos los módulos y empresas' },
+  contador: { label:'Contador',             color:'#1D9E75', bg:'rgba(29,158,117,0.16)', tx:'#1D9E75', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
+  gerente:  { label:'Gerente',              color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
+  lectura:  { label:'Solo lectura',         color:'#888780', bg:'#1F1F1F',               tx:'#C9C9C9', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
+  quimico:  { label:'Químico Farmacéutico', color:'#378ADD', bg:'rgba(55,138,221,0.16)', tx:'#5CA6E8', icon:'💊', desc:'Solo Caja (cuadratura) y Asistencia — se le redirige si intenta entrar a otro módulo' },
+  auxiliar: { label:'Auxiliar',             color:'#639922', bg:'rgba(99,153,34,0.16)',  tx:'#8ABF4A', icon:'🧑‍🔧', desc:'Solo Asistencia — se le redirige si intenta entrar a otro módulo' },
 }
 
 type Rol = keyof typeof ROLES
@@ -66,6 +68,10 @@ export default function UsuariosPage() {
         .select('rol, empresas_permitidas')
         .eq('email', email)
         .single()
+      const MODULOS_RESTRINGIDOS: Record<string,string[]> = { quimico: ['/caja','/asistencia'], auxiliar: ['/asistencia'] }
+      if (perfil?.rol && MODULOS_RESTRINGIDOS[perfil.rol] && !MODULOS_RESTRINGIDOS[perfil.rol].includes('/usuarios')) {
+        router.push(MODULOS_RESTRINGIDOS[perfil.rol][0]); return
+      }
       if (perfil) {
         if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
           setEsAdmin(true); setEmpresasPermitidas([])
