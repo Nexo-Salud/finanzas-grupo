@@ -30,7 +30,7 @@ const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'
 
 type Empresa  = { id: string; nombre_corto: string; color: string }
 type Empleada = { id: string; empresa_id: string; nombre: string; valor_hora: number; pin: string; activa: boolean }
-type Registro = { id: string; empleada_id: string; empresa_id: string; fecha: string; hora_entrada: string; hora_salida: string | null; horas_trabajadas: number | null; valor_hora: number; monto_calculado: number | null }
+type Registro = { id: string; empleada_id: string; empresa_id: string; fecha: string; hora_entrada: string; hora_salida: string | null; horas_trabajadas: number | null; valor_hora: number; monto_calculado: number | null; colacion_minutos?: number | null }
 type Cierre   = { id: string; empresa_id: string; empleada_id: string; anio: number; mes: number; total_horas: number; total_pagar: number; pagado: boolean; fecha_pago: string | null }
 
 function fmtCLP(n: number) { return '$'+Math.round(n).toLocaleString('es-CL') }
@@ -77,6 +77,9 @@ export default function AsistenciaPage() {
   const [rFecha,      setRFecha]      = useState(new Date().toISOString().split('T')[0])
   const [rEntrada,    setREntrada]    = useState('09:00')
   const [rSalida,     setRSalida]     = useState('')
+  const [rColacion,   setRColacion]   = useState('0')
+
+  const [expandido, setExpandido] = useState<string | null>(null)
 
   async function cargarDatos(perms: string[] = []) {
     setCargando(true)
@@ -170,7 +173,7 @@ export default function AsistenciaPage() {
     setShowRegForm(false); setRegEditId(null)
     setREmpleada(scopeEmpleadas[0]?.id || empleadas[0]?.id || '')
     setRFecha(new Date().toISOString().split('T')[0])
-    setREntrada('09:00'); setRSalida('')
+    setREntrada('09:00'); setRSalida(''); setRColacion('0')
   }
 
   function abrirEditarRegistro(r: Registro) {
@@ -179,6 +182,7 @@ export default function AsistenciaPage() {
     setRFecha(r.fecha)
     setREntrada(new Date(r.hora_entrada).toTimeString().slice(0,5))
     setRSalida(r.hora_salida ? new Date(r.hora_salida).toTimeString().slice(0,5) : '')
+    setRColacion(String(r.colacion_minutos || 0))
     setShowRegForm(true)
   }
 
@@ -195,7 +199,8 @@ export default function AsistenciaPage() {
       setError('La hora de salida debe ser posterior a la de entrada.')
       return
     }
-    const horas = salidaDate ? (salidaDate.getTime() - entradaDate.getTime()) / 3600000 : null
+    const colacionMin = parseInt(rColacion) || 0
+    const horas = salidaDate ? Math.max(0, (salidaDate.getTime() - entradaDate.getTime()) / 3600000 - colacionMin/60) : null
     const monto = horas != null ? Math.round(horas * emp.valor_hora) : null
     setGuardando(true)
     setError('')
@@ -208,6 +213,7 @@ export default function AsistenciaPage() {
       horas_trabajadas:   horas,
       valor_hora:         emp.valor_hora,
       monto_calculado:    monto,
+      colacion_minutos:   colacionMin,
     }
     try {
       if (regEditId) {
@@ -432,29 +438,56 @@ export default function AsistenciaPage() {
                   {cargando ? '⏳ Cargando...' : '📭 No hay trabajadoras registradas para esta empresa'}
                 </div>
               )}
-              {resumenMes.map((r,i)=>(
-                <div key={r.emp.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 0', borderBottom:i<resumenMes.length-1?'1px solid rgba(255,255,255,0.06)':'none', flexWrap:'wrap', gap:10 }}>
-                  <div style={{ flex:1, minWidth:160 }}>
-                    <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{r.emp.nombre}</div>
-                    <div style={{ fontSize:12, color:'#9A9A9A' }}>{empNombre(r.emp.empresa_id)} · {fmtCLP(r.emp.valor_hora)}/hora · {r.turnos} turno(s)</div>
-                  </div>
-                  <div style={{ textAlign:'right', minWidth:100 }}>
-                    <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{fmtHoras(r.totalHoras)}</div>
-                    <div style={{ fontSize:12, color:'#D8B24D' }}>{fmtCLP(r.totalPagar)}</div>
-                  </div>
-                  {r.cierre?.pagado ? (
-                    <span style={{ fontSize:11, padding:'4px 10px', borderRadius:999, fontWeight:600, background:'rgba(29,158,117,0.16)', color:'#1D9E75' }}>✅ Pagado {r.cierre.fecha_pago}</span>
-                  ) : (
-                    <button
-                      onClick={()=>marcarPagado(r.emp, r.totalHoras, r.totalPagar, r.cierre)}
-                      disabled={r.totalHoras===0}
-                      style={{ fontSize:12, padding:'6px 12px', borderRadius:8, fontWeight:500, cursor:r.totalHoras===0?'not-allowed':'pointer', border:'none', background:r.totalHoras===0?'#1F1F1F':'#B8912E', color:r.totalHoras===0?'#767676':'#fff' }}
+              {resumenMes.map((r,i)=>{
+                const abierto = expandido === r.emp.id
+                const regsDia = registrosMes.filter(x => x.empleada_id === r.emp.id).sort((a,b)=>a.fecha.localeCompare(b.fecha))
+                return (
+                <div key={r.emp.id} style={{ borderBottom:i<resumenMes.length-1?'1px solid rgba(255,255,255,0.06)':'none' }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 0', flexWrap:'wrap', gap:10 }}>
+                    <div
+                      style={{ flex:1, minWidth:160, cursor:regsDia.length>0?'pointer':'default' }}
+                      onClick={()=>regsDia.length>0 && setExpandido(abierto ? null : r.emp.id)}
                     >
-                      Marcar pagado
-                    </button>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA', display:'flex', alignItems:'center', gap:6 }}>
+                        {regsDia.length>0 && <span style={{ fontSize:10, color:'#767676' }}>{abierto?'▾':'▸'}</span>}
+                        {r.emp.nombre}
+                      </div>
+                      <div style={{ fontSize:12, color:'#9A9A9A' }}>{empNombre(r.emp.empresa_id)} · {fmtCLP(r.emp.valor_hora)}/hora · {r.turnos} turno(s) {regsDia.length>0 && '· ver detalle por día'}</div>
+                    </div>
+                    <div style={{ textAlign:'right', minWidth:100 }}>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{fmtHoras(r.totalHoras)}</div>
+                      <div style={{ fontSize:12, color:'#D8B24D' }}>{fmtCLP(r.totalPagar)}</div>
+                    </div>
+                    {r.cierre?.pagado ? (
+                      <span style={{ fontSize:11, padding:'4px 10px', borderRadius:999, fontWeight:600, background:'rgba(29,158,117,0.16)', color:'#1D9E75' }}>✅ Pagado {r.cierre.fecha_pago}</span>
+                    ) : (
+                      <button
+                        onClick={()=>marcarPagado(r.emp, r.totalHoras, r.totalPagar, r.cierre)}
+                        disabled={r.totalHoras===0}
+                        style={{ fontSize:12, padding:'6px 12px', borderRadius:8, fontWeight:500, cursor:r.totalHoras===0?'not-allowed':'pointer', border:'none', background:r.totalHoras===0?'#1F1F1F':'#B8912E', color:r.totalHoras===0?'#767676':'#fff' }}
+                      >
+                        Marcar pagado
+                      </button>
+                    )}
+                  </div>
+                  {abierto && regsDia.length>0 && (
+                    <div style={{ background:'#141414', borderRadius:10, padding:'6px 14px', marginBottom:12 }}>
+                      {regsDia.map((d,j)=>(
+                        <div key={d.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px 0', borderBottom:j<regsDia.length-1?'1px solid rgba(255,255,255,0.06)':'none', flexWrap:'wrap', gap:8, fontSize:12 }}>
+                          <span style={{ color:'#C9C9C9' }}>{d.fecha}</span>
+                          <span style={{ color:'#9A9A9A' }}>
+                            {fmtHora(d.hora_entrada)} → {d.hora_salida ? fmtHora(d.hora_salida) : 'abierto'}
+                            {!!d.colacion_minutos && ` · 🍽️ ${d.colacion_minutos} min`}
+                          </span>
+                          <span style={{ color:'#F0EFEA', fontWeight:500, minWidth:60, textAlign:'right' }}>{d.horas_trabajadas!=null ? fmtHoras(d.horas_trabajadas) : '—'}</span>
+                          <span style={{ color:'#D8B24D', minWidth:80, textAlign:'right' }}>{d.monto_calculado!=null ? fmtCLP(d.monto_calculado) : '—'}</span>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              ))}
+                )
+              })}
               {resumenMes.length>0 && (
                 <div style={{ display:'flex', justifyContent:'flex-end', gap:20, padding:'12px 0', fontSize:12, color:'#9A9A9A' }}>
                   <span>Total horas: <strong style={{ color:'#F0EFEA' }}>{fmtHoras(totalHorasMes)}</strong></span>
@@ -488,16 +521,20 @@ export default function AsistenciaPage() {
                     <div><label style={lbl}>Hora salida (opcional)</label>
                       <input type="time" value={rSalida} onChange={e=>setRSalida(e.target.value)} style={inp}/>
                     </div>
+                    <div><label style={lbl}>Colación (minutos, no se paga)</label>
+                      <input type="number" min={0} value={rColacion} onChange={e=>setRColacion(e.target.value.replace(/\D/g,''))} placeholder="0" style={inp}/>
+                    </div>
                   </div>
                   {rEntrada && rSalida && rEmpleada && (()=>{
                     const emp = empleadas.find(e=>e.id===rEmpleada)
                     const ent = new Date(`${rFecha}T${rEntrada}:00`)
                     const sal = new Date(`${rFecha}T${rSalida}:00`)
-                    const h = (sal.getTime()-ent.getTime())/3600000
-                    if (!emp || h<=0) return null
+                    const colacionMin = parseInt(rColacion) || 0
+                    const h = Math.max(0, (sal.getTime()-ent.getTime())/3600000 - colacionMin/60)
+                    if (!emp || sal<=ent) return null
                     return (
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', background:'rgba(184,145,46,0.16)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:13 }}>
-                        <span style={{ color:'#C9C9C9' }}>{fmtHoras(h)} × {fmtCLP(emp.valor_hora)}/hora</span>
+                        <span style={{ color:'#C9C9C9' }}>{fmtHoras(h)}{colacionMin>0?` (descontados ${colacionMin} min de colación)`:''} × {fmtCLP(emp.valor_hora)}/hora</span>
                         <strong style={{ color:'#D8B24D' }}>{fmtCLP(Math.round(h*emp.valor_hora))}</strong>
                       </div>
                     )
@@ -526,6 +563,7 @@ export default function AsistenciaPage() {
                       </div>
                       <div style={{ fontSize:12, color:'#9A9A9A' }}>
                         Entrada {fmtHora(r.hora_entrada)} → {r.hora_salida ? `Salida ${fmtHora(r.hora_salida)}` : 'turno abierto'}
+                        {!!r.colacion_minutos && ` · 🍽️ ${r.colacion_minutos} min colación`}
                       </div>
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>

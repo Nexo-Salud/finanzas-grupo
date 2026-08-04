@@ -22,6 +22,8 @@ export default function MarcarAsistenciaPage() {
   const [pin,        setPin]        = useState('')
   const [procesando, setProcesando] = useState(false)
   const [mensaje,    setMensaje]    = useState<{tipo:'ok'|'error', texto:string} | null>(null)
+  const [pasoColacion, setPasoColacion] = useState(false)
+  const [colacion,     setColacion]     = useState('0')
 
   async function cargar() {
     setCargando(true)
@@ -51,6 +53,8 @@ export default function MarcarAsistenciaPage() {
     setSeleccion(null)
     setPin('')
     setMensaje(null)
+    setPasoColacion(false)
+    setColacion('0')
   }
 
   async function procesarMarcaje(pinIngresado: string) {
@@ -60,36 +64,57 @@ export default function MarcarAsistenciaPage() {
       setPin('')
       return
     }
+    const abierto = turnoAbierto(seleccion.id)
+    if (abierto) {
+      // Antes de guardar la salida, preguntamos minutos de colación
+      setMensaje(null)
+      setPasoColacion(true)
+      return
+    }
     setProcesando(true)
     setMensaje(null)
     try {
-      const abierto = turnoAbierto(seleccion.id)
       const ahora = new Date()
       const hoy = ahora.toISOString().split('T')[0]
-
-      if (abierto) {
-        // Marcar salida
-        const entrada = new Date(abierto.hora_entrada)
-        const horas = Math.max(0, (ahora.getTime() - entrada.getTime()) / 3600000)
-        const monto = Math.round(horas * seleccion.valor_hora)
-        const { error: err } = await supabase.from('registros_asistencia')
-          .update({ hora_salida: ahora.toISOString(), horas_trabajadas: Math.round(horas*100)/100, monto_calculado: monto })
-          .eq('id', abierto.id)
-        if (err) throw err
-        setMensaje({ tipo:'ok', texto:`👋 Salida registrada a las ${horaActual()} — ${Math.round(horas*100)/100} h trabajadas.` })
-      } else {
-        const { error: err } = await supabase.from('registros_asistencia').insert({
-          empleada_id: seleccion.id,
-          empresa_id:  seleccion.empresa_id,
-          fecha:       hoy,
-          hora_entrada: ahora.toISOString(),
-          valor_hora:  seleccion.valor_hora,
-        })
-        if (err) throw err
-        setMensaje({ tipo:'ok', texto:`✅ Entrada registrada a las ${horaActual()}.` })
-      }
+      const { error: err } = await supabase.from('registros_asistencia').insert({
+        empleada_id: seleccion.id,
+        empresa_id:  seleccion.empresa_id,
+        fecha:       hoy,
+        hora_entrada: ahora.toISOString(),
+        valor_hora:  seleccion.valor_hora,
+      })
+      if (err) throw err
+      setMensaje({ tipo:'ok', texto:`✅ Entrada registrada a las ${horaActual()}.` })
       await cargar()
       setTimeout(() => { setSeleccion(null); setPin(''); setMensaje(null) }, 2500)
+    } catch(e: any) {
+      setMensaje({ tipo:'error', texto:'Error registrando: ' + e.message })
+    } finally {
+      setProcesando(false)
+    }
+  }
+
+  async function confirmarSalida() {
+    if (!seleccion) return
+    const abierto = turnoAbierto(seleccion.id)
+    if (!abierto) return
+    setProcesando(true)
+    setMensaje(null)
+    try {
+      const ahora = new Date()
+      const entrada = new Date(abierto.hora_entrada)
+      const colacionMin = parseInt(colacion) || 0
+      const horasBrutas = (ahora.getTime() - entrada.getTime()) / 3600000
+      const horas = Math.max(0, horasBrutas - colacionMin/60)
+      const monto = Math.round(horas * seleccion.valor_hora)
+      const { error: err } = await supabase.from('registros_asistencia')
+        .update({ hora_salida: ahora.toISOString(), horas_trabajadas: Math.round(horas*100)/100, monto_calculado: monto, colacion_minutos: colacionMin })
+        .eq('id', abierto.id)
+      if (err) throw err
+      setPasoColacion(false)
+      setMensaje({ tipo:'ok', texto:`👋 Salida registrada a las ${horaActual()} — ${Math.round(horas*100)/100} h trabajadas${colacionMin>0?` (se descontaron ${colacionMin} min de colación)`:''}.` })
+      await cargar()
+      setTimeout(() => { setSeleccion(null); setPin(''); setMensaje(null); setColacion('0') }, 3000)
     } catch(e: any) {
       setMensaje({ tipo:'error', texto:'Error registrando: ' + e.message })
     } finally {
@@ -145,7 +170,54 @@ export default function MarcarAsistenciaPage() {
           </>
         )}
 
-        {!cargando && seleccion && (
+        {!cargando && seleccion && pasoColacion && (
+          <div>
+            <div style={{ textAlign:'center', marginBottom:16 }}>
+              <div style={{ fontSize:16, fontWeight:600, color:'#F0EFEA' }}>{seleccion.nombre}</div>
+              <div style={{ fontSize:12, color:'#9A9A9A', marginTop:2 }}>¿Cuántos minutos de colación tomaste hoy?</div>
+            </div>
+
+            <div style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:14, flexWrap:'wrap' }}>
+              {[0,15,30,45,60].map(m=>(
+                <button key={m} onClick={()=>setColacion(String(m))} style={{ padding:'10px 14px', borderRadius:10, border: colacion===String(m) ? '2px solid #B8912E' : '1px solid rgba(255,255,255,0.1)', background:'#1F1F1F', color:'#F0EFEA', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                  {m} min
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="number" min={0} value={colacion}
+              onChange={e=>setColacion(e.target.value.replace(/\D/g,''))}
+              placeholder="Otra cantidad de minutos"
+              style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#F0EFEA', fontSize:14, textAlign:'center', marginBottom:16, fontFamily:'DM Sans, sans-serif' }}
+            />
+
+            {mensaje && (
+              <div style={{ textAlign:'center', fontSize:13, marginBottom:16, padding:'8px 12px', borderRadius:8, background: mensaje.tipo==='ok' ? 'rgba(29,158,117,0.16)' : 'rgba(226,75,74,0.16)', color: mensaje.tipo==='ok' ? '#1D9E75' : '#E24B4A' }}>
+                {mensaje.texto}
+              </div>
+            )}
+
+            {!mensaje && (
+              <>
+                <button onClick={confirmarSalida} disabled={procesando} style={{ width:'100%', padding:'12px', borderRadius:10, border:'none', background:'#B8912E', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer', marginBottom:8 }}>
+                  {procesando ? 'Guardando...' : 'Confirmar salida'}
+                </button>
+                <button onClick={volver} style={{ width:'100%', padding:'10px', borderRadius:10, border:'1px solid rgba(255,255,255,0.1)', background:'transparent', color:'#767676', fontSize:13, cursor:'pointer' }}>
+                  Cancelar
+                </button>
+              </>
+            )}
+
+            {!procesando && mensaje?.texto.startsWith('👋') && (
+              <button onClick={volver} style={{ width:'100%', padding:'12px', borderRadius:10, border:'none', background:'#B8912E', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
+                Listo
+              </button>
+            )}
+          </div>
+        )}
+
+        {!cargando && seleccion && !pasoColacion && (
           <div>
             <div style={{ textAlign:'center', marginBottom:16 }}>
               <div style={{ fontSize:16, fontWeight:600, color:'#F0EFEA' }}>{seleccion.nombre}</div>
