@@ -37,7 +37,19 @@ type Cuadratura = {
   responsable: string | null
   observaciones: string | null
   created_at: string
+  d20000?: number | null
+  d10000?: number | null
+  d5000?:  number | null
+  d2000?:  number | null
+  d1000?:  number | null
+  d500?:   number | null
+  d100?:   number | null
+  d50?:    number | null
+  d10?:    number | null
 }
+
+const DENOMINACIONES = [20000,10000,5000,2000,1000,500,100,50,10]
+const denomKey = (v:number) => 'd'+v as keyof Cuadratura
 
 function fmtCLP(n: number) { return '$'+Math.round(n).toLocaleString('es-CL') }
 function fmtM(n: number) {
@@ -77,6 +89,10 @@ export default function CajaPage() {
   const [fContado,    setFContado]    = useState('')
   const [fResponsable,setFResponsable]= useState('')
   const [fObs,        setFObs]        = useState('')
+  const [contarDenom, setContarDenom] = useState(false)
+  const [fDenom,      setFDenom]      = useState<Record<number,string>>(
+    Object.fromEntries(DENOMINACIONES.map(d=>[d,'']))
+  )
 
   async function cargarDatos(perms: string[] = []) {
     setCargando(true)
@@ -101,6 +117,22 @@ export default function CajaPage() {
     setShowForm(false)
     setFSencillo(''); setFEsperado(''); setFContado(''); setFResponsable(''); setFObs('')
     setFFecha(new Date().toISOString().split('T')[0])
+    setContarDenom(false)
+    setFDenom(Object.fromEntries(DENOMINACIONES.map(d=>[d,''])))
+  }
+
+  function totalDenom() {
+    return DENOMINACIONES.reduce((a,d) => a + d * (parseInt(fDenom[d])||0), 0)
+  }
+
+  function setDenomCantidad(d: number, v: string) {
+    const limpio = v.replace(/\D/g,'')
+    const nuevo = { ...fDenom, [d]: limpio }
+    setFDenom(nuevo)
+    if (contarDenom) {
+      const total = DENOMINACIONES.reduce((a,dd) => a + dd * (parseInt(nuevo[dd])||0), 0)
+      setFContado(total ? String(total) : '')
+    }
   }
 
   async function guardarCuadratura() {
@@ -110,7 +142,7 @@ export default function CajaPage() {
     }
     setGuardando(true)
     setError('')
-    const data = {
+    const data: any = {
       empresa_id:       fEmpresa,
       fecha:            fFecha,
       sencillo_inicial: parseFloat(fSencillo) || 0,
@@ -118,6 +150,9 @@ export default function CajaPage() {
       monto_contado:    parseFloat(fContado) || 0,
       responsable:      fResponsable || null,
       observaciones:    fObs || null,
+    }
+    if (contarDenom) {
+      DENOMINACIONES.forEach(d => { data['d'+d] = parseInt(fDenom[d]) || 0 })
     }
     try {
       const { error: err } = await supabase.from('cuadraturas_caja').insert(data)
@@ -154,6 +189,10 @@ export default function CajaPage() {
   const ultima          = scope[0]
   const diasUltima      = ultima ? diasEntre(ultima.fecha) : null
   const atrasada        = diasUltima !== null && diasUltima > 4
+  const ultimaConDenom  = scope.find(c => DENOMINACIONES.some(d => Number((c as any)[denomKey(d)]) > 0))
+  const nivelDenom = (cant: number) => cant<=2 ? 'crit' : cant<=5 ? 'warn' : 'ok'
+  const colorDenom = (n: string) => n==='crit'?'#E24B4A':n==='warn'?'#EF9F27':'#1D9E75'
+  const bgDenom     = (n: string) => n==='crit'?'rgba(226,75,74,0.16)':n==='warn'?'rgba(186,117,23,0.18)':'rgba(29,158,117,0.14)'
 
   function renderFormulario() {
     if (!showForm) return null
@@ -185,9 +224,38 @@ export default function CajaPage() {
             <input type="number" value={fEsperado} onChange={e=>setFEsperado(e.target.value)} placeholder="0" style={inp}/>
           </div>
           <div><label style={lbl}>Monto contado</label>
-            <input type="number" value={fContado} onChange={e=>setFContado(e.target.value)} placeholder="0" style={inp}/>
+            <input type="number" value={fContado} onChange={e=>setFContado(e.target.value)} placeholder="0" style={inp} disabled={contarDenom} />
           </div>
         </div>
+
+        <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:12.5, color:'#C9C9C9', marginBottom:12, cursor:'pointer' }}>
+          <input type="checkbox" checked={contarDenom} onChange={e=>{ const on=e.target.checked; setContarDenom(on); setFContado(on?String(totalDenom()):'') }} />
+          🧮 Contar el sencillo billete por billete (además arma el "Monto contado" solo)
+        </label>
+
+        {contarDenom && (
+          <div style={{ background:'#141414', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:14, marginBottom:14 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:10 }}>
+              {DENOMINACIONES.map(d=>{
+                const cant = parseInt(fDenom[d])||0
+                return (
+                  <div key={d}>
+                    <label style={lbl}>{d>=1000 ? `Billete ${fmtCLP(d)}` : `Moneda ${fmtCLP(d)}`}</label>
+                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      <input type="number" min={0} value={fDenom[d]} onChange={e=>setDenomCantidad(d, e.target.value)} placeholder="0" style={{...inp, width:70}}/>
+                      <span style={{ fontSize:11, color:'#767676', whiteSpace:'nowrap' as const }}>× {fmtCLP(d)} = {fmtCLP(cant*d)}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div style={{ marginTop:12, paddingTop:10, borderTop:'1px solid rgba(255,255,255,0.08)', display:'flex', justifyContent:'space-between', fontSize:13 }}>
+              <span style={{ color:'#9A9A9A' }}>Total contado</span>
+              <strong style={{ color:'#D8B24D' }}>{fmtCLP(totalDenom())}</strong>
+            </div>
+          </div>
+        )}
+
         {(fEsperado || fContado) && (
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', background: prevDif===0?'rgba(29,158,117,0.16)':prevDif>0?'rgba(184,145,46,0.16)':'rgba(226,75,74,0.16)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:13 }}>
             <span style={{ color:'#C9C9C9' }}>Diferencia</span>
@@ -334,6 +402,30 @@ export default function CajaPage() {
               </div>
             ))}
           </div>
+
+          {/* Estado del sencillo por denominación */}
+          {!cargando && ultimaConDenom && (
+            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:4 }}>
+                <div style={{ fontSize:14, fontWeight:600 }}>💰 Estado del sencillo por denominación</div>
+                <span style={{ fontSize:11, color:'#767676' }}>Último conteo: {ultimaConDenom.fecha}{empresa==='all' ? ' · '+empNombre(ultimaConDenom.empresa_id) : ''}</span>
+              </div>
+              <div style={{ fontSize:12, color:'#9A9A9A', marginBottom:14 }}>Así sabes con qué billetes/monedas te estás quedando corto para dar vuelto.</div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(110px,1fr))', gap:10 }}>
+                {DENOMINACIONES.map(d=>{
+                  const cant = Number((ultimaConDenom as any)[denomKey(d)]) || 0
+                  const nivel = nivelDenom(cant)
+                  return (
+                    <div key={d} style={{ background:bgDenom(nivel), borderRadius:10, padding:'10px 12px', textAlign:'center' }}>
+                      <div style={{ fontSize:11, color:colorDenom(nivel), opacity:0.85, marginBottom:2 }}>{d>=1000?'Billete':'Moneda'} {fmtCLP(d)}</div>
+                      <div style={{ fontSize:20, fontWeight:700, color:colorDenom(nivel) }}>{cant}</div>
+                      <div style={{ fontSize:10, color:colorDenom(nivel), opacity:0.8 }}>{nivel==='crit'?'⚠️ casi sin stock':nivel==='warn'?'bajo, considera sencillar':'ok'}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           {renderFormulario()}
 

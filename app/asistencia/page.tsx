@@ -70,6 +70,14 @@ export default function AsistenciaPage() {
   const [fValorHora,setFValorHora]= useState('')
   const [fPin,      setFPin]      = useState('')
 
+  // Form registro manual (libro de asistencia)
+  const [showRegForm, setShowRegForm] = useState(false)
+  const [regEditId,   setRegEditId]   = useState<string | null>(null)
+  const [rEmpleada,   setREmpleada]   = useState('')
+  const [rFecha,      setRFecha]      = useState(new Date().toISOString().split('T')[0])
+  const [rEntrada,    setREntrada]    = useState('09:00')
+  const [rSalida,     setRSalida]     = useState('')
+
   async function cargarDatos(perms: string[] = []) {
     setCargando(true)
     try {
@@ -155,6 +163,77 @@ export default function AsistenciaPage() {
       setEmpleadas(prev => prev.filter(e => e.id !== id))
     } catch(e: any) {
       setError('Error eliminando — puede que tenga registros de asistencia asociados.')
+    }
+  }
+
+  function resetRegForm() {
+    setShowRegForm(false); setRegEditId(null)
+    setREmpleada(scopeEmpleadas[0]?.id || empleadas[0]?.id || '')
+    setRFecha(new Date().toISOString().split('T')[0])
+    setREntrada('09:00'); setRSalida('')
+  }
+
+  function abrirEditarRegistro(r: Registro) {
+    setRegEditId(r.id)
+    setREmpleada(r.empleada_id)
+    setRFecha(r.fecha)
+    setREntrada(new Date(r.hora_entrada).toTimeString().slice(0,5))
+    setRSalida(r.hora_salida ? new Date(r.hora_salida).toTimeString().slice(0,5) : '')
+    setShowRegForm(true)
+  }
+
+  async function guardarRegistro() {
+    if (!rEmpleada || !rFecha || !rEntrada) {
+      setError('Completa trabajadora, fecha y hora de entrada.')
+      return
+    }
+    const emp = empleadas.find(e => e.id === rEmpleada)
+    if (!emp) { setError('Selecciona una trabajadora válida.'); return }
+    const entradaDate = new Date(`${rFecha}T${rEntrada}:00`)
+    const salidaDate  = rSalida ? new Date(`${rFecha}T${rSalida}:00`) : null
+    if (salidaDate && salidaDate <= entradaDate) {
+      setError('La hora de salida debe ser posterior a la de entrada.')
+      return
+    }
+    const horas = salidaDate ? (salidaDate.getTime() - entradaDate.getTime()) / 3600000 : null
+    const monto = horas != null ? Math.round(horas * emp.valor_hora) : null
+    setGuardando(true)
+    setError('')
+    const data = {
+      empleada_id:       rEmpleada,
+      empresa_id:        emp.empresa_id,
+      fecha:              rFecha,
+      hora_entrada:       entradaDate.toISOString(),
+      hora_salida:        salidaDate ? salidaDate.toISOString() : null,
+      horas_trabajadas:   horas,
+      valor_hora:         emp.valor_hora,
+      monto_calculado:    monto,
+    }
+    try {
+      if (regEditId) {
+        const { error: err } = await supabase.from('registros_asistencia').update(data).eq('id', regEditId)
+        if (err) throw err
+      } else {
+        const { error: err } = await supabase.from('registros_asistencia').insert(data)
+        if (err) throw err
+      }
+      await cargarDatos()
+      resetRegForm()
+      setExito('✅ Registro guardado.')
+      setTimeout(()=>setExito(''), 4000)
+    } catch(e: any) {
+      setError('Error guardando: ' + e.message)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  async function eliminarRegistro(id: string) {
+    try {
+      await supabase.from('registros_asistencia').delete().eq('id', id)
+      setRegistros(prev => prev.filter(r => r.id !== id))
+    } catch(e: any) {
+      setError('Error eliminando registro.')
     }
   }
 
@@ -387,36 +466,92 @@ export default function AsistenciaPage() {
 
           {/* ── REGISTROS ── */}
           {tab==='registros' && (
-            <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'4px 20px' }}>
-              {scopeRegistros.length===0 && (
-                <div style={{ textAlign:'center', padding:'2rem', color:'#767676', fontSize:14 }}>
-                  {cargando ? '⏳ Cargando...' : '📭 Sin registros de asistencia todavía'}
+            <>
+              {showRegForm && (
+                <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:14 }}>
+                  <div style={{ fontSize:14, fontWeight:600, marginBottom:6 }}>{regEditId ? 'Editar registro' : 'Agregar registro de asistencia'}</div>
+                  <div style={{ fontSize:12, color:'#9A9A9A', marginBottom:14, background:'rgba(184,145,46,0.16)', padding:'8px 12px', borderRadius:8 }}>
+                    💡 Tipo libro de asistencia: anota entrada y salida de cada trabajadora. Si dejas la salida vacía, el turno queda abierto (igual que si marcara en el kiosco). Las horas y el monto se calculan solos.
+                  </div>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+                    <div><label style={lbl}>Trabajadora</label>
+                      <select value={rEmpleada} onChange={e=>setREmpleada(e.target.value)} style={inp}>
+                        {empleadas.map(e=><option key={e.id} value={e.id}>{e.nombre} · {empNombre(e.empresa_id)}</option>)}
+                      </select>
+                    </div>
+                    <div><label style={lbl}>Fecha</label>
+                      <input type="date" value={rFecha} onChange={e=>setRFecha(e.target.value)} style={inp}/>
+                    </div>
+                    <div><label style={lbl}>Hora entrada</label>
+                      <input type="time" value={rEntrada} onChange={e=>setREntrada(e.target.value)} style={inp}/>
+                    </div>
+                    <div><label style={lbl}>Hora salida (opcional)</label>
+                      <input type="time" value={rSalida} onChange={e=>setRSalida(e.target.value)} style={inp}/>
+                    </div>
+                  </div>
+                  {rEntrada && rSalida && rEmpleada && (()=>{
+                    const emp = empleadas.find(e=>e.id===rEmpleada)
+                    const ent = new Date(`${rFecha}T${rEntrada}:00`)
+                    const sal = new Date(`${rFecha}T${rSalida}:00`)
+                    const h = (sal.getTime()-ent.getTime())/3600000
+                    if (!emp || h<=0) return null
+                    return (
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', background:'rgba(184,145,46,0.16)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:13 }}>
+                        <span style={{ color:'#C9C9C9' }}>{fmtHoras(h)} × {fmtCLP(emp.valor_hora)}/hora</span>
+                        <strong style={{ color:'#D8B24D' }}>{fmtCLP(Math.round(h*emp.valor_hora))}</strong>
+                      </div>
+                    )
+                  })()}
+                  <div style={{ display:'flex', gap:8 }}>
+                    <button onClick={guardarRegistro} disabled={guardando} style={{ ...btnP, flex:1, justifyContent:'center', opacity:guardando?0.7:1 }}>
+                      {guardando ? 'Guardando...' : '💾 Guardar registro'}
+                    </button>
+                    <button onClick={resetRegForm} style={{ ...btnSec, width:'auto', padding:'8px 16px' }}>Cancelar</button>
+                  </div>
                 </div>
               )}
-              {scopeRegistros.slice(0,200).map((r,i)=>(
-                <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 0', borderBottom:i<Math.min(scopeRegistros.length,200)-1?'1px solid rgba(255,255,255,0.06)':'none', flexWrap:'wrap', gap:8 }}>
-                  <div style={{ flex:1, minWidth:180 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
-                      <span style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{empleadaNombre(r.empleada_id)}</span>
-                      <span style={{ fontSize:11, color:'#767676' }}>{r.fecha} · {empNombre(r.empresa_id)}</span>
+
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'4px 20px', marginBottom:12 }}>
+                {scopeRegistros.length===0 && (
+                  <div style={{ textAlign:'center', padding:'2rem', color:'#767676', fontSize:14 }}>
+                    {cargando ? '⏳ Cargando...' : '📭 Sin registros de asistencia todavía'}
+                  </div>
+                )}
+                {scopeRegistros.slice(0,200).map((r,i)=>(
+                  <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 0', borderBottom:i<Math.min(scopeRegistros.length,200)-1?'1px solid rgba(255,255,255,0.06)':'none', flexWrap:'wrap', gap:8 }}>
+                    <div style={{ flex:1, minWidth:180 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
+                        <span style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{empleadaNombre(r.empleada_id)}</span>
+                        <span style={{ fontSize:11, color:'#767676' }}>{r.fecha} · {empNombre(r.empresa_id)}</span>
+                      </div>
+                      <div style={{ fontSize:12, color:'#9A9A9A' }}>
+                        Entrada {fmtHora(r.hora_entrada)} → {r.hora_salida ? `Salida ${fmtHora(r.hora_salida)}` : 'turno abierto'}
+                      </div>
                     </div>
-                    <div style={{ fontSize:12, color:'#9A9A9A' }}>
-                      Entrada {fmtHora(r.hora_entrada)} → {r.hora_salida ? `Salida ${fmtHora(r.hora_salida)}` : 'turno abierto'}
+                    <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+                      <div style={{ textAlign:'right' }}>
+                        {r.horas_trabajadas!=null ? (
+                          <>
+                            <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{fmtHoras(r.horas_trabajadas)}</div>
+                            <div style={{ fontSize:12, color:'#D8B24D' }}>{fmtCLP(r.monto_calculado||0)}</div>
+                          </>
+                        ) : (
+                          <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(184,145,46,0.16)', color:'#D8B24D' }}>En curso</span>
+                        )}
+                      </div>
+                      <button onClick={()=>abrirEditarRegistro(r)} style={{ background:'transparent', border:'1px solid rgba(255,255,255,0.14)', borderRadius:6, cursor:'pointer', fontSize:11, color:'#9A9A9A', padding:'4px 8px' }}>Editar</button>
+                      <button onClick={()=>eliminarRegistro(r.id)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:14, color:'#767676', padding:4 }}>🗑️</button>
                     </div>
                   </div>
-                  <div style={{ textAlign:'right' }}>
-                    {r.horas_trabajadas!=null ? (
-                      <>
-                        <div style={{ fontSize:13, fontWeight:600, color:'#F0EFEA' }}>{fmtHoras(r.horas_trabajadas)}</div>
-                        <div style={{ fontSize:12, color:'#D8B24D' }}>{fmtCLP(r.monto_calculado||0)}</div>
-                      </>
-                    ) : (
-                      <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, background:'rgba(184,145,46,0.16)', color:'#D8B24D' }}>En curso</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+
+              {!showRegForm && (
+                <button onClick={()=>{ resetRegForm(); setShowRegForm(true) }} style={{ ...btnP, width:'100%', justifyContent:'center' }}>
+                  + Agregar registro
+                </button>
+              )}
+            </>
           )}
 
           {/* ── TRABAJADORAS ── */}
