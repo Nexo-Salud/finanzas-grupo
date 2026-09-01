@@ -104,12 +104,11 @@ export default function MovimientosPage() {
       // Leer permisos
       const { data: perfil } = await supabase
         .from('usuarios_plataforma')
-        .select('rol, empresas_permitidas')
+        .select('rol, empresas_permitidas, modulos_permitidos')
         .eq('email', email)
         .single()
-      const MODULOS_RESTRINGIDOS: Record<string,string[]> = { quimico: ['/caja','/asistencia'], auxiliar: ['/asistencia'] }
-      if (perfil?.rol && MODULOS_RESTRINGIDOS[perfil.rol] && !MODULOS_RESTRINGIDOS[perfil.rol].includes('/movimientos')) {
-        router.push(MODULOS_RESTRINGIDOS[perfil.rol][0]); return
+      if (perfil?.modulos_permitidos && perfil.modulos_permitidos.length > 0 && !perfil.modulos_permitidos.includes('/movimientos')) {
+        router.push(perfil.modulos_permitidos[0]); return
       }
 
       let perms: string[] = []

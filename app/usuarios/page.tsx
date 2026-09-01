@@ -31,8 +31,32 @@ const ROLES = {
   contador: { label:'Contador',             color:'#1D9E75', bg:'rgba(29,158,117,0.16)', tx:'#1D9E75', icon:'🧮', desc:'Movimientos, facturas, bancos y reportes' },
   gerente:  { label:'Gerente',              color:'#B8912E', bg:'rgba(184,145,46,0.16)', tx:'#D8B24D', icon:'💼', desc:'Dashboard, presupuesto, reportes y proyecciones' },
   lectura:  { label:'Solo lectura',         color:'#888780', bg:'#1F1F1F',               tx:'#C9C9C9', icon:'👁️', desc:'Solo puede ver dashboard y reportes' },
-  quimico:  { label:'Químico Farmacéutico', color:'#378ADD', bg:'rgba(55,138,221,0.16)', tx:'#5CA6E8', icon:'💊', desc:'Solo Caja (cuadratura) y Asistencia — se le redirige si intenta entrar a otro módulo' },
-  auxiliar: { label:'Auxiliar',             color:'#639922', bg:'rgba(99,153,34,0.16)',  tx:'#8ABF4A', icon:'🧑‍🔧', desc:'Solo Asistencia — se le redirige si intenta entrar a otro módulo' },
+  quimico:  { label:'Químico Farmacéutico', color:'#378ADD', bg:'rgba(55,138,221,0.16)', tx:'#5CA6E8', icon:'💊', desc:'Sugerido: Caja y Asistencia — ajustable por usuario abajo' },
+  auxiliar: { label:'Auxiliar',             color:'#639922', bg:'rgba(99,153,34,0.16)',  tx:'#8ABF4A', icon:'🧑‍🔧', desc:'Sugerido: solo Asistencia — ajustable por usuario abajo' },
+}
+
+// Lista de módulos del sistema (debe reflejar los hrefs reales de cada página)
+const MODULOS = [
+  { href:'/',             label:'Dashboard',    icon:'▦'  },
+  { href:'/movimientos',  label:'Movimientos',  icon:'↕'  },
+  { href:'/caja',         label:'Caja',         icon:'💵' },
+  { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
+  { href:'/alertas',      label:'Alertas',      icon:'🔔' },
+  { href:'/reportes',     label:'Reportes',     icon:'📄' },
+  { href:'/estados',      label:'Est. Financ.', icon:'📑' },
+  { href:'/bancos',       label:'Bancos',       icon:'🏦' },
+  { href:'/tributario',   label:'Documentos',   icon:'🧾' },
+  { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
+  { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
+  { href:'/asistencia',   label:'Asistencia',   icon:'🕐' },
+  { href:'/kpis',         label:'KPIs',         icon:'📊' },
+  { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
+]
+
+// Solo una sugerencia inicial al elegir el rol — el admin puede des/marcar cualquier módulo después
+const MODULOS_SUGERIDOS: Record<string,string[]> = {
+  quimico:  ['/caja','/asistencia'],
+  auxiliar: ['/asistencia'],
 }
 
 type Rol = keyof typeof ROLES
@@ -43,6 +67,7 @@ type Perfil = {
   rol: Rol
   activa: boolean
   empresas_permitidas: string[]
+  modulos_permitidos: string[]
   created_at?: string
 }
 type Empresa = { id: string; nombre_corto: string; nombre: string; color: string }
@@ -65,12 +90,11 @@ export default function UsuariosPage() {
       setUserEmail(email)
       const { data: perfil } = await supabase
         .from('usuarios_plataforma')
-        .select('rol, empresas_permitidas')
+        .select('rol, empresas_permitidas, modulos_permitidos')
         .eq('email', email)
         .single()
-      const MODULOS_RESTRINGIDOS: Record<string,string[]> = { quimico: ['/caja','/asistencia'], auxiliar: ['/asistencia'] }
-      if (perfil?.rol && MODULOS_RESTRINGIDOS[perfil.rol] && !MODULOS_RESTRINGIDOS[perfil.rol].includes('/usuarios')) {
-        router.push(MODULOS_RESTRINGIDOS[perfil.rol][0]); return
+      if (perfil?.modulos_permitidos && perfil.modulos_permitidos.length > 0 && !perfil.modulos_permitidos.includes('/usuarios')) {
+        router.push(perfil.modulos_permitidos[0]); return
       }
       if (perfil) {
         if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
@@ -98,7 +122,7 @@ export default function UsuariosPage() {
   const [guardando, setGuardando] = useState(false)
   const [error,     setError]     = useState('')
   const [exito,     setExito]     = useState('')
-  const [tab,       setTab]       = useState<'usuarios'|'roles'|'permisos'>('usuarios')
+  const [tab,       setTab]       = useState<'usuarios'|'roles'|'permisos'|'permisosModulos'>('usuarios')
   const [showForm,  setShowForm]  = useState(false)
   const [editando,  setEditando]  = useState<Perfil|null>(null)
 
@@ -108,6 +132,8 @@ export default function UsuariosPage() {
   const [fRol,       setFRol]       = useState<Rol>('gerente')
   const [fEmpresas,  setFEmpresas]  = useState<string[]>([])
   const [fTodas,     setFTodas]     = useState(false)
+  const [fModulos,      setFModulos]      = useState<string[]>([])
+  const [fModulosTodos, setFModulosTodos] = useState(true)
 
   useEffect(() => { cargarDatos() }, [])
 
@@ -121,7 +147,8 @@ export default function UsuariosPage() {
       setEmpresas(emps || [])
       setPerfiles((perfs || []).map(p => ({
         ...p,
-        empresas_permitidas: p.empresas_permitidas || []
+        empresas_permitidas: p.empresas_permitidas || [],
+        modulos_permitidos:  p.modulos_permitidos || []
       })))
     } catch(e: any) {
       setError('Error conectando con la base de datos.')
@@ -132,6 +159,7 @@ export default function UsuariosPage() {
     setEditando(null)
     setFNombre(''); setFEmail(''); setFRol('gerente')
     setFEmpresas([]); setFTodas(false)
+    setFModulos([]); setFModulosTodos(true)
     setShowForm(true)
   }
 
@@ -142,6 +170,9 @@ export default function UsuariosPage() {
     const tieneTodasEmps = todasEmps.every(id => p.empresas_permitidas.includes(id))
     setFTodas(tieneTodasEmps || p.empresas_permitidas.length === 0)
     setFEmpresas(p.empresas_permitidas)
+    const modulos = p.modulos_permitidos || []
+    setFModulosTodos(modulos.length === 0)
+    setFModulos(modulos)
     setShowForm(true)
     setTab('usuarios')
   }
@@ -150,16 +181,34 @@ export default function UsuariosPage() {
     setFEmpresas(prev => prev.includes(id) ? prev.filter(e=>e!==id) : [...prev, id])
   }
 
+  function toggleModulo(href: string) {
+    setFModulos(prev => prev.includes(href) ? prev.filter(m=>m!==href) : [...prev, href])
+  }
+
+  function cambiarRol(nuevoRol: Rol) {
+    setFRol(nuevoRol)
+    // Solo sugiere módulos al elegir un rol nuevo en un usuario nuevo — no pisa ajustes manuales al editar
+    if (!editando && MODULOS_SUGERIDOS[nuevoRol]) {
+      setFModulosTodos(false)
+      setFModulos(MODULOS_SUGERIDOS[nuevoRol])
+    } else if (!editando) {
+      setFModulosTodos(true)
+      setFModulos([])
+    }
+  }
+
   async function guardarPerfil() {
     if (!fNombre || !fEmail) return
     setGuardando(true)
     const empresasGuardar = fTodas ? empresas.map(e=>e.id) : fEmpresas
+    const modulosGuardar  = fModulosTodos ? [] : fModulos
     const datos = {
       nombre: fNombre,
       email:  fEmail,
       rol:    fRol,
       activa: true,
       empresas_permitidas: empresasGuardar,
+      modulos_permitidos:  modulosGuardar,
     }
     try {
       if (editando) {
@@ -203,6 +252,15 @@ export default function UsuariosPage() {
     } catch(e: any) { setError('Error actualizando permisos.') }
   }
 
+  async function actualizarModulos(id: string, nuevosModulos: string[]) {
+    try {
+      await supabase.from('usuarios_plataforma').update({ modulos_permitidos: nuevosModulos }).eq('id', id)
+      setPerfiles(prev => prev.map(p => p.id===id ? {...p, modulos_permitidos:nuevosModulos} : p))
+      setExito('✅ Permisos actualizados')
+      setTimeout(() => setExito(''), 2000)
+    } catch(e: any) { setError('Error actualizando permisos.') }
+  }
+
   const empNombre = (id: string) => empresas.find(e=>e.id===id)?.nombre_corto || id
   const empColor  = (id: string) => empresas.find(e=>e.id===id)?.color || '#888780'
   const activos   = perfiles.filter(p=>p.activa).length
@@ -211,6 +269,11 @@ export default function UsuariosPage() {
     if (p.rol === 'admin') return true
     if (!p.empresas_permitidas || p.empresas_permitidas.length === 0) return true
     return p.empresas_permitidas.includes(empId)
+  }
+
+  const tieneModulo = (p: Perfil, href: string) => {
+    if (!p.modulos_permitidos || p.modulos_permitidos.length === 0) return true
+    return p.modulos_permitidos.includes(href)
   }
 
   return (
@@ -287,9 +350,10 @@ export default function UsuariosPage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:20 }}>
             {([
-              {k:'usuarios', l:'👥 Usuarios'},
-              {k:'permisos', l:'🏢 Permisos por empresa'},
-              {k:'roles',    l:'🛡️ Roles'},
+              {k:'usuarios',       l:'👥 Usuarios'},
+              {k:'permisos',       l:'🏢 Permisos por empresa'},
+              {k:'permisosModulos',l:'🧩 Permisos por módulo'},
+              {k:'roles',          l:'🛡️ Roles'},
             ] as const).map(t=>(
               <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
@@ -311,7 +375,7 @@ export default function UsuariosPage() {
                   <input type="email" value={fEmail} onChange={e=>setFEmail(e.target.value)} placeholder="usuario@correo.cl" style={inp}/>
                 </div>
                 <div><label style={lbl}>Rol</label>
-                  <select value={fRol} onChange={e=>setFRol(e.target.value as Rol)} style={inp}>
+                  <select value={fRol} onChange={e=>cambiarRol(e.target.value as Rol)} style={inp}>
                     {(Object.entries(ROLES) as [Rol, typeof ROLES[Rol]][]).map(([k,v])=>(
                       <option key={k} value={k}>{v.icon} {v.label}</option>
                     ))}
@@ -347,6 +411,36 @@ export default function UsuariosPage() {
                   )}
                 </div>
               </div>
+
+              <div style={{ marginBottom:16 }}>
+                <label style={lbl}>Acceso a módulos {fRol==='admin' && '(el administrador siempre ve todo)'}</label>
+                {fRol === 'admin' ? (
+                  <div style={{ fontSize:12, color:'#B8912E', padding:'8px', background:'rgba(184,145,46,0.16)', borderRadius:8 }}>
+                    👑 Administrador — acceso automático a todos los módulos
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ fontSize:11, color:'#767676', marginBottom:8 }}>
+                      Marca solo los módulos que este usuario puede abrir. Si intenta entrar a uno que no está marcado, lo redirigimos automáticamente. Esto es independiente del rol — puedes ajustarlo persona por persona.
+                    </div>
+                    <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#C9C9C9', marginBottom:8, cursor:'pointer', padding:'8px', background:'#141414', borderRadius:8, border:'1px solid rgba(255,255,255,0.12)' }}>
+                      <input type="checkbox" checked={fModulosTodos} onChange={e=>{ setFModulosTodos(e.target.checked); if(e.target.checked) setFModulos([]) }} style={{ accentColor:'#B8912E' }}/>
+                      <strong>Todos los módulos</strong>
+                    </label>
+                    {!fModulosTodos && (
+                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:6 }}>
+                        {MODULOS.map(m=>(
+                          <label key={m.href} style={{ display:'flex', alignItems:'center', gap:6, fontSize:12.5, color:'#C9C9C9', cursor:'pointer', padding:'7px 10px', borderRadius:8, border:`1.5px solid ${fModulos.includes(m.href)?'#B8912E':'rgba(255,255,255,0.12)'}`, background:fModulos.includes(m.href)?'rgba(184,145,46,0.12)':'#161616' }}>
+                            <input type="checkbox" checked={fModulos.includes(m.href)} onChange={()=>toggleModulo(m.href)} style={{ accentColor:'#B8912E' }}/>
+                            <span>{m.icon}</span>{m.label}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
               <div style={{ display:'flex', gap:8 }}>
                 <button onClick={guardarPerfil} disabled={guardando} style={{ ...btnP, flex:1, justifyContent:'center', opacity:guardando?0.7:1 }}>
                   {guardando ? 'Guardando...' : editando ? '💾 Guardar cambios' : '✅ Agregar usuario'}
@@ -370,6 +464,7 @@ export default function UsuariosPage() {
               {perfiles.map(p => {
                 const r = ROLES[p.rol] || ROLES.lectura
                 const tieneRestr = p.rol !== 'admin' && p.empresas_permitidas?.length > 0
+                const tieneRestrModulos = p.rol !== 'admin' && p.modulos_permitidos?.length > 0
                 return (
                   <div key={p.id} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:18, marginBottom:10, opacity:p.activa?1:0.6 }}>
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:tieneRestr?12:0 }}>
@@ -417,6 +512,22 @@ export default function UsuariosPage() {
                         </>
                       )}
                     </div>
+
+                    {/* Módulos con acceso */}
+                    {tieneRestrModulos && (
+                      <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap', marginTop:6 }}>
+                        <span style={{ fontSize:11, color:'#767676' }}>Módulos:</span>
+                        {p.modulos_permitidos.map(href=>{
+                          const m = MODULOS.find(x=>x.href===href)
+                          return (
+                            <span key={href} style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:500, background:'rgba(55,138,221,0.16)', color:'#5CA6E8', border:'1px solid rgba(55,138,221,0.3)' }}>
+                              {m?.icon} {m?.label || href}
+                            </span>
+                          )
+                        })}
+                        <span style={{ fontSize:11, color:'#E24B4A', fontWeight:500, marginLeft:4 }}>🔒 Restringido</span>
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -518,6 +629,95 @@ export default function UsuariosPage() {
 
               <div style={{ fontSize:11, color:'#767676', marginTop:10, textAlign:'center' }}>
                 ✓ verde = tiene acceso · ✕ gris = sin acceso · 👑 = administrador (siempre tiene acceso)
+              </div>
+            </>
+          )}
+
+          {/* ── Tab: Permisos por módulo ── */}
+          {!cargando && tab==='permisosModulos' && (
+            <>
+              <div style={{ background:'rgba(55,138,221,0.16)', border:'1px solid rgba(55,138,221,0.4)', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#5CA6E8', marginBottom:16 }}>
+                🧩 <strong>Panel de módulos:</strong> Marca qué páginas del sistema puede abrir cada usuario, sin importar su rol. Si intenta entrar a una que no tiene marcada, se le redirige automáticamente. Los administradores siempre tienen acceso a todo.
+              </div>
+
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'auto' }}>
+                <table style={{ width:'100%', borderCollapse:'collapse' }}>
+                  <thead>
+                    <tr style={{ background:'#141414' }}>
+                      <th style={{ textAlign:'left', padding:'12px 16px', fontSize:12, fontWeight:600, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)', position:'sticky', left:0, background:'#141414' }}>
+                        Usuario
+                      </th>
+                      {MODULOS.map(m=>(
+                        <th key={m.href} style={{ textAlign:'center', padding:'12px 10px', fontSize:11, fontWeight:600, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)', whiteSpace:'nowrap' as const }}>
+                          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4 }}>
+                            <span style={{ fontSize:14 }}>{m.icon}</span>
+                            {m.label}
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {perfiles.map((p,i)=>{
+                      const r = ROLES[p.rol] || ROLES.lectura
+                      return (
+                        <tr key={p.id} style={{ borderBottom:i<perfiles.length-1?'1px solid rgba(255,255,255,0.06)':'none', opacity:p.activa?1:0.5 }}>
+                          <td style={{ padding:'12px 16px', position:'sticky', left:0, background:'#161616' }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                              <div style={{ width:32, height:32, borderRadius:'50%', background:r.bg, color:r.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, flexShrink:0 }}>
+                                {initials(p.nombre)}
+                              </div>
+                              <div>
+                                <div style={{ fontSize:13, fontWeight:500, color:'#F0EFEA', whiteSpace:'nowrap' as const }}>{p.nombre}</div>
+                                <span style={{ fontSize:10, padding:'1px 6px', borderRadius:999, background:r.bg, color:r.tx, fontWeight:500 }}>{r.icon} {r.label}</span>
+                              </div>
+                            </div>
+                          </td>
+                          {MODULOS.map(m=>{
+                            const acceso = tieneModulo(p, m.href)
+                            const esAdmin = p.rol === 'admin'
+                            return (
+                              <td key={m.href} style={{ textAlign:'center', padding:'12px 10px' }}>
+                                {esAdmin ? (
+                                  <span style={{ fontSize:16 }} title="Admin — acceso siempre">👑</span>
+                                ) : (
+                                  <div
+                                    onClick={()=>{
+                                      if (!p.activa) return
+                                      const tieneM = p.modulos_permitidos?.includes(m.href)
+                                      let nuevos: string[]
+                                      if (!p.modulos_permitidos || p.modulos_permitidos.length === 0) {
+                                        // Tenía acceso a todos → restringir a todos menos este
+                                        nuevos = MODULOS.filter(mod=>mod.href!==m.href).map(mod=>mod.href)
+                                      } else if (tieneM) {
+                                        nuevos = p.modulos_permitidos.filter(h=>h!==m.href)
+                                      } else {
+                                        nuevos = [...(p.modulos_permitidos||[]), m.href]
+                                      }
+                                      actualizarModulos(p.id, nuevos)
+                                    }}
+                                    style={{ width:26, height:26, borderRadius:8, background:acceso?'rgba(55,138,221,0.16)':'#1F1F1F', border:`2px solid ${acceso?'#378ADD':'rgba(255,255,255,0.12)'}`, cursor:p.activa?'pointer':'not-allowed', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto', transition:'all 0.15s' }}
+                                    title={acceso?`Quitar acceso a ${m.label}`:`Dar acceso a ${m.label}`}
+                                  >
+                                    {acceso ? (
+                                      <span style={{ color:'#5CA6E8', fontSize:13, fontWeight:700 }}>✓</span>
+                                    ) : (
+                                      <span style={{ color:'#4A4A4A', fontSize:13 }}>✕</span>
+                                    )}
+                                  </div>
+                                )}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style={{ fontSize:11, color:'#767676', marginTop:10, textAlign:'center' }}>
+                ✓ azul = tiene acceso · ✕ gris = sin acceso · 👑 = administrador (siempre tiene acceso)
               </div>
             </>
           )}
