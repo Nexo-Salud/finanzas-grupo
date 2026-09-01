@@ -246,20 +246,22 @@ export default function UsuariosPage() {
 
   async function actualizarEmpresas(id: string, nuevasEmpresas: string[]) {
     try {
-      await supabase.from('usuarios_plataforma').update({ empresas_permitidas: nuevasEmpresas }).eq('id', id)
+      const { error: err } = await supabase.from('usuarios_plataforma').update({ empresas_permitidas: nuevasEmpresas }).eq('id', id)
+      if (err) throw err
       setPerfiles(prev => prev.map(p => p.id===id ? {...p, empresas_permitidas:nuevasEmpresas} : p))
       setExito('✅ Permisos actualizados')
       setTimeout(() => setExito(''), 2000)
-    } catch(e: any) { setError('Error actualizando permisos.') }
+    } catch(e: any) { setError('Error actualizando permisos: ' + (e?.message || 'desconocido')) }
   }
 
   async function actualizarModulos(id: string, nuevosModulos: string[]) {
     try {
-      await supabase.from('usuarios_plataforma').update({ modulos_permitidos: nuevosModulos }).eq('id', id)
+      const { error: err } = await supabase.from('usuarios_plataforma').update({ modulos_permitidos: nuevosModulos }).eq('id', id)
+      if (err) throw err
       setPerfiles(prev => prev.map(p => p.id===id ? {...p, modulos_permitidos:nuevosModulos} : p))
       setExito('✅ Permisos actualizados')
       setTimeout(() => setExito(''), 2000)
-    } catch(e: any) { setError('Error actualizando permisos.') }
+    } catch(e: any) { setError('Error actualizando permisos: ' + (e?.message || 'desconocido')) }
   }
 
   const empNombre = (id: string) => empresas.find(e=>e.id===id)?.nombre_corto || id
