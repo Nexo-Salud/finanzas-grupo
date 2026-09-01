@@ -165,11 +165,12 @@ export default function UsuariosPage() {
 
   function abrirFormEditar(p: Perfil) {
     setEditando(p)
-    setFNombre(p.nombre); setFEmail(p.email); setFRol(p.rol)
+    setFNombre(p.nombre); setFEmail(p.email); setFRol((p.rol && ROLES[p.rol]) ? p.rol : 'lectura')
+    const empsPerm = p.empresas_permitidas || []
     const todasEmps = empresas.map(e=>e.id)
-    const tieneTodasEmps = todasEmps.every(id => p.empresas_permitidas.includes(id))
-    setFTodas(tieneTodasEmps || p.empresas_permitidas.length === 0)
-    setFEmpresas(p.empresas_permitidas)
+    const tieneTodasEmps = todasEmps.length > 0 && todasEmps.every(id => empsPerm.includes(id))
+    setFTodas(tieneTodasEmps || empsPerm.length === 0)
+    setFEmpresas(empsPerm)
     const modulos = p.modulos_permitidos || []
     setFModulosTodos(modulos.length === 0)
     setFModulos(modulos)
@@ -381,7 +382,7 @@ export default function UsuariosPage() {
                     ))}
                   </select>
                   <div style={{ fontSize:11, color:'#9A9A9A', marginTop:4, padding:'6px 8px', background:'#141414', borderRadius:6 }}>
-                    {ROLES[fRol].desc}
+                    {(ROLES[fRol] || ROLES.lectura).desc}
                   </div>
                 </div>
                 <div>
