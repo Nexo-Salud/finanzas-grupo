@@ -50,7 +50,7 @@ export default function MarcarAsistenciaPage() {
     const hoy = new Date().toISOString().split('T')[0]
     const [{ data: empls, error: errEmpls }, { data: regs, error: errRegs }] = await Promise.all([
       supabase.from('empleadas_hora').select('*').eq('activa', true).order('nombre'),
-      supabase.from('registros_asistencia').select('id,empleada_id,hora_entrada,hora_salida_colacion,hora_entrada_tarde,hora_salida').eq('fecha', hoy),
+      supabase.from('registros_asistencia').select('id,empleada_id,hora_entrada,hora_salida_colacion,hora_entrada_tarde,hora_salida').eq('fecha', hoy).order('hora_entrada', { ascending:false }),
     ])
     if (errEmpls || errRegs) {
       setErrorCarga('Error cargando datos: ' + (errEmpls?.message || errRegs?.message || 'desconocido') + '. Es probable que falte correr una migración SQL en Supabase — avisa al administrador.')
@@ -63,7 +63,16 @@ export default function MarcarAsistenciaPage() {
   useEffect(() => { cargar() }, [])
 
   function registroHoy(empleadaId: string) {
-    return hoyRegs.find(r => r.empleada_id === empleadaId) || null
+    const regs = hoyRegs.filter(r => r.empleada_id === empleadaId)
+    if (regs.length === 0) return null
+    if (regs.length === 1) return regs[0]
+    // Si hay más de un registro hoy (ej. duplicados de una carga anterior),
+    // preferir el turno todavía abierto y, entre varios abiertos, el que
+    // tenga más pasos marcados (el más avanzado).
+    const abiertos = regs.filter(r => !r.hora_salida)
+    const candidatos = abiertos.length > 0 ? abiertos : regs
+    const rango = (r: Registro) => r.hora_entrada_tarde ? 3 : r.hora_salida_colacion ? 2 : 1
+    return [...candidatos].sort((a,b) => rango(b)-rango(a) || new Date(b.hora_entrada).getTime()-new Date(a.hora_entrada).getTime())[0]
   }
 
   function etapaDe(empleadaId: string): Etapa {
