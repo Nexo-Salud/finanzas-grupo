@@ -42,14 +42,19 @@ export default function MarcarAsistenciaPage() {
   const [pin,        setPin]        = useState('')
   const [procesando, setProcesando] = useState(false)
   const [mensaje,    setMensaje]    = useState<{tipo:'ok'|'error', texto:string} | null>(null)
+  const [errorCarga, setErrorCarga] = useState('')
 
   async function cargar() {
     setCargando(true)
+    setErrorCarga('')
     const hoy = new Date().toISOString().split('T')[0]
-    const [{ data: empls }, { data: regs }] = await Promise.all([
+    const [{ data: empls, error: errEmpls }, { data: regs, error: errRegs }] = await Promise.all([
       supabase.from('empleadas_hora').select('*').eq('activa', true).order('nombre'),
       supabase.from('registros_asistencia').select('id,empleada_id,hora_entrada,hora_salida_colacion,hora_entrada_tarde,hora_salida').eq('fecha', hoy),
     ])
+    if (errEmpls || errRegs) {
+      setErrorCarga('Error cargando datos: ' + (errEmpls?.message || errRegs?.message || 'desconocido') + '. Es probable que falte correr una migración SQL en Supabase — avisa al administrador.')
+    }
     setEmpleadas(empls || [])
     setHoyRegs(regs || [])
     setCargando(false)
@@ -179,6 +184,12 @@ export default function MarcarAsistenciaPage() {
 
         {cargando && (
           <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>⏳ Cargando...</div>
+        )}
+
+        {!cargando && errorCarga && (
+          <div style={{ textAlign:'center', fontSize:12, padding:'12px 14px', borderRadius:10, background:'rgba(226,75,74,0.16)', color:'#E24B4A', marginBottom:16 }}>
+            ⚠️ {errorCarga}
+          </div>
         )}
 
         {!cargando && !seleccion && (
