@@ -30,7 +30,7 @@ const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'
 
 type Empresa  = { id: string; nombre_corto: string; color: string }
 type Empleada = { id: string; empresa_id: string; nombre: string; valor_hora: number; pin: string; activa: boolean }
-type Registro = { id: string; empleada_id: string; empresa_id: string; fecha: string; hora_entrada: string; hora_salida: string | null; horas_trabajadas: number | null; valor_hora: number; monto_calculado: number | null; colacion_minutos?: number | null }
+type Registro = { id: string; empleada_id: string; empresa_id: string; fecha: string; hora_entrada: string; hora_salida_colacion?: string | null; hora_entrada_tarde?: string | null; hora_salida: string | null; horas_trabajadas: number | null; valor_hora: number; monto_calculado: number | null; colacion_minutos?: number | null }
 type Cierre   = { id: string; empresa_id: string; empleada_id: string; anio: number; mes: number; total_horas: number; total_pagar: number; pagado: boolean; fecha_pago: string | null }
 
 function fmtCLP(n: number) { return '$'+Math.round(n).toLocaleString('es-CL') }
@@ -38,6 +38,13 @@ function fmtHoras(n: number) { return n.toFixed(1)+' h' }
 function fmtHora(iso: string) {
   const d = new Date(iso)
   return d.toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' })
+}
+function fmtJornada(r: Registro) {
+  const partes = [`🟢 ${fmtHora(r.hora_entrada)}`]
+  if (r.hora_salida_colacion) partes.push(`🍽️ ${fmtHora(r.hora_salida_colacion)}`)
+  if (r.hora_entrada_tarde)   partes.push(`🔙 ${fmtHora(r.hora_entrada_tarde)}`)
+  partes.push(r.hora_salida ? `🔴 ${fmtHora(r.hora_salida)}` : '⏳ en curso')
+  return partes.join('  →  ')
 }
 
 export default function AsistenciaPage() {
@@ -75,9 +82,11 @@ export default function AsistenciaPage() {
   const [regEditId,   setRegEditId]   = useState<string | null>(null)
   const [rEmpleada,   setREmpleada]   = useState('')
   const [rFecha,      setRFecha]      = useState(new Date().toISOString().split('T')[0])
-  const [rEntrada,    setREntrada]    = useState('09:00')
-  const [rSalida,     setRSalida]     = useState('')
-  const [rColacion,   setRColacion]   = useState('0')
+  const [rEntrada,       setREntrada]       = useState('09:00')
+  const [rSalidaColacion,setRSalidaColacion]= useState('')
+  const [rEntradaTarde,  setREntradaTarde]  = useState('')
+  const [rSalida,        setRSalida]        = useState('')
+  const [rColacion,      setRColacion]      = useState('0')
 
   const [expandido, setExpandido] = useState<string | null>(null)
 
@@ -173,7 +182,7 @@ export default function AsistenciaPage() {
     setShowRegForm(false); setRegEditId(null)
     setREmpleada(scopeEmpleadas[0]?.id || empleadas[0]?.id || '')
     setRFecha(new Date().toISOString().split('T')[0])
-    setREntrada('09:00'); setRSalida(''); setRColacion('0')
+    setREntrada('09:00'); setRSalidaColacion(''); setREntradaTarde(''); setRSalida(''); setRColacion('0')
   }
 
   function abrirEditarRegistro(r: Registro) {
@@ -181,6 +190,8 @@ export default function AsistenciaPage() {
     setREmpleada(r.empleada_id)
     setRFecha(r.fecha)
     setREntrada(new Date(r.hora_entrada).toTimeString().slice(0,5))
+    setRSalidaColacion(r.hora_salida_colacion ? new Date(r.hora_salida_colacion).toTimeString().slice(0,5) : '')
+    setREntradaTarde(r.hora_entrada_tarde ? new Date(r.hora_entrada_tarde).toTimeString().slice(0,5) : '')
     setRSalida(r.hora_salida ? new Date(r.hora_salida).toTimeString().slice(0,5) : '')
     setRColacion(String(r.colacion_minutos || 0))
     setShowRegForm(true)
@@ -193,27 +204,41 @@ export default function AsistenciaPage() {
     }
     const emp = empleadas.find(e => e.id === rEmpleada)
     if (!emp) { setError('Selecciona una trabajadora válida.'); return }
-    const entradaDate = new Date(`${rFecha}T${rEntrada}:00`)
-    const salidaDate  = rSalida ? new Date(`${rFecha}T${rSalida}:00`) : null
+    const entradaDate       = new Date(`${rFecha}T${rEntrada}:00`)
+    const salidaColDate     = rSalidaColacion ? new Date(`${rFecha}T${rSalidaColacion}:00`) : null
+    const entradaTardeDate  = rEntradaTarde   ? new Date(`${rFecha}T${rEntradaTarde}:00`)   : null
+    const salidaDate        = rSalida ? new Date(`${rFecha}T${rSalida}:00`) : null
+    if (salidaColDate && salidaColDate <= entradaDate) {
+      setError('La salida a colación debe ser posterior a la entrada.')
+      return
+    }
+    if (entradaTardeDate && salidaColDate && entradaTardeDate <= salidaColDate) {
+      setError('El regreso de colación debe ser posterior a la salida a colación.')
+      return
+    }
     if (salidaDate && salidaDate <= entradaDate) {
       setError('La hora de salida debe ser posterior a la de entrada.')
       return
     }
-    const colacionMin = parseInt(rColacion) || 0
+    const colacionMin = (salidaColDate && entradaTardeDate)
+      ? Math.round((entradaTardeDate.getTime() - salidaColDate.getTime()) / 60000)
+      : (parseInt(rColacion) || 0)
     const horas = salidaDate ? Math.max(0, (salidaDate.getTime() - entradaDate.getTime()) / 3600000 - colacionMin/60) : null
     const monto = horas != null ? Math.round(horas * emp.valor_hora) : null
     setGuardando(true)
     setError('')
     const data = {
-      empleada_id:       rEmpleada,
-      empresa_id:        emp.empresa_id,
-      fecha:              rFecha,
-      hora_entrada:       entradaDate.toISOString(),
-      hora_salida:        salidaDate ? salidaDate.toISOString() : null,
-      horas_trabajadas:   horas,
-      valor_hora:         emp.valor_hora,
-      monto_calculado:    monto,
-      colacion_minutos:   colacionMin,
+      empleada_id:          rEmpleada,
+      empresa_id:           emp.empresa_id,
+      fecha:                rFecha,
+      hora_entrada:          entradaDate.toISOString(),
+      hora_salida_colacion:  salidaColDate ? salidaColDate.toISOString() : null,
+      hora_entrada_tarde:    entradaTardeDate ? entradaTardeDate.toISOString() : null,
+      hora_salida:           salidaDate ? salidaDate.toISOString() : null,
+      horas_trabajadas:      horas,
+      valor_hora:            emp.valor_hora,
+      monto_calculado:       monto,
+      colacion_minutos:      colacionMin,
     }
     try {
       if (regEditId) {
@@ -479,7 +504,7 @@ export default function AsistenciaPage() {
                         <div key={d.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px 0', borderBottom:j<regsDia.length-1?'1px solid rgba(255,255,255,0.06)':'none', flexWrap:'wrap', gap:8, fontSize:12 }}>
                           <span style={{ color:'#C9C9C9' }}>{d.fecha}</span>
                           <span style={{ color:'#9A9A9A' }}>
-                            {fmtHora(d.hora_entrada)} → {d.hora_salida ? fmtHora(d.hora_salida) : 'abierto'}
+                            {fmtJornada(d)}
                             {!!d.colacion_minutos && ` · 🍽️ ${d.colacion_minutos} min`}
                           </span>
                           <span style={{ color:'#F0EFEA', fontWeight:500, minWidth:60, textAlign:'right' }}>{d.horas_trabajadas!=null ? fmtHoras(d.horas_trabajadas) : '—'}</span>
@@ -507,7 +532,7 @@ export default function AsistenciaPage() {
                 <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:14 }}>
                   <div style={{ fontSize:14, fontWeight:600, marginBottom:6 }}>{regEditId ? 'Editar registro' : 'Agregar registro de asistencia'}</div>
                   <div style={{ fontSize:12, color:'#9A9A9A', marginBottom:14, background:'rgba(184,145,46,0.16)', padding:'8px 12px', borderRadius:8 }}>
-                    💡 Tipo libro de asistencia: anota entrada y salida de cada trabajadora. Si dejas la salida vacía, el turno queda abierto (igual que si marcara en el kiosco). Las horas y el monto se calculan solos.
+                    💡 Reloj control con 4 marcas: entrada, salida a colación, regreso de colación y salida final. Si registras la salida y el regreso de colación, el tiempo de colación se calcula solo (y no se paga). Deja en blanco lo que no aplique.
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                     <div><label style={lbl}>Trabajadora</label>
@@ -518,21 +543,29 @@ export default function AsistenciaPage() {
                     <div><label style={lbl}>Fecha</label>
                       <input type="date" value={rFecha} onChange={e=>setRFecha(e.target.value)} style={inp}/>
                     </div>
-                    <div><label style={lbl}>Hora entrada</label>
+                    <div><label style={lbl}>🟢 Hora entrada</label>
                       <input type="time" value={rEntrada} onChange={e=>setREntrada(e.target.value)} style={inp}/>
                     </div>
-                    <div><label style={lbl}>Hora salida (opcional)</label>
+                    <div><label style={lbl}>🍽️ Salida a colación (opcional)</label>
+                      <input type="time" value={rSalidaColacion} onChange={e=>setRSalidaColacion(e.target.value)} style={inp}/>
+                    </div>
+                    <div><label style={lbl}>🔙 Entrada de la tarde / regreso colación (opcional)</label>
+                      <input type="time" value={rEntradaTarde} onChange={e=>setREntradaTarde(e.target.value)} style={inp}/>
+                    </div>
+                    <div><label style={lbl}>🔴 Hora salida final (opcional)</label>
                       <input type="time" value={rSalida} onChange={e=>setRSalida(e.target.value)} style={inp}/>
                     </div>
-                    <div><label style={lbl}>Colación (minutos, no se paga)</label>
-                      <input type="number" min={0} value={rColacion} onChange={e=>setRColacion(e.target.value.replace(/\D/g,''))} placeholder="0" style={inp}/>
+                    <div><label style={lbl}>Colación manual (minutos) — solo si no registraste las horas de colación arriba</label>
+                      <input type="number" min={0} value={rColacion} onChange={e=>setRColacion(e.target.value.replace(/\D/g,''))} placeholder="0" disabled={!!(rSalidaColacion && rEntradaTarde)} style={{ ...inp, opacity: (rSalidaColacion && rEntradaTarde) ? 0.5 : 1 }}/>
                     </div>
                   </div>
                   {rEntrada && rSalida && rEmpleada && (()=>{
                     const emp = empleadas.find(e=>e.id===rEmpleada)
                     const ent = new Date(`${rFecha}T${rEntrada}:00`)
                     const sal = new Date(`${rFecha}T${rSalida}:00`)
-                    const colacionMin = parseInt(rColacion) || 0
+                    const solCol = rSalidaColacion ? new Date(`${rFecha}T${rSalidaColacion}:00`) : null
+                    const entTar = rEntradaTarde   ? new Date(`${rFecha}T${rEntradaTarde}:00`)   : null
+                    const colacionMin = (solCol && entTar) ? Math.round((entTar.getTime()-solCol.getTime())/60000) : (parseInt(rColacion) || 0)
                     const h = Math.max(0, (sal.getTime()-ent.getTime())/3600000 - colacionMin/60)
                     if (!emp || sal<=ent) return null
                     return (
@@ -565,7 +598,7 @@ export default function AsistenciaPage() {
                         <span style={{ fontSize:11, color:'#767676' }}>{r.fecha} · {empNombre(r.empresa_id)}</span>
                       </div>
                       <div style={{ fontSize:12, color:'#9A9A9A' }}>
-                        Entrada {fmtHora(r.hora_entrada)} → {r.hora_salida ? `Salida ${fmtHora(r.hora_salida)}` : 'turno abierto'}
+                        {fmtJornada(r)}
                         {!!r.colacion_minutos && ` · 🍽️ ${r.colacion_minutos} min colación`}
                       </div>
                     </div>
