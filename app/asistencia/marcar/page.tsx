@@ -78,10 +78,10 @@ export default function MarcarAsistenciaPage() {
   function etapaDe(empleadaId: string): Etapa {
     const r = registroHoy(empleadaId)
     if (!r) return 'entrada'
+    if (r.hora_salida) return 'completo'
     if (!r.hora_salida_colacion) return 'salida_colacion'
     if (!r.hora_entrada_tarde) return 'entrada_tarde'
-    if (!r.hora_salida) return 'salida'
-    return 'completo'
+    return 'salida'
   }
 
   function elegir(emp: Empleada) {
