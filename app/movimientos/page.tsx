@@ -66,7 +66,7 @@ export default function MovimientosPage() {
   const [showForm,      setShowForm]      = useState(false)
   const [showImport,    setShowImport]    = useState(false)
   const [editId,        setEditId]        = useState<string|null>(null)
-  const [tab,           setTab]           = useState<'lista'|'mensual'|'categorias'>('lista')
+  const [tab,           setTab]           = useState<'lista'|'mensual'|'categorias'|'comparativa'>('lista')
   const [error,         setError]         = useState('')
 
   // Período
@@ -212,6 +212,40 @@ export default function MovimientosPage() {
   })
   const cats = Object.entries(catMap).sort((a,b)=>b[1].total-a[1].total)
   const maxCat = Math.max(...cats.map(([,v])=>v.total),1)
+
+  // Comparativa mes actual vs mes anterior (respeta el filtro de empresa, no el de período)
+  const mesAnteriorDate  = new Date(anioSelec, mesSelec-2, 1)
+  const mesAnteriorMes   = mesAnteriorDate.getMonth()+1
+  const mesAnteriorAnio  = mesAnteriorDate.getFullYear()
+  const keyActual        = `${anioSelec}-${String(mesSelec).padStart(2,'0')}`
+  const keyAnterior      = `${mesAnteriorAnio}-${String(mesAnteriorMes).padStart(2,'0')}`
+
+  const scopeEmpresa = movimientos.filter(m=>empresaFiltro==='all'||m.empresa_id===empresaFiltro)
+  const catActual: Record<string,{tipo:string;total:number}> = {}
+  const catAnterior: Record<string,{tipo:string;total:number}> = {}
+  scopeEmpresa.forEach(m => {
+    const key = m.fecha.slice(0,7)
+    if (key===keyActual)   { if(!catActual[m.categoria])   catActual[m.categoria]   = {tipo:m.tipo,total:0}; catActual[m.categoria].total   += m.monto }
+    if (key===keyAnterior) { if(!catAnterior[m.categoria]) catAnterior[m.categoria] = {tipo:m.tipo,total:0}; catAnterior[m.categoria].total += m.monto }
+  })
+  const categoriasComp = Array.from(new Set([...Object.keys(catActual), ...Object.keys(catAnterior)]))
+  const comparativa = categoriasComp.map(cat => {
+    const a = catActual[cat]?.total || 0
+    const b = catAnterior[cat]?.total || 0
+    const tipo = catActual[cat]?.tipo || catAnterior[cat]?.tipo || 'gasto'
+    const diff = a - b
+    const pct = b>0 ? Math.round(diff/b*100) : (a>0 ? 100 : 0)
+    // Favorable: en ingresos, subir es a favor; en gastos, subir es en contra
+    const favorable = tipo==='ingreso' ? diff>=0 : diff<=0
+    return { cat, tipo, actual:a, anterior:b, diff, pct, favorable }
+  }).sort((x,y)=>Math.abs(y.diff)-Math.abs(x.diff))
+
+  const ingActualTot = scopeEmpresa.filter(m=>m.tipo==='ingreso'&&m.fecha.slice(0,7)===keyActual).reduce((a,m)=>a+m.monto,0)
+  const ingAnteriorTot = scopeEmpresa.filter(m=>m.tipo==='ingreso'&&m.fecha.slice(0,7)===keyAnterior).reduce((a,m)=>a+m.monto,0)
+  const gasActualTot = scopeEmpresa.filter(m=>m.tipo==='gasto'&&m.fecha.slice(0,7)===keyActual).reduce((a,m)=>a+m.monto,0)
+  const gasAnteriorTot = scopeEmpresa.filter(m=>m.tipo==='gasto'&&m.fecha.slice(0,7)===keyAnterior).reduce((a,m)=>a+m.monto,0)
+  const utilActual = ingActualTot - gasActualTot
+  const utilAnterior = ingAnteriorTot - gasAnteriorTot
 
   // CSV
   function parsearCSV(texto: string, empId: string) {
@@ -490,7 +524,7 @@ export default function MovimientosPage() {
 
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
-            {([{k:'lista',l:'≡ Lista'},{k:'mensual',l:'📅 Resumen mensual'},{k:'categorias',l:'⬛ Por categoría'}] as const).map(t=>(
+            {([{k:'lista',l:'≡ Lista'},{k:'mensual',l:'📅 Resumen mensual'},{k:'categorias',l:'⬛ Por categoría'},{k:'comparativa',l:'📊 Comparativa'}] as const).map(t=>(
               <button key={t.k} onClick={()=>setTab(t.k)} style={{ padding:'6px 14px', borderRadius:8, fontSize:13, cursor:'pointer', border:'1px solid rgba(255,255,255,0.1)', background:tab===t.k?'rgba(184,145,46,0.16)':'#161616', color:tab===t.k?'#B8912E':'#9A9A9A', fontWeight:tab===t.k?500:400 }}>
                 {t.l}
               </button>
@@ -662,6 +696,93 @@ export default function MovimientosPage() {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Comparativa mensual */}
+          {!cargando && tab==='comparativa' && (
+            <>
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'14px 18px', marginBottom:14 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:'#9A9A9A' }}>📊 Mes a analizar:</span>
+                  <select value={mesSelec} onChange={e=>setMesSelec(parseInt(e.target.value))} style={sel}>
+                    {MESES_NOMBRE.map((m,i)=><option key={i+1} value={i+1}>{m}</option>)}
+                  </select>
+                  <select value={anioSelec} onChange={e=>setAnioSelec(parseInt(e.target.value))} style={sel}>
+                    {[2024,2025,2026,2027].map(a=><option key={a}>{a}</option>)}
+                  </select>
+                  <span style={{ fontSize:12, color:'#767676' }}>vs {MESES_NOMBRE[mesAnteriorMes-1]} {mesAnteriorAnio}</span>
+                </div>
+              </div>
+
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12, marginBottom:16 }}>
+                {[
+                  { label:'Ingresos', act:ingActualTot, ant:ingAnteriorTot, tipo:'ingreso' as const },
+                  { label:'Gastos',   act:gasActualTot, ant:gasAnteriorTot, tipo:'gasto' as const },
+                  { label:'Utilidad', act:utilActual,   ant:utilAnterior,   tipo:'ingreso' as const },
+                ].map(c => {
+                  const diff = c.act - c.ant
+                  const pct = c.ant!==0 ? Math.round(diff/Math.abs(c.ant)*100) : (c.act!==0?100:0)
+                  const favorable = c.tipo==='ingreso' ? diff>=0 : diff<=0
+                  const color = favorable ? '#1D9E75' : '#E24B4A'
+                  return (
+                    <div key={c.label} style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:'14px 16px' }}>
+                      <div style={{ fontSize:11, color:'#9A9A9A', fontWeight:500, marginBottom:6 }}>{c.label}</div>
+                      <div style={{ fontSize:20, fontWeight:700, color:'#F0EFEA', marginBottom:4 }}>{fmtCLP(c.act)}</div>
+                      <div style={{ fontSize:12, color, fontWeight:600, display:'flex', alignItems:'center', gap:4 }}>
+                        {diff===0 ? '— sin cambio' : `${diff>0?'▲':'▼'} ${fmtCLP(Math.abs(diff))} (${Math.abs(pct)}%) ${favorable?'a favor':'en contra'}`}
+                      </div>
+                      <div style={{ fontSize:11, color:'#767676', marginTop:4 }}>Mes anterior: {fmtCLP(c.ant)}</div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
+                <div style={{ padding:'14px 18px 0', fontSize:12, fontWeight:600, color:'#9A9A9A', textTransform:'uppercase', letterSpacing:'0.06em' }}>
+                  Variación por categoría
+                </div>
+                {comparativa.length===0 ? (
+                  <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>Sin datos para comparar estos meses</div>
+                ) : (
+                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13, marginTop:10 }}>
+                    <thead>
+                      <tr style={{ background:'#1A1A1A' }}>
+                        {['Categoría','Tipo','Mes anterior','Mes actual','Variación',''].map(h=>(
+                          <th key={h} style={{ textAlign:'left', padding:'10px 14px', fontWeight:500, color:'#9A9A9A', borderBottom:'1px solid rgba(255,255,255,0.08)', whiteSpace:'nowrap' as const }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {comparativa.map((c,i)=>(
+                        <tr key={c.cat} style={{ borderBottom:i<comparativa.length-1?'1px solid rgba(255,255,255,0.06)':'none' }}>
+                          <td style={{ padding:'10px 14px', fontWeight:500, color:'#F0EFEA' }}>{c.cat}</td>
+                          <td style={{ padding:'10px 14px' }}>
+                            <span style={{ fontSize:11, padding:'1px 7px', borderRadius:999, fontWeight:500, background:c.tipo==='ingreso'?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', color:c.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{c.tipo}</span>
+                          </td>
+                          <td style={{ padding:'10px 14px', color:'#9A9A9A' }}>{fmtCLP(c.anterior)}</td>
+                          <td style={{ padding:'10px 14px', color:'#F0EFEA', fontWeight:500 }}>{fmtCLP(c.actual)}</td>
+                          <td style={{ padding:'10px 14px', color:c.favorable?'#1D9E75':'#E24B4A', fontWeight:600, whiteSpace:'nowrap' as const }}>
+                            {c.diff===0 ? '—' : `${c.diff>0?'+':'-'}${fmtCLP(Math.abs(c.diff))} (${Math.abs(c.pct)}%)`}
+                          </td>
+                          <td style={{ padding:'10px 14px' }}>
+                            {c.diff===0 ? (
+                              <span style={{ fontSize:11, color:'#767676' }}>Sin cambio</span>
+                            ) : (
+                              <span style={{ fontSize:11, padding:'2px 8px', borderRadius:999, fontWeight:600, background:c.favorable?'rgba(29,158,117,0.16)':'rgba(226,75,74,0.16)', color:c.favorable?'#1D9E75':'#E24B4A' }}>
+                                {c.favorable ? '✓ A favor' : '⚠ En contra'}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                <div style={{ padding:'8px 14px', fontSize:11, color:'#767676', background:'#141414', marginTop:comparativa.length===0?0:8 }}>
+                  💡 "A favor" = más ingresos o menos gastos que el mes anterior. "En contra" = menos ingresos o más gastos.
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
