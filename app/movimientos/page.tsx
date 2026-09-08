@@ -24,6 +24,7 @@ const NAV = [
   { href:'/',             label:'Dashboard',    icon:'▦'  },
   { href:'/movimientos',  label:'Movimientos',  icon:'↕',  active:true },
   { href:'/caja',           label:'Caja',         icon:'💵' },
+  { href:'/calendario-pago', label:'Calendario de pago', icon:'🗓️' },
   { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯' },
   { href:'/alertas',      label:'Alertas',      icon:'🔔' },
   { href:'/reportes',     label:'Reportes',     icon:'📄' },

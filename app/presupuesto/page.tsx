@@ -252,6 +252,7 @@ export default function PresupuestoPage() {
           { href:'/',             label:'Dashboard',    icon:'▦'  },
           { href:'/movimientos',  label:'Movimientos',  icon:'↕'  },
           { href:'/caja',           label:'Caja',         icon:'💵' },
+          { href:'/calendario-pago', label:'Calendario de pago', icon:'🗓️' },
           { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯', active:true },
           { href:'/alertas',      label:'Alertas',      icon:'🔔' },
           { href:'/reportes',     label:'Reportes',     icon:'📄' },
