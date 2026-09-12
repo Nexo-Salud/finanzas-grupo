@@ -12,76 +12,37 @@ const supabase = createClient(
 // ── Tipos ──────────────────────────────────────────────────────
 type Categoria = {
   id: string
+  empresa_id: string
+  anio: number
   nombre: string
   tipo: 'ingreso' | 'gasto'
   color: string
-  meta: number
+  meta_anual: number
   dist: number[] // 12 porcentajes que suman 100
 }
+type Empresa = { id: string; nombre_corto: string; color: string }
+type Movimiento = { empresa_id: string; tipo: string; categoria: string; monto: number; fecha: string }
 
-type Empresa = { id: string; nombre: string; color: string }
-
-// ── Datos ──────────────────────────────────────────────────────
-const EMPRESAS: Empresa[] = [
-  { id: 'A', nombre: 'Empresa A', color: '#3266ad' },
-  { id: 'B', nombre: 'Empresa B', color: '#1D9E75' },
-  { id: 'C', nombre: 'Empresa C', color: '#BA7517' },
-]
-
+const CATEGORIAS_INGRESO = ['Ventas contado','Ventas crédito','Ventas débito','Transferencias recibidas','Otros ingresos']
+const CATEGORIAS_GASTO   = ['Proveedores','Remuneraciones','Leyes sociales','Arriendos pagados','Impuestos','Tarjeta de crédito','Préstamos','Boletas de honorarios','Asesoría contable','Mantención','Comisión TUU','Controlfarma software','Seguridad','Agua Antofagasta','Servicios básicos','Gastos generales']
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
-const PRESUPUESTOS_INICIALES: Record<string, Categoria[]> = {
-  A: [
-    { id:'a1', nombre:'Ventas',                tipo:'ingreso', color:'#3266ad', meta:80000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'a2', nombre:'Servicios profesionales',tipo:'ingreso', color:'#1D9E75', meta:24000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'a3', nombre:'Otros ingresos',         tipo:'ingreso', color:'#7F77DD', meta:6000000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'a4', nombre:'Remuneraciones',         tipo:'gasto',   color:'#D85A30', meta:36000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'a5', nombre:'Proveedores',            tipo:'gasto',   color:'#BA7517', meta:18000000, dist:[7,7,8,8,9,9,9,9,9,9,8,8] },
-    { id:'a6', nombre:'Arriendos pagados',      tipo:'gasto',   color:'#534AB7', meta:6000000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'a7', nombre:'Marketing',              tipo:'gasto',   color:'#D4537E', meta:8000000,  dist:[5,5,7,8,8,10,10,10,10,9,9,9] },
-    { id:'a8', nombre:'Gastos generales',       tipo:'gasto',   color:'#888780', meta:4800000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-  ],
-  B: [
-    { id:'b1', nombre:'Ventas',           tipo:'ingreso', color:'#3266ad', meta:48000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'b2', nombre:'Servicios',        tipo:'ingreso', color:'#1D9E75', meta:12000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'b3', nombre:'Remuneraciones',   tipo:'gasto',   color:'#D85A30', meta:24000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'b4', nombre:'Proveedores',      tipo:'gasto',   color:'#BA7517', meta:10000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'b5', nombre:'Servicios básicos',tipo:'gasto',   color:'#534AB7', meta:4800000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-  ],
-  C: [
-    { id:'c1', nombre:'Arriendos cobrados',tipo:'ingreso', color:'#3266ad', meta:24000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'c2', nombre:'Otros ingresos',    tipo:'ingreso', color:'#1D9E75', meta:6000000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'c3', nombre:'Remuneraciones',    tipo:'gasto',   color:'#D85A30', meta:12000000, dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-    { id:'c4', nombre:'Mantención',        tipo:'gasto',   color:'#BA7517', meta:4800000,  dist:[8,8,8,8,8,8,8,8,8,8,8,12] },
-  ],
-}
-
-// Ejecutado real H1 2025 (primeros 6 meses)
-const EJECUTADO: Record<string, Record<string, number[]>> = {
-  A: {
-    a1:[3800,4600,4200,5500,5100,6200,0,0,0,0,0,0],
-    a2:[1800,2100,1900,2500,2300,2800,0,0,0,0,0,0],
-    a3:[400,500,450,600,550,700,0,0,0,0,0,0],
-    a4:[2900,3000,2950,3100,3200,3500,0,0,0,0,0,0],
-    a5:[1100,1200,1250,1350,1400,1500,0,0,0,0,0,0],
-    a6:[500,500,500,500,500,500,0,0,0,0,0,0],
-    a7:[280,300,420,550,560,700,0,0,0,0,0,0],
-    a8:[330,340,350,360,370,380,0,0,0,0,0,0],
-  },
-  B: {
-    b1:[3200,3700,4000,3600,4600,5000,0,0,0,0,0,0],
-    b2:[800,900,950,850,1000,1100,0,0,0,0,0,0],
-    b3:[1900,1950,2000,2050,2100,2200,0,0,0,0,0,0],
-    b4:[750,800,820,870,900,950,0,0,0,0,0,0],
-    b5:[380,385,380,390,395,400,0,0,0,0,0,0],
-  },
-  C: {
-    c1:[1800,1800,1800,1800,1800,1800,0,0,0,0,0,0],
-    c2:[350,400,420,380,450,500,0,0,0,0,0,0],
-    c3:[950,960,970,980,990,1000,0,0,0,0,0,0],
-    c4:[280,290,300,295,310,320,0,0,0,0,0,0],
-  },
-}
+const NAV = [
+  { href:'/',             label:'Dashboard',    icon:'▦'  },
+  { href:'/movimientos',  label:'Movimientos',  icon:'↕'  },
+  { href:'/caja',           label:'Caja',         icon:'💵' },
+  { href:'/calendario-pago', label:'Calendario de pago', icon:'🗓️' },
+  { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯', active:true },
+  { href:'/alertas',      label:'Alertas',      icon:'🔔' },
+  { href:'/reportes',     label:'Reportes',     icon:'📄' },
+  { href:'/bancos',       label:'Bancos',       icon:'🏦' },
+  { href:'/tributario',   label:'Documentos',   icon:'🧾' },
+  { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
+  { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
+  { href:'/asistencia',     label:'Asistencia',   icon:'🕐' },
+  { href:'/kpis',         label:'KPIs',         icon:'📊' },
+  { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
+]
 
 // ── Helpers ────────────────────────────────────────────────────
 function fmtCLP(n: number) { return '$' + Math.round(n).toLocaleString('es-CL') }
@@ -108,7 +69,24 @@ export default function PresupuestoPage() {
   const [userEmail,          setUserEmail]          = useState('')
   const [empresasPermitidas, setEmpresasPermitidas] = useState<string[]>([])
   const [esAdmin,            setEsAdmin]            = useState(true)
-  const [cargandoAuth,       setCargandoAuth]       = useState(true)
+  const [authListo,          setAuthListo]          = useState(false)
+
+  const [empresas,     setEmpresas]     = useState<Empresa[]>([])
+  const [empresa,      setEmpresa]      = useState('')
+  const [anio,         setAnio]         = useState(new Date().getFullYear())
+  const [categorias,   setCategorias]   = useState<Categoria[]>([])
+  const [movimientos,  setMovimientos]  = useState<Movimiento[]>([])
+  const [cargando,     setCargando]     = useState(false)
+  const [error,        setError]        = useState('')
+
+  const [tab,          setTab]          = useState<'categorias'|'resumen'|'comparativo'>('categorias')
+  const [tipoFiltro,   setTipoFiltro]   = useState<'all'|'ingreso'|'gasto'>('all')
+  const [expandidos,   setExpandidos]   = useState<Record<string,boolean>>({})
+  const [showForm,     setShowForm]     = useState(false)
+  const [fNombre, setFNombre] = useState('')
+  const [fTipo,   setFTipo]   = useState<'ingreso'|'gasto'>('ingreso')
+  const [fMeta,   setFMeta]   = useState('')
+  const [fColor,  setFColor]  = useState('#B8912E')
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -123,14 +101,19 @@ export default function PresupuestoPage() {
       if (perfil?.modulos_permitidos && perfil.modulos_permitidos.length > 0 && !perfil.modulos_permitidos.includes('/presupuesto')) {
         router.push(perfil.modulos_permitidos[0]); return
       }
-      if (perfil) {
-        if (perfil.rol === 'admin' || !perfil.empresas_permitidas?.length) {
-          setEsAdmin(true); setEmpresasPermitidas([])
-        } else {
-          setEsAdmin(false); setEmpresasPermitidas(perfil.empresas_permitidas)
-        }
+      let perms: string[] = []
+      if (perfil && perfil.rol !== 'admin' && perfil.empresas_permitidas?.length > 0) {
+        perms = perfil.empresas_permitidas
+        setEsAdmin(false); setEmpresasPermitidas(perms)
       } else { setEsAdmin(true); setEmpresasPermitidas([]) }
-      setCargandoAuth(false)
+
+      let qEmps = supabase.from('empresas').select('id,nombre_corto,color').eq('activa', true)
+      if (perms.length > 0) qEmps = qEmps.in('id', perms)
+      const { data: emps } = await qEmps.order('nombre_corto')
+      setEmpresas(emps || [])
+      if (emps && emps.length > 0) setEmpresa(emps[0].id)
+
+      setAuthListo(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) router.push('/login')
@@ -138,88 +121,107 @@ export default function PresupuestoPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-  async function cerrarSesion() {
-    await supabase.auth.signOut()
-    router.push('/login')
+  useEffect(() => {
+    if (!authListo || !empresa) return
+    cargarDatosEmpresa(empresa, anio)
+  }, [authListo, empresa, anio])
+
+  async function cargarDatosEmpresa(empId: string, anioSel: number) {
+    setCargando(true); setError('')
+    try {
+      const { data: cats, error: errC } = await supabase
+        .from('presupuesto_categorias').select('*')
+        .eq('empresa_id', empId).eq('anio', anioSel)
+      if (errC) throw errC
+      setCategorias((cats || []).map((c:any) => ({ ...c, dist: Array.isArray(c.dist) ? c.dist : JSON.parse(c.dist) })))
+
+      const { data: movs, error: errM } = await supabase
+        .from('movimientos').select('empresa_id,tipo,categoria,monto,fecha')
+        .eq('empresa_id', empId)
+        .gte('fecha', `${anioSel}-01-01`).lte('fecha', `${anioSel}-12-31`)
+        .limit(5000)
+      if (errM) throw errM
+      setMovimientos(movs || [])
+    } catch(e: any) {
+      setError('Error conectando con la base de datos: ' + (e?.message||'desconocido'))
+    } finally { setCargando(false) }
   }
 
-  const [empresa,      setEmpresa]      = useState('A')
-  const [anio,         setAnio]         = useState(2025)
-  const [tab,          setTab]          = useState<'categorias'|'resumen'|'comparativo'>('categorias')
-  const [tipoFiltro,   setTipoFiltro]   = useState<'all'|'ingreso'|'gasto'>('all')
-  const [presupuestos, setPresupuestos] = useState(PRESUPUESTOS_INICIALES)
-  const [expandidos,   setExpandidos]   = useState<Record<string,boolean>>({})
-  const [showForm,     setShowForm]     = useState(false)
-  const [fNombre, setFNombre] = useState('')
-  const [fTipo,   setFTipo]   = useState<'ingreso'|'gasto'>('ingreso')
-  const [fMeta,   setFMeta]   = useState('')
-  const [fColor,  setFColor]  = useState('#B8912E')
+  async function cerrarSesion() { await supabase.auth.signOut(); router.push('/login') }
 
-  const cats = presupuestos[empresa] || []
+  const cats = categorias
   const filtradas = tipoFiltro === 'all' ? cats : cats.filter(c => c.tipo === tipoFiltro)
-  const ejec = EJECUTADO[empresa] || {}
+
+  // Ejecutado real por categoría/mes, calculado desde Movimientos
+  const ejecPorCat: Record<string, number[]> = {}
+  cats.forEach(c => { ejecPorCat[c.nombre] = Array(12).fill(0) })
+  movimientos.forEach(m => {
+    if (!(m.categoria in ejecPorCat)) return
+    const mes = parseInt(m.fecha.slice(5,7), 10) - 1
+    if (mes>=0 && mes<12) ejecPorCat[m.categoria][mes] += m.monto
+  })
 
   // Métricas globales
-  const totalIngMeta = cats.filter(c=>c.tipo==='ingreso').reduce((a,c)=>a+c.meta,0)
-  const totalGasMeta = cats.filter(c=>c.tipo==='gasto').reduce((a,c)=>a+c.meta,0)
+  const totalIngMeta = cats.filter(c=>c.tipo==='ingreso').reduce((a,c)=>a+c.meta_anual,0)
+  const totalGasMeta = cats.filter(c=>c.tipo==='gasto').reduce((a,c)=>a+c.meta_anual,0)
   const utilidadMeta = totalIngMeta - totalGasMeta
   const margen       = totalIngMeta ? Math.round(utilidadMeta/totalIngMeta*100) : 0
 
   function getMesVal(cat: Categoria, mes: number) {
-    return Math.round(cat.meta * cat.dist[mes] / 100)
+    return Math.round(cat.meta_anual * (cat.dist[mes]||0) / 100)
   }
-  function getEjecMes(catId: string, mes: number) {
-    return (ejec[catId] || [])[mes] || 0
+  function getEjecMes(catNombre: string, mes: number) {
+    return (ejecPorCat[catNombre] || [])[mes] || 0
   }
-  function getTotalEjec(catId: string) {
-    return (ejec[catId] || []).reduce((a,v)=>a+v,0)
+  function getTotalEjec(catNombre: string) {
+    return (ejecPorCat[catNombre] || []).reduce((a,v)=>a+v,0)
   }
   function getPctEjec(cat: Categoria) {
-    const ej = getTotalEjec(cat.id)
-    return cat.meta ? Math.round(ej/cat.meta*100) : 0
+    const ej = getTotalEjec(cat.nombre)
+    return cat.meta_anual ? Math.round(ej/cat.meta_anual*100) : 0
   }
 
-  function updateMeta(id: string, val: number) {
-    setPresupuestos(prev => ({
-      ...prev,
-      [empresa]: prev[empresa].map(c => c.id === id ? {...c, meta: val} : c)
-    }))
+  async function updateMeta(cat: Categoria, val: number) {
+    setCategorias(prev => prev.map(c => c.id === cat.id ? {...c, meta_anual: val} : c))
+    try { await supabase.from('presupuesto_categorias').update({ meta_anual: val }).eq('id', cat.id) }
+    catch(e:any) { setError('Error guardando meta: '+e.message) }
   }
-  function updateDist(id: string, mes: number, val: number) {
-    setPresupuestos(prev => ({
-      ...prev,
-      [empresa]: prev[empresa].map(c => {
-        if (c.id !== id) return c
-        const nd = [...c.dist]; nd[mes] = val
-        return {...c, dist: nd}
-      })
-    }))
+  async function guardarDist(cat: Categoria, nuevoDist: number[]) {
+    setCategorias(prev => prev.map(c => c.id === cat.id ? {...c, dist: nuevoDist} : c))
+    try { await supabase.from('presupuesto_categorias').update({ dist: nuevoDist }).eq('id', cat.id) }
+    catch(e:any) { setError('Error guardando distribución: '+e.message) }
   }
-  function aplicarDist(id: string, modo: 'uniforme'|'estacional') {
+  function updateDistLocal(cat: Categoria, mes: number, val: number) {
+    const nd = [...cat.dist]; nd[mes] = val
+    setCategorias(prev => prev.map(c => c.id === cat.id ? {...c, dist: nd} : c))
+  }
+  function aplicarDist(cat: Categoria, modo: 'uniforme'|'estacional') {
     const nd = modo === 'uniforme' ? distribuirUniforme() : distribuirEstacional()
-    setPresupuestos(prev => ({
-      ...prev,
-      [empresa]: prev[empresa].map(c => c.id === id ? {...c, dist: nd} : c)
-    }))
+    guardarDist(cat, nd)
   }
   function toggleExpand(id: string) {
     setExpandidos(prev => ({...prev, [id]: !prev[id]}))
   }
-  function agregarCategoria() {
-    if (!fNombre || !fMeta) return
-    const nc: Categoria = {
-      id: Date.now().toString(), nombre: fNombre, tipo: fTipo,
-      color: fColor, meta: parseFloat(fMeta) || 0,
-      dist: distribuirUniforme(),
+  async function agregarCategoria() {
+    if (!fNombre || !fMeta || !empresa) return
+    try {
+      const { data, error: err } = await supabase.from('presupuesto_categorias').insert({
+        empresa_id: empresa, anio, nombre: fNombre, tipo: fTipo,
+        color: fColor, meta_anual: parseFloat(fMeta) || 0,
+        dist: distribuirUniforme(),
+      }).select().single()
+      if (err) throw err
+      setCategorias(prev => [...prev, { ...data, dist: Array.isArray(data.dist) ? data.dist : JSON.parse(data.dist) }])
+      setFNombre(''); setFMeta(''); setShowForm(false)
+    } catch(e: any) {
+      setError(e.message?.includes('duplicate') ? `Ya existe una categoría "${fNombre}" para esta empresa en ${anio}` : 'Error creando categoría: '+e.message)
     }
-    setPresupuestos(prev => ({...prev, [empresa]: [...prev[empresa], nc]}))
-    setFNombre(''); setFMeta(''); setShowForm(false)
   }
-  function eliminarCategoria(id: string) {
-    setPresupuestos(prev => ({
-      ...prev,
-      [empresa]: prev[empresa].filter(c => c.id !== id)
-    }))
+  async function eliminarCategoria(id: string) {
+    try {
+      await supabase.from('presupuesto_categorias').delete().eq('id', id)
+      setCategorias(prev => prev.filter(c => c.id !== id))
+    } catch(e:any) { setError('Error eliminando: '+e.message) }
   }
 
   const barColor = (pct: number, invert = false) => {
@@ -237,6 +239,19 @@ export default function PresupuestoPage() {
     return pct >= 100 ? 'Logrado' : pct >= 75 ? 'En curso' : 'Bajo meta'
   }
 
+  const hoy = new Date()
+  const mesesTranscurridos = anio === hoy.getFullYear() ? hoy.getMonth()+1 : 12
+  const labelPeriodoComp = `Ene–${MESES[mesesTranscurridos-1]} ${anio}`
+
+  const categoriasDisponibles = fTipo === 'ingreso' ? CATEGORIAS_INGRESO : CATEGORIAS_GASTO
+  const yaUsadas = cats.map(c=>c.nombre)
+
+  if (!authListo) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', color:'#767676' }}>
+      ⏳ Verificando acceso...
+    </div>
+  )
+
   return (
     <div style={{ minHeight:'100vh', background:'#0B0B0C', fontFamily:'DM Sans, sans-serif' }}>
 
@@ -248,23 +263,8 @@ export default function PresupuestoPage() {
         <div style={{ height:56, display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:12, marginLeft:-12, marginRight:-12, paddingLeft:20, fontSize:15, fontWeight:600, color:'#B8912E' }}>
           📊 Finanzas Grupo
         </div>
-        {[
-          { href:'/',             label:'Dashboard',    icon:'▦'  },
-          { href:'/movimientos',  label:'Movimientos',  icon:'↕'  },
-          { href:'/caja',           label:'Caja',         icon:'💵' },
-          { href:'/calendario-pago', label:'Calendario de pago', icon:'🗓️' },
-          { href:'/presupuesto',  label:'Presupuesto',  icon:'🎯', active:true },
-          { href:'/alertas',      label:'Alertas',      icon:'🔔' },
-          { href:'/reportes',     label:'Reportes',     icon:'📄' },
-          { href:'/bancos',       label:'Bancos',       icon:'🏦' },
-          { href:'/tributario',   label:'Documentos',   icon:'🧾' },
-          { href:'/proyecciones', label:'Proyecciones', icon:'📈' },
-          { href:'/usuarios',     label:'Usuarios',     icon:'👥' },
-          { href:'/asistencia',     label:'Asistencia',   icon:'🕐' },
-          { href:'/kpis',         label:'KPIs',         icon:'📊' },
-          { href:'/ia',           label:'Análisis IA',  icon:'🧠' },
-        ].map(item => (
-          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:item.active?'#B8912E':'#9A9A9A', background:item.active?'rgba(184,145,46,0.16)':'transparent', fontWeight:item.active?500:400, textDecoration:'none', marginBottom:2 }}>
+        {NAV.map(item => (
+          <Link key={item.href} href={item.href} style={{ display:'flex', alignItems:'center', gap:9, padding:'8px 10px', borderRadius:8, fontSize:13.5, color:(item as any).active?'#B8912E':'#9A9A9A', background:(item as any).active?'rgba(184,145,46,0.16)':'transparent', fontWeight:(item as any).active?500:400, textDecoration:'none', marginBottom:2 }}>
             <span style={{ fontSize:15 }}>{item.icon}</span>{item.label}
           </Link>
         ))}
@@ -292,16 +292,26 @@ export default function PresupuestoPage() {
           <div style={{ fontSize:15, fontWeight:600 }}>Presupuesto anual</div>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
             <select value={empresa} onChange={e=>setEmpresa(e.target.value)} style={sel}>
-              {EMPRESAS.map(e=><option key={e.id} value={e.id}>{e.nombre}</option>)}
+              {empresas.map(e=><option key={e.id} value={e.id}>{e.nombre_corto}</option>)}
             </select>
             <select value={anio} onChange={e=>setAnio(parseInt(e.target.value))} style={sel}>
-              {[2024,2025,2026].map(a=><option key={a}>{a}</option>)}
+              {[2024,2025,2026,2027].map(a=><option key={a}>{a}</option>)}
             </select>
             <button onClick={()=>setShowForm(true)} style={btnP}>+ Nueva categoría</button>
           </div>
         </div>
 
         <div className="app-main" style={{ padding:'24px 28px' }}>
+          {error && (
+            <div style={{ background:'rgba(226,75,74,0.16)', border:'1px solid rgba(226,75,74,0.22)', borderRadius:10, padding:'10px 14px', fontSize:13, color:'#E24B4A', marginBottom:16, display:'flex', justifyContent:'space-between' }}>
+              <span>⚠️ {error}</span>
+              <button onClick={()=>setError('')} style={{ background:'transparent', border:'none', cursor:'pointer', color:'#E24B4A' }}>✕</button>
+            </div>
+          )}
+
+          <div style={{ fontSize:11, color:'#767676', marginBottom:14 }}>
+            💡 El "ejecutado" se calcula automáticamente desde Movimientos: usa el mismo nombre de categoría en ambos módulos para que coincida.
+          </div>
 
           {/* Métricas */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24 }}>
@@ -323,18 +333,23 @@ export default function PresupuestoPage() {
             <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20, marginBottom:20 }}>
               <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Nueva categoría de presupuesto</div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
-                <div><label style={lbl}>Nombre</label><input value={fNombre} onChange={e=>setFNombre(e.target.value)} placeholder="Ej: Comisiones" style={inp}/></div>
                 <div><label style={lbl}>Tipo</label>
-                  <select value={fTipo} onChange={e=>setFTipo(e.target.value as 'ingreso'|'gasto')} style={inp}>
+                  <select value={fTipo} onChange={e=>{ setFTipo(e.target.value as 'ingreso'|'gasto'); setFNombre('') }} style={inp}>
                     <option value="ingreso">Ingreso</option>
                     <option value="gasto">Gasto</option>
+                  </select>
+                </div>
+                <div><label style={lbl}>Categoría (igual que en Movimientos)</label>
+                  <select value={fNombre} onChange={e=>setFNombre(e.target.value)} style={inp}>
+                    <option value="">Seleccionar...</option>
+                    {categoriasDisponibles.filter(c=>!yaUsadas.includes(c)).map(c=><option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div><label style={lbl}>Meta anual ($)</label><input type="number" value={fMeta} onChange={e=>setFMeta(e.target.value)} placeholder="0" style={inp}/></div>
                 <div><label style={lbl}>Color</label>
                   <div style={{ display:'flex', gap:6, marginTop:4 }}>
                     {['#3266ad','#1D9E75','#BA7517','#D85A30','#7F77DD','#D4537E','#639922'].map(c=>(
-                      <div key={c} onClick={()=>setFColor(c)} style={{ width:24, height:24, borderRadius:'50%', background:c, cursor:'pointer', border:fColor===c?'3px solid #111':'2px solid transparent' }}/>
+                      <div key={c} onClick={()=>setFColor(c)} style={{ width:24, height:24, borderRadius:'50%', background:c, cursor:'pointer', border:fColor===c?'3px solid #F0EFEA':'2px solid transparent' }}/>
                     ))}
                   </div>
                 </div>
@@ -364,8 +379,14 @@ export default function PresupuestoPage() {
             )}
           </div>
 
+          {cargando && <div style={{ textAlign:'center', padding:'3rem', color:'#767676' }}>⏳ Cargando...</div>}
+
           {/* ── Tab: Categorías ── */}
-          {tab==='categorias' && filtradas.map(cat => {
+          {!cargando && tab==='categorias' && (filtradas.length===0 ? (
+            <div style={{ textAlign:'center', padding:'3rem', color:'#767676' }}>
+              📭 Sin categorías todavía — agrega la primera con "+ Nueva categoría"
+            </div>
+          ) : filtradas.map(cat => {
             const pctEj = getPctEjec(cat)
             const totalMesPresup = MESES.map((_,i)=>getMesVal(cat,i))
             const sumaDistActual = cat.dist.reduce((a,b)=>a+b,0)
@@ -380,7 +401,7 @@ export default function PresupuestoPage() {
                     <div>
                       <div style={{ fontSize:14, fontWeight:600, color:'#F0EFEA' }}>{cat.nombre}</div>
                       <div style={{ fontSize:11, color:'#9A9A9A', marginTop:1 }}>
-                        {cat.tipo === 'ingreso' ? '↑ Ingreso' : '↓ Gasto'} · Promedio mensual: {fmtM(cat.meta/12)}
+                        {cat.tipo === 'ingreso' ? '↑ Ingreso' : '↓ Gasto'} · Promedio mensual: {fmtM(cat.meta_anual/12)}
                       </div>
                     </div>
                   </div>
@@ -401,8 +422,8 @@ export default function PresupuestoPage() {
                       <div style={{ display:'flex', alignItems:'center', gap:4 }}>
                         <input
                           type="number"
-                          value={cat.meta}
-                          onChange={e=>updateMeta(cat.id, parseFloat(e.target.value)||0)}
+                          defaultValue={cat.meta_anual}
+                          onBlur={e=>updateMeta(cat, parseFloat(e.target.value)||0)}
                           style={{ width:120, fontSize:13, fontWeight:600, textAlign:'right', border:'none', borderBottom:'1.5px solid rgba(255,255,255,0.12)', background:'transparent', color:'#F0EFEA', padding:'2px 4px' }}
                         />
                         <span style={{ fontSize:12, color:'#9A9A9A' }}>CLP</span>
@@ -412,8 +433,8 @@ export default function PresupuestoPage() {
                       <div style={{ height:'100%', borderRadius:4, transition:'width 0.4s', width:`${Math.min(100,pctEj)}%`, background:barColor(pctEj, cat.tipo==='gasto') }}/>
                     </div>
                     <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'#767676', marginTop:3 }}>
-                      <span>Ejecutado: {fmtM(getTotalEjec(cat.id))} ({pctEj}%)</span>
-                      <span>Meta: {fmtM(cat.meta)}</span>
+                      <span>Ejecutado: {fmtM(getTotalEjec(cat.nombre))} ({pctEj}%)</span>
+                      <span>Meta: {fmtM(cat.meta_anual)}</span>
                     </div>
                   </div>
                 </div>
@@ -423,8 +444,9 @@ export default function PresupuestoPage() {
                   <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:14, marginTop:4 }}>
                     <div style={{ display:'flex', gap:6, marginBottom:10, flexWrap:'wrap', alignItems:'center' }}>
                       <span style={{ fontSize:12, color:'#9A9A9A' }}>Distribuir:</span>
-                      <button onClick={()=>aplicarDist(cat.id,'uniforme')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Uniforme</button>
-                      <button onClick={()=>aplicarDist(cat.id,'estacional')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Estacional</button>
+                      <button onClick={()=>aplicarDist(cat,'uniforme')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Uniforme</button>
+                      <button onClick={()=>aplicarDist(cat,'estacional')} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11 }}>Estacional</button>
+                      <button onClick={()=>guardarDist(cat, cat.dist)} style={{ ...btnSec, width:'auto', padding:'4px 10px', fontSize:11, background:'#B8912E', color:'#fff', border:'none' }}>💾 Guardar</button>
                       <span style={{ marginLeft:'auto', fontSize:11, color: Math.abs(sumaDistActual-100) < 0.5 ? '#1D9E75' : '#E24B4A', fontWeight:500 }}>
                         Suma: {Math.round(sumaDistActual)}%
                       </span>
@@ -436,12 +458,12 @@ export default function PresupuestoPage() {
                           <input
                             type="number" step="0.1" min="0" max="100"
                             value={Math.round(cat.dist[i]*10)/10}
-                            onChange={e=>updateDist(cat.id, i, parseFloat(e.target.value)||0)}
-                            style={{ width:'100%', fontSize:11, textAlign:'center', padding:'4px 2px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:6, background: i < 6 && getEjecMes(cat.id,i) > 0 ? 'rgba(29,158,117,0.12)' : '#fff' }}
+                            onChange={e=>updateDistLocal(cat, i, parseFloat(e.target.value)||0)}
+                            style={{ width:'100%', fontSize:11, textAlign:'center', padding:'4px 2px', border:'1px solid rgba(255,255,255,0.14)', borderRadius:6, background:'#1A1A1A', color:'#F0EFEA' }}
                           />
                           <div style={{ fontSize:10, color:'#767676', marginTop:2 }}>{fmtM(totalMesPresup[i])}</div>
-                          {i < 6 && getEjecMes(cat.id,i) > 0 && (
-                            <div style={{ fontSize:10, color:'#1D9E75', marginTop:1 }}>✓ {fmtM(getEjecMes(cat.id,i))}</div>
+                          {getEjecMes(cat.nombre,i) > 0 && (
+                            <div style={{ fontSize:10, color:'#1D9E75', marginTop:1 }}>✓ {fmtM(getEjecMes(cat.nombre,i))}</div>
                           )}
                         </div>
                       ))}
@@ -450,10 +472,10 @@ export default function PresupuestoPage() {
                 )}
               </div>
             )
-          })}
+          }))}
 
           {/* ── Tab: Resumen anual ── */}
-          {tab==='resumen' && (
+          {!cargando && tab==='resumen' && (
             <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden' }}>
               <div style={{ overflowX:'auto' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, minWidth:700 }}>
@@ -465,7 +487,6 @@ export default function PresupuestoPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Ingresos */}
                     <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#1D9E75', textTransform:'uppercase', letterSpacing:'0.06em', background:'rgba(29,158,117,0.12)' }}>INGRESOS</td></tr>
                     {cats.filter(c=>c.tipo==='ingreso').map(cat=>(
                       <tr key={cat.id}>
@@ -478,10 +499,9 @@ export default function PresupuestoPage() {
                         {MESES.map((_,i)=>(
                           <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#C9C9C9' }}>{fmtM(getMesVal(cat,i))}</td>
                         ))}
-                        <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#1D9E75' }}>{fmtM(cat.meta)}</td>
+                        <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#1D9E75' }}>{fmtM(cat.meta_anual)}</td>
                       </tr>
                     ))}
-                    {/* Gastos */}
                     <tr><td colSpan={14} style={{ padding:'6px 14px', fontSize:10, fontWeight:600, color:'#E24B4A', textTransform:'uppercase', letterSpacing:'0.06em', background:'rgba(226,75,74,0.12)' }}>GASTOS</td></tr>
                     {cats.filter(c=>c.tipo==='gasto').map(cat=>(
                       <tr key={cat.id}>
@@ -494,10 +514,9 @@ export default function PresupuestoPage() {
                         {MESES.map((_,i)=>(
                           <td key={i} style={{ padding:'8px 8px', textAlign:'right', color:'#C9C9C9' }}>{fmtM(getMesVal(cat,i))}</td>
                         ))}
-                        <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#E24B4A' }}>{fmtM(cat.meta)}</td>
+                        <td style={{ padding:'8px 14px', textAlign:'right', fontWeight:600, color:'#E24B4A' }}>{fmtM(cat.meta_anual)}</td>
                       </tr>
                     ))}
-                    {/* Resultado neto */}
                     <tr style={{ background:'#141414', borderTop:'2px solid rgba(255,255,255,0.1)' }}>
                       <td style={{ padding:'10px 14px', fontWeight:700, fontSize:13 }}>Resultado neto</td>
                       {MESES.map((_,i)=>{
@@ -515,16 +534,18 @@ export default function PresupuestoPage() {
           )}
 
           {/* ── Tab: Comparativo ── */}
-          {tab==='comparativo' && (
+          {!cargando && tab==='comparativo' && (
             <div style={{ background:'#161616', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:20 }}>
               <div style={{ fontSize:13, color:'#9A9A9A', marginBottom:16 }}>
-                Comparando presupuesto vs ejecución real H1 2025
+                Comparando presupuesto vs ejecución real ({labelPeriodoComp})
               </div>
-              {cats.map(cat => {
-                const pct = getPctEjec(cat)
-                const ejTotal = getTotalEjec(cat.id)
-                const metaH1  = cat.dist.slice(0,6).reduce((a,d)=>a+cat.meta*d/100,0)
-                const variacion = metaH1 ? Math.round((ejTotal - metaH1)/metaH1*100) : 0
+              {cats.length===0 ? (
+                <div style={{ textAlign:'center', padding:'2rem', color:'#767676' }}>Sin categorías todavía</div>
+              ) : cats.map(cat => {
+                const ejTotal = ejecPorCat[cat.nombre]?.slice(0,mesesTranscurridos).reduce((a,v)=>a+v,0) || 0
+                const metaAcum  = cat.dist.slice(0,mesesTranscurridos).reduce((a,d)=>a+cat.meta_anual*d/100,0)
+                const pct = metaAcum ? Math.round(ejTotal/metaAcum*100) : 0
+                const variacion = metaAcum ? Math.round((ejTotal - metaAcum)/metaAcum*100) : 0
                 return (
                   <div key={cat.id} style={{ marginBottom:18 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6, flexWrap:'wrap', gap:6 }}>
@@ -538,14 +559,13 @@ export default function PresupuestoPage() {
                         </span>
                       </div>
                       <div style={{ display:'flex', gap:12, fontSize:12, flexWrap:'wrap' }}>
-                        <span style={{ color:'#9A9A9A' }}>Meta H1: <strong style={{ color:'#F0EFEA' }}>{fmtM(metaH1)}</strong></span>
-                        <span style={{ color:'#9A9A9A' }}>Real H1: <strong style={{ color: cat.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtM(ejTotal)}</strong></span>
+                        <span style={{ color:'#9A9A9A' }}>Meta a la fecha: <strong style={{ color:'#F0EFEA' }}>{fmtM(metaAcum)}</strong></span>
+                        <span style={{ color:'#9A9A9A' }}>Real: <strong style={{ color: cat.tipo==='ingreso'?'#1D9E75':'#E24B4A' }}>{fmtM(ejTotal)}</strong></span>
                         <span style={{ fontWeight:600, color: variacion >= 0 ? (cat.tipo==='ingreso'?'#1D9E75':'#E24B4A') : (cat.tipo==='ingreso'?'#E24B4A':'#1D9E75') }}>
                           {variacion >= 0 ? '+' : ''}{variacion}%
                         </span>
                       </div>
                     </div>
-                    {/* Barras dobles */}
                     <div style={{ display:'flex', gap:4, alignItems:'center' }}>
                       <span style={{ fontSize:10, color:'#767676', width:50, flexShrink:0 }}>Meta</span>
                       <div style={{ flex:1, height:7, background:'#1F1F1F', borderRadius:4, overflow:'hidden' }}>
@@ -572,7 +592,7 @@ export default function PresupuestoPage() {
 }
 
 // ── Estilos ────────────────────────────────────────────────────
-const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616' }
+const sel: React.CSSProperties = { fontSize:13, padding:'6px 10px', border:'1px solid rgba(255,255,255,0.16)', borderRadius:8, background:'#161616', color:'#F0EFEA' }
 const btnP: React.CSSProperties = { display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, border:'none', background:'#B8912E', color:'#fff', fontSize:13, fontWeight:500, cursor:'pointer' }
 const btnSec: React.CSSProperties = { display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'8px 16px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', border:'1px solid rgba(255,255,255,0.14)', background:'#161616', color:'#F0EFEA', width:'100%' }
 const lbl: React.CSSProperties = { display:'block', fontSize:12, fontWeight:500, color:'#9A9A9A', marginBottom:4 }
