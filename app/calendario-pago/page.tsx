@@ -245,10 +245,19 @@ export default function CalendarioPagoPage() {
         const filas: any[][] = XLSX.utils.sheet_to_json(sheet, { header:1, raw:true })
         let idxHeader = filas.findIndex(f => f.some(c => String(c).toUpperCase().includes('PROVEEDOR')) && f.some(c => String(c).toUpperCase().includes('VENCIMIENTO')))
         if (idxHeader<0) { setImportError('No se encontró la fila de encabezados (PROVEEDOR / FECHA_VENCIMIENTO).'); return }
-        const header = filas[idxHeader].map(h => String(h).trim().toUpperCase())
-        const col = (name: string) => header.findIndex(h => h===name)
-        const cProv = col('PROVEEDOR'), cNum = col('NUMERO'), cNom = col('NOMBRE')
-        const cFEmi = col('FECHA_FORMAT'), cFVen = col('FECHA_VENCIMIENTO')
+        // Acepta el formato antiguo (FECHA_VENCIMIENTO, NUMERO...) y el nuevo de oct-2026
+        // ("Fecha vencimiento", "N° documento"...): se normalizan los encabezados.
+        const normHeader = (h: any) => String(h ?? '').trim()
+          .replace(/N\s*[°º]/gi, 'NUMERO ')
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+        const header = filas[idxHeader].map(normHeader)
+        const col = (...names: string[]) => {
+          for (const n of names) { const i = header.findIndex(h => h===n); if (i>=0) return i }
+          return -1
+        }
+        const cProv = col('PROVEEDOR'), cNum = col('NUMERO', 'NUMERO_DOCUMENTO', 'N_DOCUMENTO'), cNom = col('NOMBRE')
+        const cFEmi = col('FECHA_FORMAT', 'FECHA_EMISION', 'FECHA'), cFVen = col('FECHA_VENCIMIENTO')
         const cTot = col('TOTAL'), cPago = col('PAGO'), cSaldo = col('SALDO'), cCC = col('CENTRO_COSTO_NOMBRE')
         if (cProv<0 || cFVen<0 || cTot<0) { setImportError('Faltan columnas obligatorias (PROVEEDOR, FECHA_VENCIMIENTO, TOTAL).'); return }
 
@@ -397,7 +406,7 @@ export default function CalendarioPagoPage() {
                 <button onClick={()=>{ setShowImport(false); setImportPreview([]) }} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:18, color:'#767676' }}>✕</button>
               </div>
               <div style={{ background:'rgba(184,145,46,0.16)', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#B8912E', marginBottom:12 }}>
-                Sube el archivo tal como lo exporta el sistema (columnas PROVEEDOR, FECHA_VENCIMIENTO, TOTAL, PAGO, SALDO). Si un documento ya existe (mismo proveedor, número, vencimiento y monto), se actualiza en vez de duplicarse.
+                Sube el archivo tal como lo exporta el sistema (formato nuevo con columnas Proveedor, Fecha vencimiento, Total, Pago, Saldo; también acepta el formato antiguo). Si un documento ya existe (mismo proveedor, número, vencimiento y monto), se actualiza en vez de duplicarse.
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
                 <div><label style={lbl}>Empresa</label>
