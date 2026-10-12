@@ -413,6 +413,10 @@ export default function CajaPage() {
                 <div style={{ fontSize:14, fontWeight:600 }}>💰 Estado del sencillo por denominación</div>
                 <span style={{ fontSize:11, color:'#767676' }}>Último conteo: {ultimaConDenom.fecha}{empresa==='all' ? ' · '+empNombre(ultimaConDenom.empresa_id) : ''}</span>
               </div>
+              <div style={{ fontSize:22, fontWeight:700, color:'#D8B24D', margin:'6px 0 4px' }}>
+                {fmtCLP(DENOMINACIONES.reduce((a,d)=> a + d*(Number((ultimaConDenom as any)[denomKey(d)])||0), 0))}
+                <span style={{ fontSize:12, fontWeight:400, color:'#9A9A9A', marginLeft:8 }}>total en sencillo</span>
+              </div>
               <div style={{ fontSize:12, color:'#9A9A9A', marginBottom:14 }}>Así sabes con qué billetes/monedas te estás quedando corto para dar vuelto.</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(110px,1fr))', gap:10 }}>
                 {DENOMINACIONES.map(d=>{
@@ -421,7 +425,8 @@ export default function CajaPage() {
                   return (
                     <div key={d} style={{ background:bgDenom(nivel), borderRadius:10, padding:'10px 12px', textAlign:'center' }}>
                       <div style={{ fontSize:11, color:colorDenom(nivel), opacity:0.85, marginBottom:2 }}>{d>=1000?'Billete':'Moneda'} {fmtCLP(d)}</div>
-                      <div style={{ fontSize:20, fontWeight:700, color:colorDenom(nivel) }}>{cant}</div>
+                      <div style={{ fontSize:18, fontWeight:700, color:colorDenom(nivel) }}>{fmtCLP(cant*d)}</div>
+                      <div style={{ fontSize:10, color:colorDenom(nivel), opacity:0.7 }}>{cant} {d>=1000 ? (cant===1?'billete':'billetes') : (cant===1?'moneda':'monedas')}</div>
                       <div style={{ fontSize:10, color:colorDenom(nivel), opacity:0.8 }}>{nivel==='crit'?'⚠️ casi sin stock':nivel==='warn'?'bajo, considera sencillar':'ok'}</div>
                     </div>
                   )
